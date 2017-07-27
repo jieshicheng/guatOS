@@ -25,5 +25,7 @@ void main(void)
     put_char('m');
     put_char('.');
 
+    put_str("This is tiny operator system by CJS\n");
+
     while(1);
 }
