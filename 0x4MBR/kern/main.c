@@ -1,4 +1,5 @@
 #include "print.h"
+#include "init.h"
 
 void main(void)
 {
@@ -10,8 +11,8 @@ void main(void)
     put_char('L');
     put_char('\n');
     put_str("This is tiny operator system by CJS\n");
-    put_int(0xffffffff);
-    put_int(0);
-
+    
+    init_all();
+    asm volatile ("sti");
     while(1);
 }
