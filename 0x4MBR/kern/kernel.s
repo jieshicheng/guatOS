@@ -1,6 +1,6 @@
 %define ERROR_CODE nop
 
-%define ZERO 0
+%define ZERO push 0
 
 extern put_str
 
