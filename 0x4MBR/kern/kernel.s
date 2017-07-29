@@ -5,7 +5,7 @@
 extern put_str
 
 section .data
-intr_str db "interrupt occur", 0xa, 0
+intr_str db "interrupt occur!", 0xa, 0
 
 global intr_entry_table
 intr_entry_table:

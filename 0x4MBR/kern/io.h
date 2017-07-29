@@ -17,6 +17,7 @@ static inline uint8_t inb(uint16_t port)
 {
 	uint8_t ans;
 	asm volatile ("inb %w1, %b0" : "=a"(ans) : "Nd"(port));
+	return ans;
 }
 
 static inline void insw(uint16_t port, void *addr, uint32_t word_cnt)
