@@ -2,12 +2,8 @@
 #include "global.h"
 #include "io.h"
 #include "print.h"
+#include "interrupt.h"
 
-#define IDT_DESC_CNT 0x21
-#define PIC_M_CTRL 0x20
-#define PIC_M_DATA 0x21
-#define PIC_S_CTRL 0xa0
-#define PIC_S_DATA 0xa1
 
 struct gate_desc {
 	uint16_t	func_offset_low_word;
@@ -18,14 +14,53 @@ struct gate_desc {
 
 };
 
-
 char *intr_name[IDT_DESC_CNT];
-typedef void* intr_handler;
 intr_handler idt_table[IDT_DESC_CNT];
-static void make_idt_desc(struct gate_desc *p_gdesc, uint8_t attr, intr_handler function);
 static struct gate_desc idt[IDT_DESC_CNT];
+
+
 extern intr_handler intr_entry_table[IDT_DESC_CNT];
 
+
+enum intr_status intr_enable()
+{
+	enum intr_status old_status;
+	if(INTR_ON == intr_get_status()) {
+		old_status = INTR_ON;
+		return old_status;
+	}
+	else {
+		old_status = INTR_OFF;
+		asm volatile("sti");
+		return old_status;
+	}
+}
+
+enum intr_status intr_disable()
+{
+	enum intr_status old_status;
+	if(INTR_ON == intr_get_status()) {
+		old_status = INTR_ON;
+		asm volatile("cli" : : : "memory");
+		return old_status;
+	}
+	else {
+		old_status = INTR_OFF;
+		return old_status;
+	}
+}
+
+enum intr_status intr_set_status(enum intr_status status)
+{
+	return status & INTR_ON ? intr_enable() : intr_disable();
+}
+
+enum intr_status intr_get_status()
+{
+	uint32_t eflags = 0;
+	GET_EFALGS(eflags);
+	return (eflags & EFLAGS_IF) ? INTR_ON : INTR_OFF;
+}
 
 static void general_intr_handler(uint8_t vec_nr)
 {

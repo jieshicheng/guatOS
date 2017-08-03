@@ -27,17 +27,10 @@ VIDEO_DESC:
 
     gdt_ptr dw GDT_LIMIT
             dd GDT_BASE
-    loadermsg db '2 loader in real.'
 
 
 loader_start:
     mov sp, LOADER_BASE_ADDR
-    mov bp, loadermsg
-    mov cx, 17
-    mov ax, 0x1301
-    mov bx, 0x001f
-    mov dx, 0x1800
-    int 0x10
 
     in al, 0x92
     or al, 0000_0010B
@@ -62,7 +55,6 @@ p_mode_start:
     mov esp, LOADER_STACK_TOP
     mov ax, SELECTOR_VIDEO
     mov gs, ax
-    mov byte [gs:160], 'P'
     
     mov eax, KERNEL_START_SECTOR
     mov ebx, KERNEL_BIN_BASE_ADDR
@@ -84,7 +76,6 @@ p_mode_start:
 
     lgdt [gdt_ptr]
 
-    mov byte [gs:162], 'V'
     jmp SELECTOR_CODE:enter_kernel
 
 enter_kernel:
