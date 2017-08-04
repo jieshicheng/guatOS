@@ -58,7 +58,7 @@ enum intr_status intr_set_status(enum intr_status status)
 enum intr_status intr_get_status()
 {
 	uint32_t eflags = 0;
-	GET_EFALGS(eflags);
+	GET_EFLAGS(eflags);
 	return (eflags & EFLAGS_IF) ? INTR_ON : INTR_OFF;
 }
 
