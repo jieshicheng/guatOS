@@ -5,9 +5,9 @@ CC = gcc
 LD = ld
 LIB = -I lib/ -I kernel/ -I device/
 ASFLAGS = -f elf
-CFLAGS1 = -Wall $(LIB) -c -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes
-CFLAGS2 = -Wall $(LIB) -c -fno-builtin -fno-stack-protector -W -Wstrict-prototypes -Wmissing-prototypes
-LDFLAGS = -Ttext $(ENTRY_POINT) -e main -Map $(BUILD_DIR)/kernel.map
+CFLAGS1 = $(LIB) -c -fno-builtin
+CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
+LDFLAGS = -Ttext $(ENTRY_POINT) -e main
 OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/interrupt.o $(BUILD_DIR)/timer.o \
 		$(BUILD_DIR)/kernel.o $(BUILD_DIR)/print.o $(BUILD_DIR)/debug.o
 
