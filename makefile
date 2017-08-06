@@ -24,7 +24,8 @@ $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
 					  lib/print.h \
 					  kernel/interrupt.h \
 					  device/timer.h \
-					  lib/stdint.h
+					  lib/stdint.h \
+					  kernel/memory.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/interrupt.o : kernel/interrupt.c kernel/interrupt.h \
