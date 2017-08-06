@@ -29,7 +29,7 @@ struct virtual_addr kernel_vaddr;
  */
 static void mem_pool_init(uint32_t all_mem)
 {
-	put_str("   mem pool init start\n");
+	put_str("    mem pool init start\n");
 	// 已经使用的二级页表占用的内存
 	// PDE 加 第一个和769到1022个PTE一共256个页面
 	uint32_t page_table_size = PAGE_SIZE * 256;
@@ -74,7 +74,7 @@ static void mem_pool_init(uint32_t all_mem)
 	kernel_vaddr.vaddr_bitmap.bits = (void *)(MEM_BITMAP_BASE + kbm_length + ubm_length);
 	kernel_vaddr.vaddr_start = K_HEAP_START;
 	bitmap_init(&kernel_vaddr.vaddr_bitmap);
-	put_str(".    pool mem init done\n");
+	put_str(".   mem pool init done\n");
 
 }
 

@@ -13,19 +13,49 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/interrupt.o $(BUILD_
 
 #####		c  complier		#######
 
-$(BUILD_DIR)/main.o : kernel/main.c kernel/init.h lib/print.h lib/stdint.h
+$(BUILD_DIR)/main.o : kernel/main.c \
+					  kernel/init.h \
+					  lib/print.h \
+					  lib/stdint.h
 	$(CC) $(CFLAGS1) $< -o $@
 
-$(BUILD_DIR)/init.o : kernel/init.c kernel/init.h lib/print.h kernel/interrupt.h device/timer.h lib/stdint.h
+$(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
+					  lib/print.h \
+					  kernel/interrupt.h \
+					  device/timer.h \
+					  lib/stdint.h
 	$(CC) $(CFLAGS1) $< -o $@
 
-$(BUILD_DIR)/interrupt.o : kernel/interrupt.c kernel/interrupt.h lib/print.h lib/global.h lib/io.h lib/stdint.h
+$(BUILD_DIR)/interrupt.o : kernel/interrupt.c kernel/interrupt.h \
+						   lib/print.h \ 
+						   lib/global.h \
+						   lib/io.h \
+						   lib/stdint.h
 	$(CC) $(CFLAGS2) $< -o $@
 
-$(BUILD_DIR)/timer.o : device/timer.c device/timer.h lib/stdint.h lib/io.h lib/print.h
+$(BUILD_DIR)/timer.o : device/timer.c device/timer.h \
+					   lib/stdint.h \
+					   lib/io.h \
+					   lib/print.h
 	$(CC) $(CFLAGS1) $< -o $@
 
-$(BUILD_DIR)/debug.o : kernel/debug/debug.c kernel/debug/debug.h lib/print.h lib/stdint.h kernel/interrupt.h
+$(BUILD_DIR)/debug.o : kernel/debug/debug.c kernel/debug/debug.h \
+					   lib/print.h \
+					   lib/stdint.h \
+					   kernel/interrupt.h
+	$(CC) $(CFLAGS1) $< -o $@
+
+$(BUILD_DIR)/bitmap.o : lib/bitmap.c lib/bitmap.h \
+						lib/stdint.h \
+						lib/string.h \
+						lib/global.h kernel/debug/debug.h \ 
+						kernel/interrupt.h lib/print.h
+	$(CC) $(CFLAGS1) $< -o $@
+
+$(BUILD_DIR)/memory.o : kernel/memory.c kernel/memory.h \
+						lib/bitmap.h \
+						lib/stdint.h \
+						lib/print.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 ##### 		nasm complier   ########
