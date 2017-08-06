@@ -50,7 +50,10 @@ $(BUILD_DIR)/bitmap.o : lib/bitmap.c lib/bitmap.h \
 						lib/stdint.h \
 						lib/string.h \
 						lib/global.h kernel/debug/debug.h \
- 						kernel/interrupt.h lib/print.h
+ 						kernel/interrupt.h lib/print.h \
+						lib/global.h kernel/debug/debug.h \
+						kernel/interrupt.h lib/print.h \
+						kernel/debug/debug.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/memory.o : kernel/memory.c kernel/memory.h \
