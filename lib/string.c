@@ -3,7 +3,7 @@
 #include "global.h"
 #include "stdint.h"
 
-void memset(void *dst_, uint8_t value, uing32_t size)
+void memset(void *dst_, uint8_t value, uint32_t size)
 {
 	ASSERT(dst_ != NULL);
 	uint8_t *dst = (uint8_t *)dst_;
@@ -12,7 +12,7 @@ void memset(void *dst_, uint8_t value, uing32_t size)
 	}
 }
 
-void memcpy(void *dst_, const void *src_, uing32_t size)
+void memcpy(void *dst_, const void *src_, uint32_t size)
 {
 	ASSERT(dst_ != NULL && src_ != NULL);
 	uint8_t *dst = (uint8_t *)dst_;
@@ -22,7 +22,7 @@ void memcpy(void *dst_, const void *src_, uing32_t size)
 	}
 }
 
-int memcmp(const void *a_, const void *b_, uing32_t size)
+int memcmp(const void *a_, const void *b_, uint32_t size)
 {
 	const char *a = a_;
 	const char *b = b_;
@@ -106,7 +106,7 @@ char strcat(char *dst_, const char *src_)
 uint32_t strchrs(const char *str, uint8_t ch)
 {
 	ASSERT(str != NULL);
-	uing32_t ch_cnt = 0;
+	uint32_t ch_cnt = 0;
 	const char *p = str;
 	while(*p != 0) {
 		if(*p == ch)
