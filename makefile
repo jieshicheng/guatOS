@@ -3,7 +3,7 @@ ENTRY_POINT = 0xc0001500
 AS = nasm
 CC = gcc
 LD = ld
-LIB = -I lib/ -I kernel/ -I device/
+LIB = -I lib/ -I kernel/ -I kernel/debug -I device/
 ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
@@ -16,7 +16,8 @@ OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/interrupt.o $(BUILD_
 $(BUILD_DIR)/main.o : kernel/main.c \
 					  kernel/init.h \
 					  lib/print.h \
-					  lib/stdint.h
+					  lib/stdint.h \
+					  kernel/debug/debug.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
@@ -27,7 +28,7 @@ $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/interrupt.o : kernel/interrupt.c kernel/interrupt.h \
-						   lib/print.h \ 
+						   lib/print.h \
 						   lib/global.h \
 						   lib/io.h \
 						   lib/stdint.h
@@ -48,8 +49,8 @@ $(BUILD_DIR)/debug.o : kernel/debug/debug.c kernel/debug/debug.h \
 $(BUILD_DIR)/bitmap.o : lib/bitmap.c lib/bitmap.h \
 						lib/stdint.h \
 						lib/string.h \
-						lib/global.h kernel/debug/debug.h \ 
-						kernel/interrupt.h lib/print.h
+						lib/global.h kernel/debug/debug.h \
+ 						kernel/interrupt.h lib/print.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/memory.o : kernel/memory.c kernel/memory.h \
