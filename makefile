@@ -60,7 +60,10 @@ $(BUILD_DIR)/bitmap.o : lib/bitmap.c lib/bitmap.h \
 $(BUILD_DIR)/memory.o : kernel/memory.c kernel/memory.h \
 						lib/bitmap.h \
 						lib/stdint.h \
-						lib/print.h
+						lib/print.h \
+						lib/string.h \
+						lib/gloabal.h
+						kernel/debug/debug.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/string.o : lib/string.c lib/string.h \
