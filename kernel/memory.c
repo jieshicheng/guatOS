@@ -98,7 +98,7 @@ static void mem_pool_init(uint32_t all_mem)
 void mem_init()
 {
 	put_str("mem_init start\n");
-	uint32_t mem_bytes_total = (*(uint32_t *)(0xb00));
+	uint32_t mem_bytes_total = 0x1000000;
 	mem_pool_init(mem_bytes_total);
 	put_str("mem_init done\n");
 }
@@ -168,7 +168,7 @@ static void *palloc(struct pool *m_pool)
  */
 static void page_table_add(void *_vaddr, void *_page_phyaddr)
 {
-	uint32_t vaddr = (uint32_t)vaddr, page_phyaddr = (uint32_t)_page_phyaddr;
+	uint32_t vaddr = (uint32_t)_vaddr, page_phyaddr = (uint32_t)_page_phyaddr;
 	uint32_t *pde = pde_ptr(vaddr);
 	uint32_t *pte = pte_ptr(vaddr);
 	if( *pde & 0x00000001) {
