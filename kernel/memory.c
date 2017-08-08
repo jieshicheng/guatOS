@@ -153,12 +153,12 @@ uint32_t *pde_ptr(uint32_t vaddr)
  */
 static void *palloc(struct pool *m_pool)
 {
-	int bit_idx = bitmap_scan(&m_pool.pool_bitmap, 1);
+	int bit_idx = bitmap_scan(&m_pool->pool_bitmap, 1);
 	if(bit_idx == -1)
 		return NULL;
 	else {
-		bitmap_set(&m_pool.pool_bitmap, bit_idx, 1);
-		uint32_t page_phyaddr = ((bit_idx * PAGE_SIZE) + m_pool.phy_addr_start);
+		bitmap_set(&m_pool->pool_bitmap, bit_idx, 1);
+		uint32_t page_phyaddr = ((bit_idx * PAGE_SIZE) + m_pool->phy_addr_start);
 		return (void *)page_phyaddr;
 	}
 }
@@ -172,7 +172,7 @@ static void page_table_add(void *_vaddr, void *_page_phyaddr)
 	uint32_t *pde = pde_ptr(vaddr);
 	uint32_t *pte = pte_ptr(vaddr);
 	if( *pde & 0x00000001) {
-		ASSERT(!(pte & 0x00000001));
+		ASSERT(!(*pte & 0x00000001));
 		*pte = (page_phyaddr | PG_US_U | PG_RW_W | PG_P_1);
 	}
 	else {

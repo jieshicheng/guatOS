@@ -39,7 +39,7 @@ uint32_t *pte_ptr(uint32_t vaddr);
 uint32_t *pde_ptr(uint32_t vaddr);
 static void *palloc(struct pool *m_pool);
 static void page_table_add(void *_vaddr, void *_page_phyaddr);
-void *get_kernel_pages(uint32_t pg_cnt)；
+void *get_kernel_pages(uint32_t pg_cnt);
 void *malloc_page(enum pool_flags pf, uint32_t pg_cnt);
 
 

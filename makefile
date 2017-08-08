@@ -62,7 +62,7 @@ $(BUILD_DIR)/memory.o : kernel/memory.c kernel/memory.h \
 						lib/stdint.h \
 						lib/print.h \
 						lib/string.h \
-						lib/gloabal.h
+						lib/global.h \
 						kernel/debug/debug.h
 	$(CC) $(CFLAGS1) $< -o $@
 
