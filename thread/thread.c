@@ -41,7 +41,8 @@ struct task_struct *thread_start(char *name, int prio, thread_func function, voi
 				   pop %%ebp; \
 				   pop %%ebx; \
 				   pop %%edi; \
-				   pop %%esi;" : : "g"(thread->self_kstack) : "memory");
+				   pop %%esi; \
+				   ret" : : "g"(thread->self_kstack) : "memory");
 	return thread;
 }
 
