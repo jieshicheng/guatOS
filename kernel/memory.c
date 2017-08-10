@@ -21,7 +21,7 @@
 #include "debug.h"
 #include "global.h"
 
-#define PAGE_SIZE 4096
+
 #define MEM_BITMAP_BASE 0xc009a000
 #define K_HEAP_START 0xc0100000
 

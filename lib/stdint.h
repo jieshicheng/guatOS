@@ -2,6 +2,7 @@
 #define __LIB_STDINT_H
 
 #define NULL 0
+#define PAGE_SIZE 4096
 
 typedef signed char int8_t;
 typedef signed short int int16_t;

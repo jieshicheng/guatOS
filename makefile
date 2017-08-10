@@ -8,7 +8,7 @@ ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
 LDFLAGS = -Ttext $(ENTRY_POINT) -e main
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/memory.o $(BUILD_DIR)/bitmap.o $(BUILD_DIR)/string.o $(BUILD_DIR)/interrupt.o $(BUILD_DIR)/timer.o \
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/thread.o $(BUILD_DIR)/memory.o $(BUILD_DIR)/bitmap.o $(BUILD_DIR)/string.o $(BUILD_DIR)/interrupt.o $(BUILD_DIR)/timer.o \
 		$(BUILD_DIR)/kernel.o $(BUILD_DIR)/print.o $(BUILD_DIR)/debug.o
 
 #####		c  complier		#######
@@ -17,7 +17,9 @@ $(BUILD_DIR)/main.o : kernel/main.c \
 					  kernel/init.h \
 					  lib/print.h \
 					  lib/stdint.h \
-					  kernel/debug/debug.h
+					  kernel/debug/debug.h \
+					  thread/thread.h \
+					  kernel/memory.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
@@ -71,6 +73,14 @@ $(BUILD_DIR)/string.o : lib/string.c lib/string.h \
 			kernel/debug/debug.h \
 			lib/stdint.h
 	$(CC) $(CFLAGS1) $< -o $@
+
+$(BUILD_DIR)/thread.o : thread/thread.c thread/thread.h \
+						lib/stdint.h \
+						lib/global.h \
+						lib/string.h \
+						kernel/memory.h
+	$(CC) $(CFLAGS1) $< -o $@
+
 
 ##### 		nasm complier   ########
 

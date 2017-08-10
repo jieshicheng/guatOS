@@ -1,8 +1,16 @@
 #include "print.h"
 #include "init.h"
 #include "debug.h"
-
+#include "thread.h"
 #include "memory.h"
+
+void k_thread_a(void *arg)
+{
+	char *msg = arg;
+	while(1)
+		put_str(msg);
+}
+
 
 int main(void)
 {
@@ -14,6 +22,9 @@ int main(void)
     put_str("address start at: ");
     put_int((uint32_t)addr);
     put_char('\n');
+
+    thread_start("k_thread_a", k_thread_a, "argA");
+
     while(1);
     return 0;
 }
