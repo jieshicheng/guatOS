@@ -6,7 +6,7 @@
 
 static void kernel_thread(thread_func *function, void *func_arg)
 {
-	function(func_arg);
+	(*function)(func_arg);
 }
 
 void thread_create(struct task_struct *pthread, thread_func *function, void *func_arg)
