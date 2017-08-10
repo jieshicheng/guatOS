@@ -16,9 +16,9 @@ void thread_create(struct task_struct *pthread, thread_func *function, void *fun
 
 	struct thread_stack *kthread_stack = (struct thread_stack *)pthread->self_kstack;
 	kthread_stack->eip = kernel_thread;
-	kernel_thread->function = function;
-	kernel_thread->func_arg = func_arg;
-	kernel_thread->ebp = kernel_thread->ebx = kernel_thread->esi = kernel_thread->edi = 0;
+	kthread_stack->function = function;
+	kthread_stack->fun_arg = func_arg;
+	kthread_stack->ebp = kthread_stack->ebx = kthread_stack->esi = kthread_stack->edi = 0;
 }
 
 void init_thread(struct task_struct *pthread, char *name, int prio)
@@ -37,10 +37,10 @@ struct task_struct *thread_start(char *name, int prio, thread_func *function, vo
 	init_thread(thread, name, prio);
 	thread_create(thread, function, func_arg);
 
-	asm volatile ("movl %0, %%esp;
-				   pop %%ebp;
-				   pop %%ebx;
-				   pop %%edi;
+	asm volatile ("movl %0, %%esp; \
+				   pop %%ebp; \
+				   pop %%ebx; \
+				   pop %%edi; \
 				   pop %%esi;" : : "g"(thread->self_kstack) : "memory");
 	return thread;
 }

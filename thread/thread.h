@@ -46,10 +46,10 @@ struct thread_stack
 	uint32_t edi;
 	uint32_t esi;
 
-	void (*eip)(thread_fun *func, void *func_arg);
+	void (*eip)(thread_func *func, void *func_arg);
 
 	void (*unused_retaddr);
-	thread_fun *function;
+	thread_func *function;
 	void *fun_arg;
 };
 
@@ -63,9 +63,9 @@ struct task_struct
 	uint32_t stack_magic;
 };
 
-static void kernel_thread(thread_fun *function, void *func_arg);
-void thread_create(struct task_struct *pthread, thread_fun function, void *func_arg);
-struct task_struct *thread_start(char *name, int prio, thread_fun function, void func_arg);
+static void kernel_thread(thread_func *function, void *func_arg);
+void thread_create(struct task_struct *pthread, thread_func *function, void *func_arg);
+struct task_struct *thread_start(char *name, int prio, thread_func *function, void *func_arg);
 
 
 #endif
