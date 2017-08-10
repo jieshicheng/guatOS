@@ -15,7 +15,7 @@ void thread_create(struct task_struct *pthread, thread_func *function, void *fun
 	pthread->self_kstack -= sizeof(struct thread_stack);
 
 	struct thread_stack *kthread_stack = (struct thread_stack *)pthread->self_kstack;
-	kthread_stack->eip = kernel_thread;
+	kthread_stack->eip = &kernel_thread;
 	kthread_stack->function = function;
 	kthread_stack->fun_arg = func_arg;
 	kthread_stack->ebp = kthread_stack->ebx = kthread_stack->esi = kthread_stack->edi = 0;

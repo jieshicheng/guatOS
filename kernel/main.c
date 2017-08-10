@@ -18,7 +18,7 @@ int main(void)
     put_int((uint32_t)addr);
     put_char('\n');
 
-    thread_start("k_thread_a", 31, k_thread_a, "argA");
+    thread_start("k_thread_a", 31, &k_thread_a, "argA");
 
     while(1);
     return 0;
