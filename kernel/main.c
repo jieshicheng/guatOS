@@ -3,6 +3,7 @@
 #include "debug.h"
 #include "thread.h"
 #include "memory.h"
+#include "interrupt.h"
 
 void k_thread_a(void *arg);
 
@@ -13,14 +14,14 @@ int main(void)
     put_str("          This is tiny operator system by CJS\n");
     
     init_all();
-    void *addr = get_kernel_pages(3);
-    put_str("address start at: ");
-    put_int((uint32_t)addr);
-    put_char('\n');
 
-    thread_start("k_thread_a", 31, k_thread_a, "argA");
+    thread_start("k_thread_a", 31, k_thread_a, "argA ");
+    thread_start("k_thread_b", 31, k_thread_b, "argB ");
 
-    while(1);
+    intr_enable();
+
+    while(1)
+        put_str("main ");
     return 0;
 }
 
@@ -29,4 +30,11 @@ void k_thread_a(void *arg)
     char *msg = arg;
     while(1)
     put_str(msg);
+}
+
+void k_thread_b(void *arg)
+{
+    char *msg = arg;
+    while(1)
+        put_str(msg);
 }

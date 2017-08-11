@@ -8,7 +8,7 @@ ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
 LDFLAGS = -Ttext $(ENTRY_POINT) -e main
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/thread.o $(BUILD_DIR)/memory.o $(BUILD_DIR)/bitmap.o $(BUILD_DIR)/string.o $(BUILD_DIR)/interrupt.o $(BUILD_DIR)/timer.o \
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/list.o $(BUILD_DIR)/thread.o $(BUILD_DIR)/memory.o $(BUILD_DIR)/bitmap.o $(BUILD_DIR)/string.o $(BUILD_DIR)/interrupt.o $(BUILD_DIR)/timer.o \
 		$(BUILD_DIR)/kernel.o $(BUILD_DIR)/print.o $(BUILD_DIR)/debug.o
 
 #####		c  complier		#######
@@ -19,7 +19,8 @@ $(BUILD_DIR)/main.o : kernel/main.c \
 					  lib/stdint.h \
 					  kernel/debug/debug.h \
 					  thread/thread.h \
-					  kernel/memory.h
+					  kernel/memory.h \
+					  kernel/interrupt.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
@@ -27,7 +28,8 @@ $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
 					  kernel/interrupt.h \
 					  device/timer.h \
 					  lib/stdint.h \
-					  kernel/memory.h
+					  kernel/memory.h \
+					  thread/thread.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/interrupt.o : kernel/interrupt.c kernel/interrupt.h \
@@ -40,7 +42,9 @@ $(BUILD_DIR)/interrupt.o : kernel/interrupt.c kernel/interrupt.h \
 $(BUILD_DIR)/timer.o : device/timer.c device/timer.h \
 					   lib/stdint.h \
 					   lib/io.h \
-					   lib/print.h
+					   lib/print.h \
+					   kernel/interrupt.h \
+					   thread/thread.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/debug.o : kernel/debug/debug.c kernel/debug/debug.h \
@@ -78,8 +82,16 @@ $(BUILD_DIR)/thread.o : thread/thread.c thread/thread.h \
 						lib/stdint.h \
 						lib/global.h \
 						lib/string.h \
-						kernel/memory.h
+						kernel/memory.h \
+						lib/list.h \
+						kernel/interrupt.h \
+						lib/print.h
 	$(CC) $(CFLAGS1) $< -o $@
+
+$(BUILD_DIR)/list.o : lib/list.c lib/list.h \
+					  lib/global.h \
+					  kernel/interrupt.h \
+					  lib/stdint.h
 
 
 ##### 		nasm complier   ########

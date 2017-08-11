@@ -58,10 +58,23 @@ struct task_struct
 {
 	uint32_t *self_kstack;
 	enum task_status status;
-	uint8_t priority;
 	char name[16];
+	uint8_t priority;
+	
+	int8_t ticks;
+	uint32_t elapsed_ticks;
+	struct list_elem general_tag;
+	struct list_elem all_list_tag;
+	uint32_t *pgdir;
+
+
 	uint32_t stack_magic;
 };
+
+static void make_main_thread(void);
+struct task_struct *running_thread();
+void schedule();
+void thread_init(void);
 
 static void kernel_thread(thread_func *function, void *func_arg);
 void thread_create(struct task_struct *pthread, thread_func function, void *func_arg);

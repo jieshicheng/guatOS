@@ -15,5 +15,6 @@
 
 static void frequency_set(uint8_t , uint8_t , uint8_t , uint8_t , uint16_t );
 void timer_init();
+static void intr_timer_handler(void);
 
 #endif

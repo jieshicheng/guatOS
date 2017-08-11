@@ -3,6 +3,12 @@
 
 #include "stdint.h"
 
+#define NULL 0
+#define PAGE_SIZE 4096
+enum bool { false = 0, true = 1 };
+
+
+
 #define RPL0 0
 #define RPL1 1
 #define RPL2 2

@@ -15,7 +15,7 @@
 struct gate_desc;
 typedef void * intr_handler;
 enum intr_status { INTR_OFF, INTR_ON };
-
+void register_handler(uint8_t vector_no, intr_handler function);
 
 static void make_idt_desc(struct gate_desc *, uint8_t, intr_handler);
 static void idt_desc_init(void);
