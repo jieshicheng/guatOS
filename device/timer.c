@@ -4,6 +4,7 @@
 #include "stdint.h"
 #include "thread.h"
 #include "interrupt.h"
+#include "debug.h"
 
 uint32_t ticks = 0;
 

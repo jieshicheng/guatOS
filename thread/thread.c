@@ -6,7 +6,7 @@
 #include "list.h"
 #include "interrupt.h"
 #include "print.h"
-
+#include "debug.h"
 
 struct task_struct *main_thread;
 struct list thread_ready_list;

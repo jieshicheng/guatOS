@@ -1,5 +1,5 @@
 #include "list.h"
-#include "interrrupt.h"
+#include "interrupt.h"
 #include "stdint.h"
 #include "global.h"
 
@@ -53,7 +53,7 @@ struct list_elem *list_pop(struct list *plist)
 	return top;
 }
 
-bool list_empty(struct list *plist)
+enum bool list_empty(struct list *plist)
 {
 	return (plist->head.next == &plist->tail ? true : false);
 }
@@ -75,15 +75,15 @@ struct list_elem *list_traversal(struct list *plist, function func, int arg)
 		return NULL;
 	struct list_elem *point = plist->head.next;
 	while( point != &plist->tail ) {
-		if( func(elem, arg) )
-			return elem;
+		if( func(point, arg) )
+			return point;
 		else
 			point = point->next;
 	}
 	return NULL;
 }
 
-bool elem_find(struct list *plist, struct list_elem *elem)
+enum bool elem_find(struct list *plist, struct list_elem *elem)
 {
 	struct list_elem *point = plist->head.next;
 	while( point != &plist->tail ) {

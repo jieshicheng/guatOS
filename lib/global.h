@@ -5,8 +5,7 @@
 
 #define NULL 0
 #define PAGE_SIZE 4096
-enum bool { false = 0, true = 1 };
-
+enum bool { false, true };
 
 
 #define RPL0 0
