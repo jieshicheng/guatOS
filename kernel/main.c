@@ -20,21 +20,30 @@ int main(void)
 
     intr_enable();
 
-    while(1)
+    while(1) {
+        intr_disable();
         put_str("main ");
+        intr_enable();
+    }
     return 0;
 }
 
 void k_thread_a(void *arg)
 {
     char *msg = arg;
-    while(1)
-    put_str(msg);
+    while(1) {
+        intr_disable();
+        put_str(msg);
+        intr_enable();
+    }
 }
 
 void k_thread_b(void *arg)
 {
     char *msg = arg;
-    while(1)
+    while(1) {
+        intr_disable();
         put_str(msg);
+        intr_enable();
+    }
 }
