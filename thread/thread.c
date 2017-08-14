@@ -118,5 +118,30 @@ void thread_init(void)
 	put_str("thread init done\n");
 }
 
+void thread_block(enum task_status stat)
+{
+	ASSERT(stat == TASK_BLOCKED || stat == TASK_WAITING || stat == TASK_HANGING);
+	enum intr_status old_status = intr_disable();
+	struct task_struct *cur_thread = running_thread();
+	cur_thread->status = stat;
+	schedule();
+	intr_set_status(old_status);
+}
+
+
+void thread_unblock(struct task_struct *pthread)
+{
+	enum intr_status old_status = intr_disable();
+	ASSERT( pthread->status == TASK_BLOCKED || pthread->status == TASK_WAITING || pthread->status == HANGING);
+	if ( pthread->status != TASK_READY ) {
+		ASSERT(!elem_find(&thread_ready_list, &pthread->general_tag));
+		list_push(&thread_ready_list, &pthread->general_tag);
+		pthread->status = TASK_READY;
+	}
+	intr_set_status(old_status);
+}
+
+
+
 
 

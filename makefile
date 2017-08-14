@@ -20,7 +20,9 @@ $(BUILD_DIR)/main.o : kernel/main.c \
 					  kernel/debug/debug.h \
 					  thread/thread.h \
 					  kernel/memory.h \
-					  kernel/interrupt.h
+					  kernel/interrupt.h \
+					  device/console.h \
+					  thread/sync.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
@@ -29,7 +31,9 @@ $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
 					  device/timer.h \
 					  lib/stdint.h \
 					  kernel/memory.h \
-					  thread/thread.h
+					  thread/thread.h \
+					  device/console.h \
+					  thread/sync.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/interrupt.o : kernel/interrupt.c kernel/interrupt.h \
@@ -74,9 +78,9 @@ $(BUILD_DIR)/memory.o : kernel/memory.c kernel/memory.h \
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/string.o : lib/string.c lib/string.h \
-			lib/global.h \
-			kernel/debug/debug.h \
-			lib/stdint.h
+						lib/global.h \
+						kernel/debug/debug.h \
+						lib/stdint.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/thread.o : thread/thread.c thread/thread.h \
@@ -94,6 +98,23 @@ $(BUILD_DIR)/list.o : lib/list.c lib/list.h \
 					  lib/global.h \
 					  kernel/interrupt.h \
 					  lib/stdint.h
+	$(CC) $(CFLAGS1) $< -o $@
+
+$(BUILD_DIR)/sync.o : thread/sync.c thread/sync.h \
+					  lib/stdint.h \
+					  lib/global.h \
+					  kernel/debug/debug.h \
+					  kernel/interrupt.h \
+					  thread/thread.h \
+					  lib/list.h
+	$(CC) $(CFLAGS1) $< -o $@
+
+$(BUILD_DIR)/console.o : device/console.c device/console.h \
+						 lib/stdint.h \
+						 lib/global.h \
+						 lib/print.h \
+						 thread/thread.h \
+						 thread/sync.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 ##### 		nasm complier   ########
