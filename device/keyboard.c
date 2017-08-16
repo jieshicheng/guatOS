@@ -167,7 +167,7 @@ static void intr_keyboard_handler(void)
 		else if ( scancode == alt_r_make || scancode == alt_l_make ) {
 			alt_status = true;
 		}
-		else if ( caps_lock_last == scancode ) {
+		else if ( caps_lock_make == scancode ) {
 			caps_lock_status = !caps_lock_status;
 		}
 	}
