@@ -133,7 +133,7 @@ static void pic_init(void)
 	outb(PIC_S_DATA, 0x02);
 	outb(PIC_S_DATA, 0x01);
 
-	outb(PIC_M_DATA, 0xfe);
+	outb(PIC_M_DATA, 0xfd);
 	outb(PIC_S_DATA, 0xff);
 
 	put_str("	pic_init done\n");

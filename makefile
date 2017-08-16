@@ -33,7 +33,8 @@ $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
 					  kernel/memory.h \
 					  thread/thread.h \
 					  device/console.h \
-					  thread/sync.h
+					  thread/sync.h \
+					  device/keyboard.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/interrupt.o : kernel/interrupt.c kernel/interrupt.h \
@@ -115,6 +116,14 @@ $(BUILD_DIR)/console.o : device/console.c device/console.h \
 						 lib/print.h \
 						 thread/thread.h \
 						 thread/sync.h
+	$(CC) $(CFLAGS1) $< -o $@
+
+$(BUILD_DIR)/keyboard.o : device/keyboard.c device/keyboard.h \
+						  lib/stdint.h \
+						  lib/global.h \
+						  kernel/interrupt.h \
+						  lib/print.h \
+						  lib/io.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 ##### 		nasm complier   ########
