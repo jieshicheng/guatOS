@@ -31,7 +31,7 @@
 #define ctrl_r_break		0xe09d
 #define caps_lock_make		0x3a
 
-static enum bool ctrl_status, shift_status, caps_lock_status, alt_status, ext_status;
+static enum bool ctrl_status = false, shift_status = false, caps_lock_status = false, alt_status, ext_status = false;
 
 static char keymap[][2] = 	{
 								{0, 0},
@@ -126,16 +126,16 @@ static void intr_keyboard_handler(void)
 		if ( make_code == shift_r_make || make_code == shift_l_make ) {
 			shift_status = false;
 		}
-		if ( caps_lock_make == make_code ) {
-			caps_lock_status = false;
+		if ( make_code == alt_r_make || make_code == alt_l_make ) {
+			alt_status = false;
 		}
 		return ;
 	}
 	else if ( (scancode > 0x00 && scancode < 0x3b) || (scancode == alt_r_make) || (scancode == ctrl_r_make) ) {
 		enum bool shift = false;
 
-		if ( (scancode < 0x0e) || (scancode == 0x29) || (scancode == 0x1a) || (scancode == 0x1b)
-			 (scancode == 0x2b) || (scancode == 0x27) || (scancode == 0x28) || (scancode == 0x33) 
+		if ( (scancode < 0x0e) || (scancode == 0x29) || (scancode == 0x1a) || (scancode == 0x1b) ||
+			 (scancode == 0x2b) || (scancode == 0x27) || (scancode == 0x28) || (scancode == 0x33) ||
 			 (scancode == 0x34) || (scancode == 0x35) ) {
 			if ( shift_down_last == true )
 				shift = true;
@@ -168,7 +168,7 @@ static void intr_keyboard_handler(void)
 			alt_status = true;
 		}
 		else if ( caps_lock_last == scancode ) {
-			caps_lock_status = true;
+			caps_lock_status = !caps_lock_status;
 		}
 	}
 	else {
