@@ -68,7 +68,7 @@ void ioq_putchar(struct ioqueue *ioq, char byte)
 	ASSERT(intr_get_status() == INTR_OFF);
 
 	while ( ioq_full(ioq) ) {
-		lock_acquire(&ioq_lock);
+		lock_acquire(&ioq->lock);
 		ioq_wait(&ioq->producer);
 		lock_release(&ioq->lock);
 	}
