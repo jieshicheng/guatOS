@@ -1,3 +1,8 @@
+;   定义一些常用的位常量
+;   用在段选择子，描述符 ……中
+
+
+;	下面的七个常量标注了内核加载的位置以及起始位置
 LOADER_BASE_ADDR equ 0x900
 LOADER_START_SECTOR equ 0x2
 PAGE_DIR_TABLE_POS equ 0x100000

@@ -1,8 +1,14 @@
+/**
+ *	字符串操作函数
+ *
+ */
+
 #include "string.h"
 #include "debug.h"
 #include "global.h"
 #include "stdint.h"
 
+// 按字节填充内存函数
 void memset(void *dst_, uint8_t value, uint32_t size)
 {
 	ASSERT(dst_ != NULL);
@@ -12,6 +18,7 @@ void memset(void *dst_, uint8_t value, uint32_t size)
 	}
 }
 
+// 按字节拷贝函数
 void memcpy(void *dst_, const void *src_, uint32_t size)
 {
 	ASSERT(dst_ != NULL && src_ != NULL);
@@ -22,6 +29,7 @@ void memcpy(void *dst_, const void *src_, uint32_t size)
 	}
 }
 
+// 按字节比较函数
 int memcmp(const void *a_, const void *b_, uint32_t size)
 {
 	const char *a = a_;
@@ -37,7 +45,7 @@ int memcmp(const void *a_, const void *b_, uint32_t size)
 	return 0;
 }
 
-
+// 字符串复制函数
 char *strcpy(char *dst_, const char *src_)
 {
 	ASSERT(dst_ != NULL && src_ != NULL);
@@ -46,6 +54,7 @@ char *strcpy(char *dst_, const char *src_)
 	return r;
 }
 
+// 返回字符串长度函数
 uint32_t strlen(const char *str)
 {
 	ASSERT(str != NULL);
@@ -54,7 +63,7 @@ uint32_t strlen(const char *str)
 	return (p - str - 1);
 }
 
-
+// 字符串比较函数
 int8_t strcmp(const char *a, const char *b)
 {
 	ASSERT(a != NULL && b != NULL);
@@ -66,7 +75,7 @@ int8_t strcmp(const char *a, const char *b)
 	return *a < *b ? -1 : *a > *b;
 }
 
-
+// 字符串中查找给定字符第一个位置函数
 char *strchr(const char *str, const uint8_t ch) 
 {
 	ASSERT(str != NULL);
@@ -78,6 +87,7 @@ char *strchr(const char *str, const uint8_t ch)
 	return NULL;
 }
 
+// 字符串中查找给定字符的最后一个位置函数
 char *strrchr(const char *str, const uint8_t ch)
 {
 	ASSERT(str != NULL);
@@ -91,6 +101,7 @@ char *strrchr(const char *str, const uint8_t ch)
 
 }
 
+// 两个字符串拼接函数
 char strcat(char *dst_, const char *src_)
 {
 	ASSERT(dst_ != NULL && src_ != NULL);
@@ -103,6 +114,7 @@ char strcat(char *dst_, const char *src_)
 	return dst_;
 }
 
+// 字符串中查找给定字符的出现次数函数
 uint32_t strchrs(const char *str, uint8_t ch)
 {
 	ASSERT(str != NULL);

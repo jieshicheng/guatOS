@@ -1,3 +1,10 @@
+/**
+ *	对应组件初始化工作
+ *
+ *
+ *
+ */
+
 #include "print.h"
 #include "interrupt.h"
 #include "timer.h"

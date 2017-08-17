@@ -1,3 +1,9 @@
+/**
+ *	定义了标准整形的各种形式
+ *
+ *
+ */
+
 #ifndef __LIB_STDINT_H
 #define __LIB_STDINT_H
 

@@ -1,3 +1,7 @@
+/**
+ *	内核中重要的数据结构---双向链表实现
+ */
+
 #include "list.h"
 #include "interrupt.h"
 #include "stdint.h"

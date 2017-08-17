@@ -1,10 +1,17 @@
+/**
+ *	与中断处理机制相关的函数都在此文件中
+ *
+ *
+ *
+ */
+
 #include "stdint.h"
 #include "global.h"
 #include "io.h"
 #include "print.h"
 #include "interrupt.h"
 
-
+// 中断们描述符结构体
 struct gate_desc {
 	uint16_t	func_offset_low_word;
 	uint16_t	selector;
@@ -14,14 +21,17 @@ struct gate_desc {
 
 };
 
+// 各个中断名称
 char *intr_name[IDT_DESC_CNT];
+// 各个中断对应的处理函数表
 intr_handler idt_table[IDT_DESC_CNT];
+// 定义中断表
 static struct gate_desc idt[IDT_DESC_CNT];
 
-
+// 在kernel.s中定义的中断处理例程入口
 extern intr_handler intr_entry_table[IDT_DESC_CNT];
 
-
+// 打开中断
 enum intr_status intr_enable()
 {
 	enum intr_status old_status;
@@ -36,6 +46,7 @@ enum intr_status intr_enable()
 	}
 }
 
+// 关闭中断
 enum intr_status intr_disable()
 {
 	enum intr_status old_status;
@@ -50,11 +61,13 @@ enum intr_status intr_disable()
 	}
 }
 
+// 设置中断状态根据参数
 enum intr_status intr_set_status(enum intr_status status)
 {
 	return status & INTR_ON ? intr_enable() : intr_disable();
 }
 
+// 得到当前中断状态
 enum intr_status intr_get_status()
 {
 	uint32_t eflags = 0;
@@ -62,6 +75,7 @@ enum intr_status intr_get_status()
 	return (eflags & EFLAGS_IF) ? INTR_ON : INTR_OFF;
 }
 
+// 统一的中断处理函数。
 static void general_intr_handler(uint8_t vec_nr)
 {
 	if(vec_nr == 0x27 || vec_nr == 0x2f)
@@ -86,11 +100,13 @@ static void general_intr_handler(uint8_t vec_nr)
 	while (1);
 }
 
+// 安装中断处理函数
 void register_handler(uint8_t vector_no, intr_handler function)
 {
 	idt_table[vector_no] = function;
 }
 
+// 中断入口初始化， 初始化名字， 对应的处理函数
 static void exception_init(void)
 {
 	int i;
@@ -121,6 +137,7 @@ static void exception_init(void)
 
 }
 
+// 初始化可编程中断控制器
 static void pic_init(void)
 {
 	outb(PIC_M_CTRL, 0x11);
@@ -133,12 +150,13 @@ static void pic_init(void)
 	outb(PIC_S_DATA, 0x02);
 	outb(PIC_S_DATA, 0x01);
 
-	outb(PIC_M_DATA, 0xfc);
+	outb(PIC_M_DATA, 0xfc); // 开关外部中断的位。0xfc表示倒数的时钟，键盘中断打开
 	outb(PIC_S_DATA, 0xff);
 
 	put_str("	pic_init done\n");
 }
 
+// 设置中断描述符
 static void make_idt_desc(struct gate_desc *p_gdesc, uint8_t attr, intr_handler function)
 {
 	p_gdesc->func_offset_low_word = (uint32_t)function & 0x0000ffff;
@@ -149,6 +167,7 @@ static void make_idt_desc(struct gate_desc *p_gdesc, uint8_t attr, intr_handler 
 
 }
 
+// 中断描述符初始化
 static void idt_desc_init(void)
 {
 	int i;
@@ -159,6 +178,12 @@ static void idt_desc_init(void)
 
 }
 
+/**
+ *	总的初始化
+ *		先初始所有的中断描述符
+ *		再设置各个中断的转发函数以及中断名称
+ *		最后初始化8259可编程中断控制器。将外部设备的中断口打开
+ */
 void idt_init() 
 {
 	put_str("idt_init start\n");

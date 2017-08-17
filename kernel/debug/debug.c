@@ -1,3 +1,9 @@
+/**
+ *	断言函数。
+ *	如果发生条件不符合，则死循环暂停在此处
+ */
+
+
 #include "debug.h"
 #include "print.h"
 #include "interrupt.h"

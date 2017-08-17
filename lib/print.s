@@ -1,3 +1,13 @@
+; 输出函数
+; put_char() 
+; put_str()
+; put_int()
+
+; 设置光标函数
+; set_cursor()
+
+
+
 TI_GDT equ 0
 RPL0 equ 0
 SELECTOR_VIDEO equ (0x0003 << 3) + TI_GDT + RPL0

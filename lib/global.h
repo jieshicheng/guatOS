@@ -1,3 +1,8 @@
+/**
+ *	全局常量，类型定义
+ */
+
+
 #ifndef __KERNEL_GLOBAL_H
 #define __KERNEL_GLOBAL_H
 

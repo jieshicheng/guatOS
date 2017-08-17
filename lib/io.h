@@ -1,3 +1,8 @@
+/**
+ *	实现磁盘读写的函数。由内链汇编完成
+ */
+
+
 #ifndef __KERNEL_IO_H
 #define __KERNEL_IO_H
 

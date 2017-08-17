@@ -1,3 +1,15 @@
+/**
+ *  操作系统内核执行部分
+ *  main入口
+ *
+ *  已实现功能：
+ *      分段分页面机制--------在loader.s中
+ *      虚拟内存管理----------在memory.c中
+ *      中断机制处理----------在interrupte.c中
+ *      线程调度机制----------在thread文件中
+ */
+
+
 #include "print.h"
 #include "init.h"
 #include "debug.h"

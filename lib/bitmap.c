@@ -1,3 +1,10 @@
+/**
+ *	位图定义。用来实现资源管理
+ *
+ */
+
+
+
 #include "bitmap.h"
 #include "stdint.h"
 #include "string.h"
