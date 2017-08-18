@@ -12,6 +12,23 @@
 #define PAGE_SIZE 4096
 enum bool { false = 0, true = 1 };
 
+#define DESC_G_4K	1
+#define DESC_D_32	1
+#define DESC_L 		0
+#define DESC_AVL	0
+#define DESC_P 		1
+#define DESC_DPL_0	0
+#define DESC_DPL_1	1
+#define DESC_DPL_2	2
+#define DESC_DPL_3	3
+
+#define DESC_S_CODE	1
+#define DESC_S_DATA	DESC_S_CODE
+#define DESC_S_SYS	0
+#define DESC_TYPE_CODE	8 // 1000 x/c/r/a
+#define DESC_TYPE_DATA	2 // 0010 x/c/r/a
+
+#define DESC_TYPE_TSS	9
 
 #define RPL0 0
 #define RPL1 1
@@ -25,6 +42,40 @@ enum bool { false = 0, true = 1 };
 #define SELECTOR_K_DATA		((2 << 3) + (TI_GDT << 2) + RPL0)
 #define SELECTOR_K_STACK	SELECTOR_K_DATA
 #define SELECTOR_K_GS		((3 << 3) + (TI_GDT << 2) + RPL0)
+// TSS GDT .no define in here
+#define SELECTOR_U_CODE		((5 << 3) + (TI_GDT << 2) + RPL3)
+#define SELECTOR_U_DATA		((6 << 3) + (TI_GDT << 2) + RPL3)
+#define SELECTOR_U_STACK	SELECTOR_U_DATA
+
+//GDT describe 64 bits in 52 to 55
+#define GDT_ATTR_HIGH	((DESC_G_4K << 7) + (DESC_D_32 << 6) + (DESC_L << 5) + (DESC_AVL << 4))
+
+//GDT describe 64 bits in 40 to 47
+#define GDT_CODE_ATTR_LOW_DPL3	((DESC_P << 7) + (DESC_DPL_3 << 5) + (DESC_S_CODE << 4) + DESC_TYPE_CODE)
+
+#define GDT_DATA_ATTR_LOW_DPL3	((DESC_P << 7) + (DESC_DPL_3 << 5) + (DESC_S_CODE << 4) + DESC_TYPE_DATA)
+
+#define TSS_DESC_D 0
+
+// GDT describe 64 bits in 52 to 55
+#define TSS_ATTR_HIGH	((DESC_G_4K << 7) + (TSS_DESC_D << 6) + (DESC_L << 5) + (DESC_AVL << 4) + 0x0)
+
+// GDT describe 64 bits in 40 to 47
+#define TSS_ATTR_LOW	((DESC_P << 7) + (DESC_DPL_0 << 5) + (DESC_S_SYS << 4) + DESC_TYPE_TSS)
+
+// TSS GDT define here
+#define SELECTOR_TSS	((4 << 3) + (TI_GDT << 2) + RPL0)
+
+struct gdt_desc
+{
+	uint16_t limit_low_word;
+	uint16_t base_low_word;
+	uint8_t base_mid_byte;
+	uint8_t attr_low_byte;
+	uint8_t limit_high_attr_high;
+	uint8_t base_high_byte;
+};
+
 
 
 #define IDT_DESC_P			1
