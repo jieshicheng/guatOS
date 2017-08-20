@@ -1,6 +1,8 @@
 #ifndef __KERNEL_TSS_H
 #define __KERNEL_TSS_H
 
+#include "thread.h"
+
 struct tss
 {
 	uint32_t backlink;

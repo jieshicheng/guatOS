@@ -3,6 +3,7 @@
 
 #include "stdint.h"
 #include "list.h"
+#include "memory.h"
 
 typedef void thread_func(void *);
 
@@ -71,7 +72,6 @@ struct task_struct
 	uint32_t stack_magic;
 };
 
-#include "memory.h"
 
 
 static void make_main_thread(void);

@@ -145,7 +145,7 @@ $(BUILD_DIR)/tss.o : userprog/tss.c userprog/tss.h \
 					 lib/global.h \
 					 lib/string.h \
 					 lib/print.h
-	$(CC) $(CFLAGS1) $< -o $@
+	$(CC) $(CFLAGS2) $< -o $@
 
 $(BUILD_DIR)/process.o : userprog/process.c userprog/process.h \
 						 lib/stdint.h\
@@ -153,11 +153,12 @@ $(BUILD_DIR)/process.o : userprog/process.c userprog/process.h \
 						 userprog/tss.h \
 						 kernel/memory.h \
 						 thread/thread.h \
-						 device/bitmap.h \
+						 lib/bitmap.h \
 						 device/console.h \
 						 lib/string.h \
 						 kernel/interrupt.h \
-						 lib/list.h
+						 lib/list.h \
+						 kernel/debug/debug.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 ##### 		nasm complier   ########
