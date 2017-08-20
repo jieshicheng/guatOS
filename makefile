@@ -8,7 +8,7 @@ ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
 LDFLAGS = -Ttext $(ENTRY_POINT) -e main
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/tss.o $(BUILD_DIR)/ioqueue.o $(BUILD_DIR)/keyboard.o $(BUILD_DIR)/console.o $(BUILD_DIR)/sync.o $(BUILD_DIR)/list.o $(BUILD_DIR)/thread.o $(BUILD_DIR)/switch.o $(BUILD_DIR)/memory.o $(BUILD_DIR)/bitmap.o $(BUILD_DIR)/string.o $(BUILD_DIR)/interrupt.o $(BUILD_DIR)/timer.o \
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/process.o $(BUILD_DIR)/tss.o $(BUILD_DIR)/ioqueue.o $(BUILD_DIR)/keyboard.o $(BUILD_DIR)/console.o $(BUILD_DIR)/sync.o $(BUILD_DIR)/list.o $(BUILD_DIR)/thread.o $(BUILD_DIR)/switch.o $(BUILD_DIR)/memory.o $(BUILD_DIR)/bitmap.o $(BUILD_DIR)/string.o $(BUILD_DIR)/interrupt.o $(BUILD_DIR)/timer.o \
 		$(BUILD_DIR)/kernel.o $(BUILD_DIR)/print.o $(BUILD_DIR)/debug.o
 
 #####		c  complier		#######
@@ -76,7 +76,9 @@ $(BUILD_DIR)/memory.o : kernel/memory.c kernel/memory.h \
 						lib/print.h \
 						lib/string.h \
 						lib/global.h \
-						kernel/debug/debug.h
+						kernel/debug/debug.h \
+						thread/sync.h \
+						thread/thread.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/string.o : lib/string.c lib/string.h \
@@ -93,7 +95,8 @@ $(BUILD_DIR)/thread.o : thread/thread.c thread/thread.h \
 						lib/list.h \
 						kernel/interrupt.h \
 						lib/print.h \
-						kernel/debug/debug.h
+						kernel/debug/debug.h \
+						userprog/process.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/list.o : lib/list.c lib/list.h \
@@ -142,6 +145,19 @@ $(BUILD_DIR)/tss.o : userprog/tss.c userprog/tss.h \
 					 lib/global.h \
 					 lib/string.h \
 					 lib/print.h
+	$(CC) $(CFLAGS1) $< -o $@
+
+$(BUILD_DIR)/process.o : userprog/process.c userprog/process.h \
+						 lib/stdint.h\
+						 lib/global.h \
+						 userprog/tss.h \
+						 kernel/memory.h \
+						 thread/thread.h \
+						 device/bitmap.h \
+						 device/console.h \
+						 lib/string.h \
+						 kernel/interrupt.h \
+						 lib/list.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 ##### 		nasm complier   ########

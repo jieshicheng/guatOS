@@ -3,6 +3,7 @@
 
 #include "stdint.h"
 #include "bitmap.h"
+#include "sync.h"
 
 enum pool_flags
 {
@@ -26,6 +27,7 @@ struct virtual_addr
 
 struct pool
 {
+	struct lock lock;
 	struct bitmap pool_bitmap;
 	uint32_t phy_addr_start;
 	uint32_t pool_size;
@@ -40,7 +42,9 @@ uint32_t *pde_ptr(uint32_t vaddr);
 static void *palloc(struct pool *m_pool);
 static void page_table_add(void *_vaddr, void *_page_phyaddr);
 void *get_kernel_pages(uint32_t pg_cnt);
+void *get_user_pages(uint32_t pg_cnt);
 void *malloc_page(enum pool_flags pf, uint32_t pg_cnt);
-
+void *get_a_page(enum pool_flags pf, uint32_t vaddr);
+uint32_t addr_v2p(uint32_t vaddr);
 
 #endif

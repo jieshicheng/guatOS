@@ -12,6 +12,14 @@
 #define PAGE_SIZE 4096
 enum bool { false = 0, true = 1 };
 
+#define EFLAGS_MBS		(1 << 1)
+#define EFALGS_IF_1		(1 << 9)
+#define EFLAGS_IF_0		0
+#define EFLAGS_IOPL_3	(3 << 12)
+
+#define EFALGS_IOPL_0	(0 << 12)
+#define DIV_ROUND_UP(x, STEP) ((x + STEP - 1) / STEP)
+
 #define DESC_G_4K	1
 #define DESC_D_32	1
 #define DESC_L 		0
