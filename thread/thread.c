@@ -7,7 +7,6 @@
 #include "interrupt.h"
 #include "print.h"
 #include "debug.h"
-
 #include "process.h"
 
 struct task_struct *main_thread;

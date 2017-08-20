@@ -5,11 +5,6 @@
 #include "bitmap.h"
 #include "sync.h"
 
-enum pool_flags
-{
-	PF_KERNEL = 1,
-	PF_USER = 2
-};
 
 #define PG_P_1 1
 #define PG_P_0 0
@@ -17,6 +12,21 @@ enum pool_flags
 #define PG_RW_W 2
 #define PG_US_S 0
 #define PG_US_U 4
+
+
+#define MEM_BITMAP_BASE 0xc009a000
+#define K_HEAP_START 0xc0100000
+
+// function to get given virtual addr's PDE and PTE
+#define PDE_IDX(addr) ((addr & 0xffc00000) >> 22)
+#define PTE_IDX(addr) ((addr & 0x003ff000) >> 12)
+
+
+enum pool_flags
+{
+	PF_KERNEL = 1,
+	PF_USER = 2
+};
 
 
 struct virtual_addr

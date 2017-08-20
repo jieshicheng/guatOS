@@ -8,6 +8,10 @@
 #define elem2entry(struct_type, struct_member_name, ele_ptr) \
 		(struct_type *)((int)ele_ptr - offset(struct_type, struct_member_name))
 
+
+typedef enum bool (function)(struct list_elem *, int);
+
+
 struct list_elem
 {
 	struct list_elem *prev;
@@ -20,7 +24,7 @@ struct list
 	struct list_elem tail;
 };
 
-typedef enum bool (function)(struct list_elem *, int);
+
 
 void list_init(struct list *plist);
 void list_insert_before(struct list_elem *before, struct list_elem *elem);

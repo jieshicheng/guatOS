@@ -4,7 +4,6 @@
 #include "stdint.h"
 #include "memory.h"
 #include "tss.h"
-
 #include "console.h"
 #include "string.h"
 #include "bitmap.h"
@@ -13,6 +12,11 @@
 
 extern void intr_exit(void);
 
+
+/**
+ *	初始化中断栈，然后顺序弹出，调用filename用户进程
+ *
+ */
 void start_process(void *filename_)
 {
 	void *function = filename_;
@@ -36,7 +40,9 @@ void start_process(void *filename_)
 	asm volatile ("movl %0, %%esp; jmp intr_exit" : : "g"(proc_stack) : "memory");
 }
 
-
+/**
+ *	切换进程的时候重新载入对应的页表
+ */	
 void page_dir_activate(struct task_struct *p_thread)
 {
 	uint32_t pagedir_pyh_addr = 0x100000;
@@ -46,7 +52,10 @@ void page_dir_activate(struct task_struct *p_thread)
 	asm volatile ("movl %0, %%cr3" : : "r"(pagedir_pyh_addr) : "memory");
 }
 
-
+/**
+ *	保护两个过程。
+ *		激活页表，切换esp
+ */
 void process_activate(struct task_struct *p_thread)
 {
 	ASSERT(p_thread != NULL);
@@ -55,7 +64,12 @@ void process_activate(struct task_struct *p_thread)
 		update_tss_esp(p_thread);
 	}
 }
-
+ 
+/**
+ * 	为进城创建页表
+ *		先拷贝内核所处的页表768-1023
+ *		更改指向页目录表的1023项，使之指向正确的页表起始位置
+ */
 uint32_t *create_page_dir(void)
 {
 	uint32_t *page_dir_vaddr = get_kernel_pages(1);
@@ -72,7 +86,10 @@ uint32_t *create_page_dir(void)
 	return page_dir_vaddr;
 }
 
-
+/**
+ *	创建用户资源管理位图，放在内核内存空间中
+ *
+ */
 void create_user_vaddr_bitmap(struct task_struct *user_prog)
 {
 	user_prog->userprog_vaddr.vaddr_start = USER_VADDR_START;
@@ -82,15 +99,21 @@ void create_user_vaddr_bitmap(struct task_struct *user_prog)
 	bitmap_init(&user_prog->userprog_vaddr.vaddr_bitmap);
 }
 
-
+/**
+ *	准备运行进城。
+ *		先在内核内存空间中建立PCB
+ *		然后建立用户进城资源管理位图
+ *		建立用户进城的页表
+ *		然后将它加入相应的就绪队列中
+ */
 void process_execute(void *filename, char *name)
 {
 	struct task_struct *thread = get_kernel_pages(1);
-	init_thread(thread, name, default_prio); //
+	init_thread(thread, name, 31); //
 	create_user_vaddr_bitmap(thread);
 	thread_create(thread, start_process, filename);
 	thread->pgdir = create_page_dir();
-
+	
 	enum intr_status old_status = intr_disable();
 	ASSERT(!elem_find(&thread_ready_list, &thread->general_tag));
 	list_append(&thread_ready_list, &thread->general_tag);

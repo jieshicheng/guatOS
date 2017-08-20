@@ -71,14 +71,3 @@ void lock_release(struct lock *plock)
 	plock->holder = NULL;
 	sema_up(&plock->semaphore);
 }
-
-
-
-
-
-
-
-
-
-
-

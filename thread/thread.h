@@ -71,6 +71,9 @@ struct task_struct
 	uint32_t stack_magic;
 };
 
+#include "memory.h"
+
+
 static void make_main_thread(void);
 struct task_struct *running_thread();
 void schedule();

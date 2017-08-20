@@ -17,15 +17,6 @@
 #include "global.h"
 #include "thread.h"
 
-
-#define MEM_BITMAP_BASE 0xc009a000
-#define K_HEAP_START 0xc0100000
-
-// function to get given virtual addr's PDE and PTE
-#define PDE_IDX(addr) ((addr & 0xffc00000) >> 22)
-#define PTE_IDX(addr) ((addr & 0x003ff000) >> 12)
-
-
 // 定义内核，用户态的物理内存池
 struct pool kernel_pool, user_pool;
 
@@ -224,9 +215,11 @@ void *malloc_page(enum pool_flags pf, uint32_t pg_cnt)
  */
 void *get_kernel_pages(uint32_t pg_cnt)
 {
+	lock_acquire(kernel_pool.lock);
 	void *vaddr = malloc_page(PF_KERNEL, pg_cnt);
 	if( vaddr != NULL )
 		memset(vaddr, 0, pg_cnt * PAGE_SIZE);
+	lock_release(kernel_pool.lock);
 	return vaddr;
 }
 
@@ -238,15 +231,20 @@ void *get_user_pages(uint32_t pg_cnt)
 {
 	lock_acquire(&user_pool.lock);
 	void *vaddr = malloc_page(PF_USER, pg_cnt);
-	memset(vaddr, 0, PAGE_SIZE * pg_cnt);
+	if ( vaddr != NULL )
+		memset(vaddr, 0, PAGE_SIZE * pg_cnt);
 	lock_release(&user_pool.lock);
 	return vaddr;
 }
 
 
+/**
+ *	在相应的物理内存池pf中得到一页物理内存
+ *		这一页物理内存的虚拟地址是vaddr
+ */
 void *get_a_page(enum pool_flags pf, uint32_t vaddr)
 {
-	struct pool *mem_pool = pf & PF_KERNEL ? &kernel_pool : user_pool;
+	struct pool *mem_pool = pf & PF_KERNEL ? &kernel_pool : &user_pool;
 	lock_acquire(&mem_pool.lock);
 
 	struct task_struct *cur = running_thread();
@@ -275,29 +273,11 @@ void *get_a_page(enum pool_flags pf, uint32_t vaddr)
 	return (void *)vaddr;
 }
 
+/**
+ *	将虚拟地址vaddr映射到的物理地址返回
+ */
 uint32_t addr_v2p(uint32_t vaddr)
 {
 	uint32_t *pte = pte_ptr(vaddr);
 	return ((*pte & 0xfffff000) + (vaddr & 0x00000fff));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
