@@ -22,7 +22,9 @@ $(BUILD_DIR)/main.o : kernel/main.c \
 					  kernel/memory.h \
 					  kernel/interrupt.h \
 					  device/console.h \
-					  thread/sync.h
+					  thread/sync.h \
+					  userprog/process.h \
+					  userprog/tss.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
