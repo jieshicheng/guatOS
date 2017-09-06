@@ -26,5 +26,5 @@ void init_all()
 	console_init();
 	keyboard_init();
 	tss_init();
-	syscall-init();
+	syscall_init();
 }

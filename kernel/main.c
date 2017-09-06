@@ -20,7 +20,7 @@
 #include "console.h"
 #include "tss.h"
 #include "process.h"
-#include "syscall-init.h"
+#include "syscall.h"
 
 void k_thread_a(void *arg);
 void k_thread_b(void *arg);
