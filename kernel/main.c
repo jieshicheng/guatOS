@@ -20,13 +20,12 @@
 #include "console.h"
 #include "tss.h"
 #include "process.h"
+#include "syscall-init.h"
 
 void k_thread_a(void *arg);
 void k_thread_b(void *arg);
 void u_prog_a(void);
 void u_prog_b(void);
-
-int test_var_a = 0, test_var_b = 0;
 
 int main(void)
 {
@@ -42,9 +41,8 @@ int main(void)
 
     intr_enable();
 
-    while(1);// {
-       // console_put_str("main ");
-   // }
+    while(1)
+        ;
     return 0;
 }
 
@@ -53,7 +51,7 @@ void k_thread_a(void *arg)
     char *msg = arg;
     while(1) {
         console_put_str(arg);
-	console_put_int(test_var_a);
+
     }
 }
 
@@ -62,18 +60,22 @@ void k_thread_b(void *arg)
     char *msg = arg;
     while(1) {
         console_put_str(arg);
-    	console_put_int(test_var_b);
     }
 }
 
 void u_prog_a(void)
 {
-    while(1)
-	test_var_a++;
+    while(1) {
+        pid_t pid = getpid();
+        console_put_int(pid);
+    }
+
 }
 
 void u_prog_b(void)
 {
-    while(1)
-	test_var_b++;
+    while(1) {
+        pid_t pid = getpid();
+        console_put_int(pid);
+    }
 }

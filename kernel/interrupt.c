@@ -30,6 +30,7 @@ static struct gate_desc idt[IDT_DESC_CNT];
 
 // 在kernel.s中定义的中断处理例程入口
 extern intr_handler intr_entry_table[IDT_DESC_CNT];
+extern uint32_t syscall_handler(void);
 
 // 打开中断
 enum intr_status intr_enable()
@@ -133,7 +134,7 @@ static void exception_init(void)
 	intr_name[16] = "#MF x86 FPU Floating-Point Error";
 	intr_name[17] = "#AC Alignment Check Exception";
 	intr_name[18] = "#MC Machine-Check Exception";
-	intr_name[19] = "#XF SIMD Floating-Point Exception";
+	intr_name[19] = "#XM SIMD Floating-Point Exception";
 
 }
 
@@ -171,9 +172,11 @@ static void make_idt_desc(struct gate_desc *p_gdesc, uint8_t attr, intr_handler 
 static void idt_desc_init(void)
 {
 	int i;
+	int lastindex = IDT_DESC_CNT - 1;
 	for(i = 0; i != IDT_DESC_CNT; ++i) {
 		make_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]);
 	}
+	make_idt_desc(&idt[lastindex], IDT_DESC_ATTR_DPL3, syscall_handler);
 	put_str("	idt_desc_init done\n");
 
 }

@@ -1,18 +1,18 @@
 ; 中断处理程序入口，发生中断后调用对应的例程
 ; 先进行一系列的压栈保存上下文操作，然后转发到专门处理
 ; 	对应中断的函数中。最后从函数返回时再执行上下文恢复操作
-
+[bits 32]
 %define ERROR_CODE nop
 
 %define ZERO push 0
 
 extern put_str
 extern idt_table
+extern syscall_table
 
 section .data
-intr_str db "interrupt occur!", 0xa, 0
-
 global intr_entry_table
+
 intr_entry_table:
 	
 %macro VECTOR 2
@@ -48,6 +48,31 @@ intr_exit:
 	pop ds
 	add esp, 4
 	iretd
+
+
+section .text
+global syscall_handler
+syscall_handler:
+	push 0
+	push ds
+	push es
+	push fs
+	push gs
+	pushad
+
+	push 0x80
+
+	push edx
+	push ecx
+	push ebx
+
+	call [syscall_table + eax * 4]
+	add esp, 12
+
+	mov [esp + 8 * 4], eax
+	jmp intr_exit
+
+
 
 
 VECTOR 0x00, ZERO
@@ -98,4 +123,84 @@ VECTOR 0x2c, ZERO
 VECTOR 0x2d, ZERO
 VECTOR 0x2e, ZERO
 VECTOR 0x2f, ZERO
-
+VECTOR 0x30, ZERO
+VECTOR 0x31, ZERO
+VECTOR 0x32, ZERO
+VECTOR 0x33, ZERO
+VECTOR 0x34, ZERO
+VECTOR 0x35, ZERO
+VECTOR 0x36, ZERO
+VECTOR 0x37, ZERO
+VECTOR 0x38, ZERO
+VECTOR 0x39, ZERO
+VECTOR 0x3a, ZERO
+VECTOR 0x3b, ZERO
+VECTOR 0x3c, ZERO
+VECTOR 0x3d, ZERO
+VECTOR 0x3e, ZERO
+VECTOR 0x3f, ZERO
+VECTOR 0x40, ZERO
+VECTOR 0x41, ZERO
+VECTOR 0x42, ZERO
+VECTOR 0x43, ZERO
+VECTOR 0x44, ZERO
+VECTOR 0x45, ZERO
+VECTOR 0x46, ZERO
+VECTOR 0x47, ZERO
+VECTOR 0x48, ZERO
+VECTOR 0x49, ZERO
+VECTOR 0x4a, ZERO
+VECTOR 0x4b, ZERO
+VECTOR 0x4c, ZERO
+VECTOR 0x4d, ZERO
+VECTOR 0x4e, ZERO
+VECTOR 0x4f, ZERO
+VECTOR 0x50, ZERO
+VECTOR 0x51, ZERO
+VECTOR 0x52, ZERO
+VECTOR 0x53, ZERO
+VECTOR 0x54, ZERO
+VECTOR 0x55, ZERO
+VECTOR 0x56, ZERO
+VECTOR 0x57, ZERO
+VECTOR 0x58, ZERO
+VECTOR 0x59, ZERO
+VECTOR 0x5a, ZERO
+VECTOR 0x5b, ZERO
+VECTOR 0x5c, ZERO
+VECTOR 0x5d, ZERO
+VECTOR 0x5e, ZERO
+VECTOR 0x5f, ZERO
+VECTOR 0x60, ZERO
+VECTOR 0x61, ZERO
+VECTOR 0x62, ZERO
+VECTOR 0x63, ZERO
+VECTOR 0x64, ZERO
+VECTOR 0x65, ZERO
+VECTOR 0x66, ZERO
+VECTOR 0x67, ZERO
+VECTOR 0x68, ZERO
+VECTOR 0x69, ZERO
+VECTOR 0x6a, ZERO
+VECTOR 0x6b, ZERO
+VECTOR 0x6c, ZERO
+VECTOR 0x6d, ZERO
+VECTOR 0x6e, ZERO
+VECTOR 0x6f, ZERO
+VECTOR 0x70, ZERO
+VECTOR 0x71, ZERO
+VECTOR 0x72, ZERO
+VECTOR 0x73, ZERO
+VECTOR 0x74, ZERO
+VECTOR 0x75, ZERO
+VECTOR 0x76, ZERO
+VECTOR 0x77, ZERO
+VECTOR 0x78, ZERO
+VECTOR 0x79, ZERO
+VECTOR 0x7a, ZERO
+VECTOR 0x7b, ZERO
+VECTOR 0x7c, ZERO
+VECTOR 0x7d, ZERO
+VECTOR 0x7e, ZERO
+VECTOR 0x7f, ZERO
+VECTOR 0x80, ZERO
