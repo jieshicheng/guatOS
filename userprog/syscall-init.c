@@ -1,5 +1,8 @@
 #include "syscall-init.h"
 #include "thread.h"
+#include "syscall.h"
+#include "print.h"
+#include "stdint.h"
 
 
 #define syscall_nr 32
