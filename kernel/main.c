@@ -26,6 +26,7 @@ void k_thread_a(void *arg);
 void k_thread_b(void *arg);
 void u_prog_a(void);
 void u_prog_b(void);
+pid_t pid_ua = 0, pid_ub = 0;
 
 int main(void)
 {
@@ -34,8 +35,8 @@ int main(void)
     
     init_all();
 
-    thread_start("k_thread_a", 31, k_thread_a, "argA ");
-    thread_start("k_thread_b", 31, k_thread_b, "argB ");
+    thread_start("k_thread_a", 31, k_thread_a, "kernel thread a ");
+    thread_start("k_thread_b", 31, k_thread_b, "kernel thread b ");
     process_execute(u_prog_a, "u_prog_a");
     process_execute(u_prog_b, "u_prog_b");
 
@@ -51,7 +52,8 @@ void k_thread_a(void *arg)
     char *msg = arg;
     while(1) {
         console_put_str(arg);
-
+        console_put_int(pid_ua);
+        console_put_char('\n');
     }
 }
 
@@ -60,14 +62,15 @@ void k_thread_b(void *arg)
     char *msg = arg;
     while(1) {
         console_put_str(arg);
+        console_put_int(pid_ub);
+        console_put_char('\n');
     }
 }
 
 void u_prog_a(void)
 {
     while(1) {
-        pid_t pid = getpid();
-        console_put_int(pid);
+        pid_ua = getpid();
     }
 
 }
@@ -75,7 +78,6 @@ void u_prog_a(void)
 void u_prog_b(void)
 {
     while(1) {
-        pid_t pid = getpid();
-        console_put_int(pid);
+        pid_ub = getpid();
     }
 }
