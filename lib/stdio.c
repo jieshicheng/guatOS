@@ -30,7 +30,7 @@ uint32_t vsprintf(char *str, const char *format, va_list ap)
 	const char *index_ptr = format;
 	char index_char = *index_ptr;
 	int32_t arg_int;
-	char arg_str;
+	char *arg_str;
 	while (index_char) {
 		if (index_char != '%') {
 			*(buf_ptr++) = index_char;

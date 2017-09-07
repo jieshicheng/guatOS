@@ -70,7 +70,7 @@ void k_thread_b(void *arg)
 void u_prog_a(void)
 {
     char *str_ua = "u_prog_a thread, my pid is: ";
-    pid_t pid = getpid();
+    pid_t pid_ua = getpid();
     while(1) {
         printf("%s%d\n", str_ua, pid_ua);
     }
@@ -80,7 +80,7 @@ void u_prog_a(void)
 void u_prog_b(void)
 {
     char *str_ub = "u_prog_b thread, my pid is: ";
-    pid_t pid = getpid();
+    pid_t pid_ub = getpid();
     while(1) {
         printf("%s%d\n", str_ub, pid_ub);
     }
