@@ -184,7 +184,7 @@ $(BUILD_DIR)/syscall-init.o : userprog/syscall-init.c userprog/syscall-init.h \
 $(BUILD_DIR)/stdio.o : lib/stdio.c lib/stdio.h \
 					   lib/global.h lib/stdint.h \
 					   lib/string.h lib/syscall.h
-	$(CC) $(CFLAGS1) $< -o $@
+	$(CC) $(CFLAGS2) $< -o $@
 
 ##### 		nasm complier   ########
 
