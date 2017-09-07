@@ -8,7 +8,7 @@ ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
 LDFLAGS = -Ttext $(ENTRY_POINT) -e main
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/syscall-init.o \
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/stdio.o $(BUILD_DIR)/syscall-init.o \
 	   $(BUILD_DIR)/syscall.o $(BUILD_DIR)/process.o $(BUILD_DIR)/tss.o \
 	   $(BUILD_DIR)/ioqueue.o $(BUILD_DIR)/keyboard.o $(BUILD_DIR)/console.o \
 	   $(BUILD_DIR)/sync.o $(BUILD_DIR)/list.o $(BUILD_DIR)/thread.o \
@@ -179,6 +179,11 @@ $(BUILD_DIR)/syscall-init.o : userprog/syscall-init.c userprog/syscall-init.h \
 							  lib/print.h \
 							  device/console.h \
 							  lib/string.h
+	$(CC) $(CFLAGS1) $< -o $@
+
+$(BUILD_DIR)/stdio.o : lib/stdio.c lib/stdio.h \
+					   lib/global.h lib/stdint.h \
+					   lib/string.h lib/syscall.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 ##### 		nasm complier   ########
