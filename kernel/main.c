@@ -71,6 +71,7 @@ void u_prog_a(void)
 {
     while(1) {
         pid_ua = getpid();
+        write("u_thread_a\n");
     }
 
 }
@@ -79,5 +80,6 @@ void u_prog_b(void)
 {
     while(1) {
         pid_ub = getpid();
+        write("u_thread_b\n");
     }
 }
