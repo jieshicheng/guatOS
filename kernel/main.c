@@ -21,6 +21,7 @@
 #include "tss.h"
 #include "process.h"
 #include "syscall.h"
+#include "stdio.h"
 
 void k_thread_a(void *arg);
 void k_thread_b(void *arg);
@@ -71,7 +72,7 @@ void u_prog_a(void)
 {
     while(1) {
         pid_ua = getpid();
-        write("u_thread_a\n");
+        printf("%x u_thread_a\n", pid_ua);
     }
 
 }
@@ -80,6 +81,6 @@ void u_prog_b(void)
 {
     while(1) {
         pid_ub = getpid();
-        write("u_thread_b\n");
+        printf("%x u_thread_b\n", pid_ub);
     }
 }
