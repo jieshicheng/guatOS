@@ -27,7 +27,6 @@ void k_thread_a(void *arg);
 void k_thread_b(void *arg);
 void u_prog_a(void);
 void u_prog_b(void);
-pid_t pid_ua = 0, pid_ub = 0;
 
 int main(void)
 {
@@ -36,8 +35,8 @@ int main(void)
     
     init_all();
 
-    thread_start("k_thread_a", 31, k_thread_a, "kernel thread a ");
-    thread_start("k_thread_b", 31, k_thread_b, "kernel thread b ");
+    thread_start("k_thread_a", 31, k_thread_a, "kernel thread a, my pid is: ");
+    thread_start("k_thread_b", 31, k_thread_b, "kernel thread b, my pid is: ");
     process_execute(u_prog_a, "u_prog_a");
     process_execute(u_prog_b, "u_prog_b");
 
@@ -53,7 +52,7 @@ void k_thread_a(void *arg)
     char *msg = arg;
     while(1) {
         console_put_str(arg);
-        console_put_int(pid_ua);
+        console_put_int(getpid());
         console_put_char('\n');
     }
 }
@@ -63,24 +62,26 @@ void k_thread_b(void *arg)
     char *msg = arg;
     while(1) {
         console_put_str(arg);
-        console_put_int(pid_ub);
+        console_put_int(getpid());
         console_put_char('\n');
     }
 }
 
 void u_prog_a(void)
 {
+    char *str_ua = "u_prog_a thread, my pid is: ";
+    pid_t pid = getpid();
     while(1) {
-        pid_ua = getpid();
-        printf("%x u_thread_a\n", pid_ua);
+        printf("%s%d\n", str_ua, pid_ua);
     }
 
 }
 
 void u_prog_b(void)
 {
+    char *str_ub = "u_prog_b thread, my pid is: ";
+    pid_t pid = getpid();
     while(1) {
-        pid_ub = getpid();
-        printf("%x u_thread_b\n", pid_ub);
+        printf("%s%d\n", str_ub, pid_ub);
     }
 }

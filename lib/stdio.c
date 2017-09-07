@@ -30,6 +30,7 @@ uint32_t vsprintf(char *str, const char *format, va_list ap)
 	const char *index_ptr = format;
 	char index_char = *index_ptr;
 	int32_t arg_int;
+	char arg_str;
 	while (index_char) {
 		if (index_char != '%') {
 			*(buf_ptr++) = index_char;
@@ -41,6 +42,25 @@ uint32_t vsprintf(char *str, const char *format, va_list ap)
 			case 'x':
 				arg_int = va_arg(ap, int);
 				itoa(arg_int, &buf_ptr, 16);
+				index_char = *(++index_ptr);
+				break;
+			case 's':
+				arg_str = va_arg(ap, char *);
+				strcpy(buf_ptr, arg_str);
+				buf_ptr += strlen(arg_str);
+				index_char = *(++index_ptr);
+				break;
+			case 'd':
+				arg_int = va_arg(ap, int);
+				if (arg_int < 0) {
+					arg_int = 0 - arg_int;
+					*buf_ptr++ = '-';
+				}
+				itoa(arg_int, &buf_ptr, 10);
+				index_char = *(++index_ptr);
+				break;
+			case 'c':
+				*(buf_ptr++) = va_arg(ap, char);
 				index_char = *(++index_ptr);
 				break;
 		}
@@ -56,4 +76,14 @@ uint32_t printf(const char *format, ...)
 	vsprintf(buf, format, args);
 	va_end(args);
 	return write(buf);
+}
+
+uint32_t sprintf(char *buf, const char *format, ...)
+{
+	va_list ap;
+	uint32_t revalue;
+	va_start(ap, format);
+	revalue = vsprintf(buf, format, ap);
+	va_end(ap);
+	return revalue;
 }
