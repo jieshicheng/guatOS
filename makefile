@@ -86,7 +86,8 @@ $(BUILD_DIR)/memory.o : kernel/memory.c kernel/memory.h \
 						kernel/debug/debug.h \
 						thread/sync.h \
 						thread/thread.h \
-						lib/list.h
+						lib/list.h \
+						kernel/interrupt.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/string.o : lib/string.c lib/string.h \

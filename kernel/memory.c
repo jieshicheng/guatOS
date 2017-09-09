@@ -17,6 +17,7 @@
 #include "global.h"
 #include "thread.h"
 #include "list.h"
+#include "interrupt.h"
 
 // 定义内核，用户态的物理内存池
 struct pool kernel_pool, user_pool;
@@ -25,7 +26,7 @@ struct pool kernel_pool, user_pool;
 struct virtual_addr kernel_vaddr;
 
 // 定义7中规格的块描述符
-struct mem_block_desc k_block_descs[DESC_CNT]
+struct mem_block_desc k_block_descs[DESC_CNT];
 
 struct arena
 {
@@ -62,7 +63,7 @@ void *sys_malloc(uint32_t size)
 	enum pool_flags pf;
 	struct pool *mem_pool;
 	uint32_t pool_size;
-	struct mem_block_desc *descs;
+	struct mem_block_desc *desc;
 	struct task_struct *cur_thread = running_thread();
 
 	if (cur_thread->pgdir == NULL) {
@@ -82,7 +83,7 @@ void *sys_malloc(uint32_t size)
 		return NULL;
 	struct arena *a;
 	struct mem_block *b;
-	lock_acquire(&mem_pool.lock);
+	lock_acquire(&mem_pool->lock);
 
 	if (size > 1024) {
 		uint32_t page_cnt = DIV_ROUND_UP(size + sizeof(struct arena), PAGE_SIZE);
@@ -116,11 +117,11 @@ void *sys_malloc(uint32_t size)
 			}
 			memset(a, 0, PAGE_SIZE);
 			a->desc = &desc[desc_idx];
-			a->cnt = desc[desc_idx.block].blocks_pre_arena;
+			a->cnt = desc[desc_idx].blocks_pre_arena;
 			a->large = false;
 
 			uint32_t block_idx;
-			enum old_status = intr_disable();
+			enum intr_status old_status = intr_disable();
 
 			for (block_idx = 0; block_idx < desc[desc_idx].blocks_pre_arena; block_idx++) {
 				b = arena2block(a, block_idx);
@@ -129,8 +130,10 @@ void *sys_malloc(uint32_t size)
 			}
 			intr_set_status(old_status);
 		}
+		b = elem2entry(struct mem_block, free_elem, list_pop(&(desc[desc_idx].free_list)));
+		memset(b, 0, desc[desc_idx].block_size);
 
-		b = block2arena(b);
+		a = block2arena(b);
 		a->cnt--;
 		lock_release(&mem_pool->lock);
 		return (void *)b;
@@ -151,7 +154,7 @@ void pfree(uint32_t pg_phy_addr)
 		mem_pool = &kernel_pool;
 		bit_idx = (pg_phy_addr - kernel_pool.phy_addr_start) / PAGE_SIZE;
 	}
-	bitmap_set(&mem_pool->pool_bitmapm, bit_idx, 0);
+	bitmap_set(&mem_pool->pool_bitmap, bit_idx, 0);
 }
 
 
@@ -166,7 +169,7 @@ static void vaddr_remove(enum pool_flags pf, void *_vaddr, uint32_t pg_cnt)
 {
 	uint32_t bit_idx_start = 0, vaddr = (uint32_t)_vaddr, cnt = 0;
 	if (pf == PF_KERNEL) {
-		bit_idx_start = (vaddr - kernel_pool.vaddr_start) / PAGE_SIZE;
+		bit_idx_start = (vaddr - kernel_vaddr.vaddr_start) / PAGE_SIZE;
 		while (cnt < pg_cnt) {
 			bitmap_set(&kernel_vaddr.vaddr_bitmap, bit_idx_start + cnt++, 0);
 		}
