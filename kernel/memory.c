@@ -189,7 +189,7 @@ void mfree_page(enum pool_flags pf, void *_vaddr, uint32_t pg_cnt)
 	uint32_t vaddr = (uint32_t)_vaddr;
 	uint32_t page_cnt = 0;
 
-	ASSERT(pg_cnt >= 1 && vaddr % PAGE_SIZE == 0);
+	ASSERT(pg_cnt >= 1 && ((vaddr % PAGE_SIZE) == 0));
 	pg_phy_addr = addr_v2p(vaddr);
 	ASSERT((pg_phy_addr % PAGE_SIZE) == 0 && pg_phy_addr >= 0x102000);
 
@@ -244,7 +244,7 @@ void sys_free(void *ptr)
 	struct mem_block *b = ptr;
 	struct arena *a = block2arena(b);
 
-	ASSERT(a->large == 0 || a->large == 1);
+	ASSERT(a->large == true || a->large == false);
 	if (a->desc == NULL && a->large == true) {
 		mfree_page(pf, a, a->cnt);
 	}
