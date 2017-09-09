@@ -16,12 +16,251 @@
 #include "debug.h"
 #include "global.h"
 #include "thread.h"
+#include "list.h"
 
 // 定义内核，用户态的物理内存池
 struct pool kernel_pool, user_pool;
 
 // 定义内核虚拟内存池，因为目前没有用户态的进程，所以没有用户虚拟池
 struct virtual_addr kernel_vaddr;
+
+// 定义7中规格的块描述符
+struct mem_block_desc k_block_descs[DESC_CNT]
+
+struct arena
+{
+	struct mem_block_desc *desc;
+	uint32_t cnt;
+	enum bool large;
+};
+
+void block_desc_init(struct mem_block_desc *desc_array)
+{
+	uint16_t desc_idx, block_size = 16;
+
+	for (desc_idx = 0; desc_idx < DESC_CNT; desc_idx++) {
+		desc_array[desc_idx].block_size = block_size;
+		desc_array[desc_idx].blocks_pre_arena = (PAGE_SIZE - sizeof(struct arena)) / block_size;
+		list_init(&desc_array[desc_idx].free_list);
+		block_size *= 2;
+	}
+}
+
+
+static struct mem_block *arena2block(struct arena *a, uint32_t idx)
+{
+	return (struct mem_block *)((uint32_t)a + sizeof(struct arena) + idx * a->desc->block_size);
+}
+
+static struct arena *block2arena(struct mem_block *b)
+{	
+	return (struct arena *)((uint32_t)b & 0xfffff000);
+}
+
+void *sys_malloc(uint32_t size)
+{
+	enum pool_flags pf;
+	struct pool *mem_pool;
+	uint32_t pool_size;
+	struct mem_block_desc *descs;
+	struct task_struct *cur_thread = running_thread();
+
+	if (cur_thread->pgdir == NULL) {
+		pf = PF_KERNEL;
+		pool_size = kernel_pool.pool_size;
+		mem_pool = &kernel_pool;
+		desc = k_block_descs;
+	}
+	else {
+		pf = PF_USER;
+		pool_size = user_pool.pool_size;
+		mem_pool = &user_pool;
+		desc = cur_thread->u_block_desc;
+	}
+
+	if (!(size > 0 && size < pool_size))
+		return NULL;
+	struct arena *a;
+	struct mem_block *b;
+	lock_acquire(&mem_pool.lock);
+
+	if (size > 1024) {
+		uint32_t page_cnt = DIV_ROUND_UP(size + sizeof(struct arena), PAGE_SIZE);
+		a = malloc_page(pf, page_cnt);
+
+		if (a != NULL) {
+			memset(a, 0, page_cnt * PAGE_SIZE);
+			a->desc = NULL;
+			a->cnt = page_cnt;
+			a->large = true;
+			lock_release(&mem_pool->lock);
+			return (void *)(a + 1);
+		}
+		else {
+			lock_release(&mem_pool->lock);
+			return NULL;
+		}
+	}
+	else {
+		uint8_t desc_idx;
+
+		for (desc_idx = 0; desc_idx < DESC_CNT; desc_idx++) {
+			if (size <= desc[desc_idx].block_size)
+				break;
+		}
+		if (list_empty(&desc[desc_idx].free_list)) {
+			a = malloc_page(pf, 1);
+			if (a == NULL) {
+				lock_release(&mem_pool->lock);
+				return NULL;
+			}
+			memset(a, 0, PAGE_SIZE);
+			a->desc = &desc[desc_idx];
+			a->cnt = desc[desc_idx.block].blocks_pre_arena;
+			a->large = false;
+
+			uint32_t block_idx;
+			enum old_status = intr_disable();
+
+			for (block_idx = 0; block_idx < desc[desc_idx].blocks_pre_arena; block_idx++) {
+				b = arena2block(a, block_idx);
+				ASSERT(!elem_find(&a->desc->free_list, &b->free_elem));
+				list_append(&a->desc->free_list, &b->free_elem);
+			}
+			intr_set_status(old_status);
+		}
+
+		b = block2arena(b);
+		a->cnt--;
+		lock_release(&mem_pool->lock);
+		return (void *)b;
+	}
+
+}
+
+
+void pfree(uint32_t pg_phy_addr)
+{
+	struct pool *mem_pool;
+	uint32_t bit_idx = 0;
+	if (pg_phy_addr >= user_pool.phy_addr_start) {
+		mem_pool = &user_pool;
+		bit_idx = (pg_phy_addr - user_pool.phy_addr_start) / PAGE_SIZE;
+	}
+	else {
+		mem_pool = &kernel_pool;
+		bit_idx = (pg_phy_addr - kernel_pool.phy_addr_start) / PAGE_SIZE;
+	}
+	bitmap_set(&mem_pool->pool_bitmapm, bit_idx, 0);
+}
+
+
+static void page_table_pte_remove(uint32_t vaddr)
+{
+	uint32_t *pte = pte_ptr(vaddr);
+	*pte &= ~PG_P_1;
+	asm volatile ("invlpg %0" : : "m"(vaddr) : "memory");
+}
+
+static void vaddr_remove(enum pool_flags pf, void *_vaddr, uint32_t pg_cnt)
+{
+	uint32_t bit_idx_start = 0, vaddr = (uint32_t)_vaddr, cnt = 0;
+	if (pf == PF_KERNEL) {
+		bit_idx_start = (vaddr - kernel_pool.vaddr_start) / PAGE_SIZE;
+		while (cnt < pg_cnt) {
+			bitmap_set(&kernel_vaddr.vaddr_bitmap, bit_idx_start + cnt++, 0);
+		}
+	}
+	else {
+		struct task_struct *cur_thread = running_thread();
+		bit_idx_start = (vaddr - cur_thread->userprog_vaddr.vaddr_start) / PAGE_SIZE;
+		while (cnt < pg_cnt) {
+			bitmap_set(&cur_thread->userprog_vaddr.vaddr_bitmap, bit_idx_start + cnt++, 0);
+		}
+	}
+}
+
+void mfree_page(enum pool_flags pf, void *_vaddr, uint32_t pg_cnt)
+{
+	uint32_t pg_phy_addr;
+	uint32_t vaddr = (uint32_t)_vaddr;
+	uint32_t page_cnt = 0;
+
+	ASSERT(pg_cnt >= 1 && vaddr % PAGE_SIZE == 0);
+	pg_phy_addr = addr_v2p(vaddr);
+	ASSERT((pg_phy_addr % PAGE_SIZE) == 0 && pg_phy_addr >= 0x102000);
+
+	if (pg_phy_addr >= user_pool.phy_addr_start) {
+		vaddr -= PAGE_SIZE;
+		while (page_cnt < pg_cnt) {
+			vaddr += PAGE_SIZE;
+			pg_phy_addr = addr_v2p(vaddr);
+			ASSERT((pg_phy_addr % PAGE_SIZE) == 0 && pg_phy_addr >= user_pool.phy_addr_start);
+			pfree(pg_phy_addr);
+			page_table_pte_remove(vaddr);
+			page_cnt++;
+		}
+		vaddr_remove(pf, _vaddr, pg_cnt);
+	}
+	else {
+		vaddr -= PAGE_SIZE;
+		while (page_cnt < pg_cnt) {
+			vaddr += PAGE_SIZE;
+			pg_phy_addr = addr_v2p(vaddr);
+			ASSERT((pg_phy_addr % PAGE_SIZE) == 0 && 
+					pg_phy_addr >= kernel_pool.phy_addr_start &&
+					pg_phy_addr < user_pool.phy_addr_start);
+			pfree(pg_phy_addr);
+			page_table_pte_remove(vaddr);
+			page_cnt++;
+		}
+		vaddr_remove(pf, _vaddr, pg_cnt);
+	}
+}
+
+
+void sys_free(void *ptr)
+{
+	if (ptr == NULL) {
+		return ;
+	}
+	enum pool_flags pf;
+	struct pool *mem_pool;
+
+	if (running_thread()->pgdir == NULL) {
+		ASSERT((uint32_t)ptr >= K_HEAP_START);
+		pf = PF_KERNEL;
+		mem_pool = &kernel_pool;
+	}
+	else {
+		pf = PF_USER;
+		mem_pool = &user_pool;
+	}
+
+	lock_acquire(&mem_pool->lock);
+	struct mem_block *b = ptr;
+	struct arena *a = block2arena(b);
+
+	ASSERT(a->large == 0 || a->large == 1);
+	if (a->desc == NULL && a->large == true) {
+		mfree_page(pf, a, a->cnt);
+	}
+	else {
+		list_append(&a->desc->free_list, &b->free_elem);
+
+		if (++a->cnt == a->desc->blocks_pre_arena) {
+			uint32_t block_idx;
+			for (block_idx = 0; block_idx < a->desc->blocks_pre_arena; block_idx++) {
+				struct mem_block *b = arena2block(a, block_idx);
+				ASSERT(elem_find(&a->desc->free_list, &b->free_elem));
+				list_remove(&b->free_elem);
+			}
+			mfree_page(pf, a, 1);
+		}
+	}
+	lock_release(&mem_pool->lock);
+}
+
 
 /**
  * 初始化三个内存池
@@ -91,6 +330,7 @@ void mem_init()
 	put_str("mem_init start\n");
 	uint32_t mem_bytes_total = 0x1000000;
 	mem_pool_init(mem_bytes_total);
+	block_desc_init(k_block_descs);
 	put_str("mem_init done\n");
 }
 

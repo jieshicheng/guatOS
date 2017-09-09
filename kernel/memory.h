@@ -4,6 +4,7 @@
 #include "stdint.h"
 #include "bitmap.h"
 #include "sync.h"
+#include "list.h"
 
 
 #define PG_P_1 1
@@ -20,6 +21,21 @@
 // function to get given virtual addr's PDE and PTE
 #define PDE_IDX(addr) ((addr & 0xffc00000) >> 22)
 #define PTE_IDX(addr) ((addr & 0x003ff000) >> 12)
+
+
+#define DESC_CNT 7
+
+struct mem_block
+{
+	struct list_elem free_elem;
+};
+
+struct mem_block_desc
+{
+	uint32_t block_size;
+	uint32_t blocks_pre_arena;
+	struct list free_list;
+};
 
 
 enum pool_flags
@@ -42,6 +58,13 @@ struct pool
 	uint32_t phy_addr_start;
 	uint32_t pool_size;
 };
+
+
+void block_desc_init(struct mem_block_desc *desc_array);
+void *sys_malloc(uint32_t size);
+void sys_free(void *ptr);
+
+
 
 extern struct pool kernel_pool, user_pool;
 void mem_init(void);

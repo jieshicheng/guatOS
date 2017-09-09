@@ -37,8 +37,8 @@ int main(void)
 
     thread_start("k_thread_a", 31, k_thread_a, "kernel thread a, my pid is: ");
     thread_start("k_thread_b", 31, k_thread_b, "kernel thread b, my pid is: ");
-    process_execute(u_prog_a, "u_prog_a");
-    process_execute(u_prog_b, "u_prog_b");
+    //process_execute(u_prog_a, "u_prog_a");
+    //process_execute(u_prog_b, "u_prog_b");
 
     intr_enable();
 
@@ -50,8 +50,35 @@ int main(void)
 void k_thread_a(void *arg)
 {
     char *msg = arg;
+    void *addr1;
+    void *addr2;
+    void *addr3;
+    void *addr4;
+    void *addr5;
+    void *addr6;
+
+    uint32_t size = 16;
+    addr1 = sys_malloc(size);
+    size *= 2;
+    addr2 = sys_malloc(size);
+    size *= 2;
+    addr3 = sys_malloc(size);
+    size *= 2;
+    addr4 = sys_malloc(size);
+    size *= 2;
+    addr5 = sys_malloc(size);
+    size *= 2;
+    addr6 = sys_malloc(size);
+
+    sys_free(addr1);
+    sys_free(addr2);
+    sys_free(addr3);
+    sys_free(addr4);
+    sys_free(addr5);
+    sys_free(addr6);
+
     while(1) {
-        console_put_str(arg);
+        console_put_str(msg);
         console_put_int(getpid());
         console_put_char('\n');
     }
@@ -60,8 +87,36 @@ void k_thread_a(void *arg)
 void k_thread_b(void *arg)
 {
     char *msg = arg;
+    void *addr1;
+    void *addr2;
+    void *addr3;
+    void *addr4;
+    void *addr5;
+    void *addr6;
+
+    uint32_t size = 16;
+    addr1 = sys_malloc(size);
+    size *= 2;
+    addr2 = sys_malloc(size);
+    size *= 2;
+    addr3 = sys_malloc(size);
+    size *= 2;
+    addr4 = sys_malloc(size);
+    size *= 2;
+    addr5 = sys_malloc(size);
+    size *= 2;
+    addr6 = sys_malloc(size);
+
+    sys_free(addr1);
+    sys_free(addr2);
+    sys_free(addr3);
+    sys_free(addr4);
+    sys_free(addr5);
+    sys_free(addr6);
+
+
     while(1) {
-        console_put_str(arg);
+        console_put_str(msg);
         console_put_int(getpid());
         console_put_char('\n');
     }

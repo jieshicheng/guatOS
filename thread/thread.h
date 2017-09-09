@@ -71,6 +71,7 @@ struct task_struct
 	struct list_elem all_list_tag;
 	uint32_t *pgdir;
 	struct virtual_addr userprog_vaddr;
+	struct mem_block_desc u_block_desc[DESC_CNT];
 	uint32_t stack_magic;
 };
 
