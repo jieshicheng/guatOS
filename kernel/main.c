@@ -37,8 +37,8 @@ int main(void)
     intr_enable();
     thread_start("k_thread_a", 31, k_thread_a, "kernel thread a, my pid is: ");
     thread_start("k_thread_b", 31, k_thread_b, "kernel thread b, my pid is: ");
-    //process_execute(u_prog_a, "u_prog_a");
-    //process_execute(u_prog_b, "u_prog_b");
+    process_execute(u_prog_a, "u_prog_a");
+    process_execute(u_prog_b, "u_prog_b");
     intr_enable();
 
 
@@ -119,11 +119,12 @@ void k_thread_b(void *arg)
     }
 }
 
-/*
 void u_prog_a(void)
 {
     char *str_ua = "u_prog_a thread, my pid is: ";
     pid_t pid_ua = getpid();
+    void *addr = malloc(1024);
+    free(addr);
     while(1) {
         printf("%s%d\n", str_ua, pid_ua);
     }
@@ -134,7 +135,9 @@ void u_prog_b(void)
 {
     char *str_ub = "u_prog_b thread, my pid is: ";
     pid_t pid_ub = getpid();
+    void *addr = malloc(1024);
+    free(addr);
     while(1) {
         printf("%s%d\n", str_ub, pid_ub);
     }
-}*/
+}
