@@ -4,10 +4,9 @@
 #include "string.h"
 #include "syscall.h"
 
-#define va_start(ap, v) (ap = (va_list)&v)
-#define va_arg(ap, t) (*((t *)(ap += 4)))
-#define va_end(ap) (ap = NULL)
-
+/**
+ *	convert value to char base on parameter 'base'
+ */
 static void itoa(uint32_t value, char **buf_ptr_addr, uint8_t base)
 {
 	uint32_t m = value % base;
@@ -23,7 +22,9 @@ static void itoa(uint32_t value, char **buf_ptr_addr, uint8_t base)
 	}
 }
 
-
+/**
+ *	analyse format and supplement value to str
+ */
 uint32_t vsprintf(char *str, const char *format, va_list ap)
 {
 	char *buf_ptr = str;
@@ -68,6 +69,9 @@ uint32_t vsprintf(char *str, const char *format, va_list ap)
 	return strlen(str);
 }
 
+/**
+ *	format output to console
+ */
 uint32_t printf(const char *format, ...)
 {
 	va_list args;
@@ -78,6 +82,10 @@ uint32_t printf(const char *format, ...)
 	return write(buf);
 }
 
+
+/**
+ *	format output to buf
+ */
 uint32_t sprintf(char *buf, const char *format, ...)
 {
 	va_list ap;

@@ -58,7 +58,8 @@ $(BUILD_DIR)/timer.o : device/timer.c device/timer.h \
 					   lib/print.h \
 					   kernel/interrupt.h \
 					   thread/thread.h \
-					   kernel/debug/debug.h
+					   kernel/debug/debug.h \
+					   lib/global.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/debug.o : kernel/debug/debug.c kernel/debug/debug.h \
@@ -188,6 +189,23 @@ $(BUILD_DIR)/stdio.o : lib/stdio.c lib/stdio.h \
 					   lib/global.h lib/stdint.h \
 					   lib/string.h lib/syscall.h
 	$(CC) $(CFLAGS2) $< -o $@
+
+$(BUILD_DIR)/stdio-kernel.o : kernel/stdio-kernel.c kernel/stdio-kernel.h \
+							  device/console.h \
+							  lib/stdio.h
+	$(CC) $(CFLAGS2) $< -o $@
+
+$(BUILD_DIR)/ide.o : device/ide.c device/ide.h \
+					 lib/stdint.h lib/global.h \
+					 lib/list.h lib/bitmap.h \
+					 thread/sync.h \
+					 kernel/debug/debug.h \
+					 kernel/stdio-kernel.h \
+					 lib/io.h \
+					 device/timer.h \
+					 kernel/interrupt.h
+	$(CC) $(CFLAGS1) $< -o $@
+
 
 ##### 		nasm complier   ########
 

@@ -151,8 +151,8 @@ static void pic_init(void)
 	outb(PIC_S_DATA, 0x02);
 	outb(PIC_S_DATA, 0x01);
 
-	outb(PIC_M_DATA, 0xfc); // 开关外部中断的位。0xfc表示倒数的时钟，键盘中断打开
-	outb(PIC_S_DATA, 0xff);
+	outb(PIC_M_DATA, 0xf8); // 开关外部中断的位。0xfc表示倒数的时钟，键盘中断打开
+	outb(PIC_S_DATA, 0xbf);
 
 	put_str("	pic_init done\n");
 }
