@@ -7,6 +7,8 @@
 #include "timer.h"
 #include "sync.h"
 #include "interrupt.h"
+#include "list.h"
+#include "string.h"
 
 #define reg_data(channel) 		(channel->port_base + 0)
 #define reg_error(channel)		(channel->port_base + 1)
@@ -33,6 +35,11 @@
 #define CMD_WRITE_SECTOR	0x30
 
 #define max_lba 			((80 * 1024 * 1024 / 512) - 1)
+
+
+int32_t ext_lba_base = 0;
+uint8_t p_no = 0, l_no = 0;
+struct list partition_list;
 
 uint8_t channel_cnt;
 struct ide_channel channels[2];
@@ -227,13 +234,52 @@ void intr_hd_handler(uint8_t irq_no)
 }
 
 
+static void swap_pairs_bytes(const char *dst, char *buf, uint32_t len)
+{
+	uint8_t idx;
+	for( idx = 0; idx < len; idx += 2) {
+		buf[idx + 1] = *dst++;
+		buf[idx] = *dst++;
+	}
+	buf[idx] = '\0';
+}
 
 
+static void identify_disk(struct disk *hd)
+{
+	char id_info[512];
+	select_disk(hd);
+	cmd_out(hd->my_channel, CMD_IDENTIFY);
+
+	sema_down(&hd->my_channel->disk_done);
+
+	if( !busy_wait(hd) ) {
+		char error[64];
+		sprintf(error, "%s identify failed !!!!!\n", hd->name);
+		PANIC(error);
+	}
+		
+	read_from_sector(hd, id_info, 1);
+
+	char buf[64];
+	uint8_t sn_start = 10 * 2, sn_len = 20;
+	uint8_t md_start = 27 * 2, md_len = 40;
+	memset(buf, 0, sizeof(buf));
+	swap_pairs_bytes(&id_info[sn_start], buf, sn_len);
+	printk(" disk %s info : \n      SN: %s\n", hd->name, buf);
+	memset(buf, 0, sizeof(buf));
+	swap_pairs_bytes(&id_info[md_start], buf, md_len);
+	printk(" module: %s\n", buf);
+	uint32_t sectors = *((uint32_t *)&id_info[60 * 2]);
+	printk(" sectors: %d\n", sectors);
+	printk(" capacity: %dMB\n", sectors * 512 / 1024 / 1024);
+}
 
 
-
-
-
+static void partition_scan(struct disk *hd, uint32_t ext_lba)
+{
+	
+}
 
 
 

@@ -46,6 +46,32 @@ struct ide_channel
 	struct disk devices[2];
 };
 
+
+struct partition_table_entry
+{
+	uint8_t bootable;
+	uint8_t start_head;
+	uint8_t start_sec;
+	uint8_t start_chs;
+	uint8_t fs_type;
+	uint8_t end_head;
+	uint8_t end_sec;
+	uint8_t end_chs;
+	uint32_t start_lba;
+	uint32_t sec_cnt;
+} __attribute__ ((packed));
+
+
+struct boot_sector
+{
+	uint8_t other[446];
+	struct partition_table_entry partition_table[4];
+	uint16_t signature;
+} __attribute__ ((packed));
+
+
+
+
 /**
  *	interface function
  */
@@ -63,6 +89,9 @@ static void cmd_out(struct ide_channel *channel, uint8_t cmd);
 static void read_from_sector(struct disk *hd, void *buf, uint8_t sec_cnt);
 static void write2sector(struct disk *hd, void *buf, uint8_t sec_cnt);
 static enum bool busy_wait(struct disk *hd);
+static void swap_pairs_bytes(const char *dst, char *buf, uint32_t len);
+static void identify_disk(struct disk *hd);
 void intr_hd_handler(uint8_t irq_no);
+
 
 #endif

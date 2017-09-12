@@ -203,7 +203,9 @@ $(BUILD_DIR)/ide.o : device/ide.c device/ide.h \
 					 kernel/stdio-kernel.h \
 					 lib/io.h \
 					 device/timer.h \
-					 kernel/interrupt.h
+					 kernel/interrupt.h \
+					 lib/list.h \
+					 lib/string.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 
