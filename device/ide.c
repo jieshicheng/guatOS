@@ -9,6 +9,7 @@
 #include "interrupt.h"
 #include "list.h"
 #include "string.h"
+#include "memory.h"
 
 #define reg_data(channel) 		(channel->port_base + 0)
 #define reg_error(channel)		(channel->port_base + 1)
@@ -52,7 +53,7 @@ void ide_init()
 	channel_cnt = DIV_ROUND_UP(hd_cnt, 2);
 
 	struct ide_channel *channel;
-	uint8_t channel_no = 0;
+	uint8_t channel_no = 0, dev_no = 0;
 	while (channel_no < channel_cnt) {
 		channel = &channels[channel_no];
 
@@ -71,8 +72,24 @@ void ide_init()
 		lock_init(&channel->lock);
 		sema_init(&channel->disk_done, 0);
 		register_handler(channel->irq_no, intr_hd_handler);
+
+		while( dev_no < 2 ) {
+			struct disk *hd = &channel->devices[dev_no];
+			hd->my_channel = channel;
+			hd->dev_no = dev_no;
+			sprintf(hd->name, "sd%c", 'a' + channel_no * 2 + dev_no);
+			identify_disk(hd);
+			if( dev_no != 0 ) {
+				partition_scan(hd, 0);
+			}
+			p_no = l_no = 0;
+			dev_no++;
+		}
+		dev_no = 0;
 		channel_no++;
 	}
+	printk("     all partition info :\n");
+	list_traversal(&partition_list, partition_info, (int)NULL);
 	printk("ide_init done\n");
 }
 
@@ -278,13 +295,54 @@ static void identify_disk(struct disk *hd)
 
 static void partition_scan(struct disk *hd, uint32_t ext_lba)
 {
-	
+	struct boot_sector *bs = sys_malloc(sizeof(struct boot_sector));
+	ide_read(hd, ext_lba, bs, 1);
+	uint8_t part_idx = 0;
+	struct partition_table_entry *p = bs->partition_table;
+
+	while( part_idx++ < 4 ) {
+		if( p->fs_type == 0x5) {
+			if( ext_lba_base != 0 ) {
+				partition_scan(hd, p->start_lba + ext_lba_base);
+			}
+			else {
+				ext_lba_base = p->start_lba;
+				partition_scan(hd, p->start_lba);
+			}
+		}
+		else if( p->fs_type == != 0 ) {
+			if( ext_lba == 0 ) {
+				hd->prim_parts[p_no].start_lba = ext_lba + p->start_lba;
+				hd->prim_parts[p_no].sec_cnt = p->sec_cnt;
+				hd->prim_parts[p_no].my_disk = hd;
+				list_append(&partition_list, &hd->prim_parts[p_no].part_tag);
+				sprintf(hd->prim_parts[p_no].name, "%s%d", hd->name, p_no + 1);
+				p_no++;
+				ASSERT(p_no < 4);
+			}
+			else {
+				hd->logic_parts[l_no].start_lba = ext_lba + p->start_lba;
+				hd->logic_parts[l_no].sec_cnt = p->sec_cnt;
+				hd->logic_parts[l_no].my_disk = hd;
+				list_append(&partition_list, &hd->logic_parts[l_no].part_tag);
+				sprintf(hd->logic_parts[l_no].name, "%s%d", hd->name, l_no + 5);
+				l_no++;
+				if( l_no >= 8 )
+					return ;
+			}
+		}
+		p++;
+	}
+	sys_free(bs);
 }
 
 
-
-
-
+static enum bool partition_info(struct list_elem *pelem, int arg UNUSED)
+{
+	struct partition *part = elem2entry(struct partition, part_tag, pelem);
+	printk("    %s start_lba: 0x%x, sec_cnt: 0x%x\n", part->name, part->start_lba, part->sec_cnt);
+	return false;
+}
 
 
 

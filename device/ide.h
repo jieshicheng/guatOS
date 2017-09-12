@@ -91,6 +91,8 @@ static void write2sector(struct disk *hd, void *buf, uint8_t sec_cnt);
 static enum bool busy_wait(struct disk *hd);
 static void swap_pairs_bytes(const char *dst, char *buf, uint32_t len);
 static void identify_disk(struct disk *hd);
+static void partition_scan(struct disk *hd, uint32_t ext_lba);
+static enum bool partition_info(struct list_elem *pelem, int arg UNUSED);
 void intr_hd_handler(uint8_t irq_no);
 
 

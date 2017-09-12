@@ -97,7 +97,7 @@ void init_thread(struct task_struct *pthread, char *name, int prio);
 static pid_t allocate_pid(void);
 static void make_main_thread(void);
 static void kernel_thread(thread_func *function, void *func_arg);
-static void idle(void *arg);
+static void idle(void *arg UNUSED);
 
 
 

@@ -32,7 +32,7 @@ extern void switch_to(struct task_struct *cur, struct task_struct *next);
  *	free thread. when CPU is nothing to do
  *	then run it
  */
-static void idle(void *arg)
+static void idle(void *arg UNUSED)
 {
 	while (1) {
 		thread_block(TASK_BLOCKED);

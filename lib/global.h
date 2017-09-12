@@ -11,6 +11,7 @@
 #define NULL ((void *)0)
 #define PAGE_SIZE 4096
 enum bool { false = 0, true = 1 };
+#define UNUSED __attribute__ ((unused))
 
 #define EFLAGS_MBS		(1 << 1)
 #define EFLAGS_IF_1		(1 << 9)
