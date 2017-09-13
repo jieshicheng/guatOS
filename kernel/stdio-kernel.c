@@ -14,3 +14,16 @@ void printk(const char *format, ...)
 	va_end(args);
 	console_put_str(buf);
 }
+
+/**
+ *	format output str to buf
+ */
+uint32_t sprintk(char *buf, const char *format, ...)
+{
+	va_list ap;
+	uint32_t revalue;
+	va_start(ap, format);
+	revalue = vsprintf(buf, format, ap);
+	va_end(ap);
+	return revalue;
+}

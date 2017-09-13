@@ -66,7 +66,7 @@ void ide_init()
 	while (channel_no < channel_cnt) {
 		channel = &channels[channel_no];
 
-		sprintf(channel->name, "ide%d", channel_no);
+		sprintk(channel->name, "ide%d", channel_no);
 		// 不同的插口对应不同的数据端口
 		switch (channel_no) {		
 			case 0:
@@ -144,7 +144,7 @@ static void read_from_sector(struct disk *hd, void *buf, uint8_t sec_cnt)
 	else {
 		size_in_byte = sec_cnt * 512;
 	}
-	insw(reg_data(hd->channel), buf, size_in_byte / 2);
+	insw(reg_data(hd->my_channel), buf, size_in_byte / 2);
 }
 
 static void write2sector(struct disk *hd, void *buf, uint8_t sec_cnt)
@@ -156,7 +156,7 @@ static void write2sector(struct disk *hd, void *buf, uint8_t sec_cnt)
 	else {
 		size_out_byte = sec_cnt * 512;
 	}
-	outsw(reg_data(hd->channel), buf, size_out_byte / 2);
+	outsw(reg_data(hd->my_channel), buf, size_out_byte / 2);
 }
 
 static enum bool busy_wait(struct disk *hd)
@@ -211,7 +211,7 @@ void ide_read(struct disk *hd, uint32_t lba, void *buf, uint32_t sec_cnt)
 	lock_release(&hd->my_channel->disk_done);
 }
 
-void ide_write(struct disk *hd, uint32_t lbd, void *buf, uint32_t sec_cnt)
+void ide_write(struct disk *hd, uint32_t lba, void *buf, uint32_t sec_cnt)
 {
 	ASSERT(lba <= max_lba);
 	ASSERT(sec_cnt > 0);
@@ -321,7 +321,7 @@ static void partition_scan(struct disk *hd, uint32_t ext_lba)
 				partition_scan(hd, p->start_lba);
 			}
 		}
-		else if( p->fs_type == != 0 ) {
+		else if( p->fs_type != 0 ) {
 			if( ext_lba == 0 ) {
 				hd->prim_parts[p_no].start_lba = ext_lba + p->start_lba;
 				hd->prim_parts[p_no].sec_cnt = p->sec_cnt;

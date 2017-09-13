@@ -5,6 +5,7 @@
  *	interface function
  */
 void printk(const char *format, ...);
+uint32_t sprintk(char *buf, const char *format, ...);
 
 /**
  *	inside function
