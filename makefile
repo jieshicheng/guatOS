@@ -43,7 +43,8 @@ $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
 					  device/console.h \
 					  thread/sync.h \
 					  device/keyboard.h \
-					  userprog/tss.h
+					  userprog/tss.h \
+					  device/ide.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/interrupt.o : kernel/interrupt.c kernel/interrupt.h \
@@ -207,7 +208,7 @@ $(BUILD_DIR)/ide.o : device/ide.c device/ide.h \
 					 kernel/interrupt.h \
 					 lib/list.h \
 					 lib/string.h
-	$(CC) $(CFLAGS1) $< -o $@
+	$(CC) $(CFLAGS2) $< -o $@
 
 
 ##### 		nasm complier   ########

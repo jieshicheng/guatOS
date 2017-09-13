@@ -1,7 +1,7 @@
 #include "syscall.h"
 
 #define _syscall0(NUMBER) \
-		( \ 
+		(\
 			{ \
 				int retval; \
 				asm volatile ("int $0x80" \

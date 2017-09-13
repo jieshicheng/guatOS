@@ -186,7 +186,7 @@ void ide_read(struct disk *hd, uint32_t lba, void *buf, uint32_t sec_cnt)
 	uint32_t secs_op;
 	uint32_t secs_done = 0;
 
-	while (secs_done <= sec_cnt) {
+	while (secs_done < sec_cnt) {
 		if ((secs_done + 256) <= sec_cnt) {
 			secs_op = 256;
 		}
@@ -201,7 +201,7 @@ void ide_read(struct disk *hd, uint32_t lba, void *buf, uint32_t sec_cnt)
 
 		if (!busy_wait(hd)) {
 			char error[64];
-			sprintf(error, "%s read sector %d failed !!!!!\n", hd->name, lba);
+			sprintk(error, "%s read sector %d failed !!!!!\n", hd->name, lba);
 			PANIC(error);
 		}
 
@@ -234,7 +234,7 @@ void ide_write(struct disk *hd, uint32_t lba, void *buf, uint32_t sec_cnt)
 
 		if (!busy_wait(hd)) {
 			char error[64];
-			sprintf(error, "%s write sector %d failed !!!!\n", hd->name, lba);
+			sprintk(error, "%s write sector %d failed !!!!\n", hd->name, lba);
 			PANIC(error);
 		}
 
@@ -283,7 +283,7 @@ static void identify_disk(struct disk *hd)
 
 	if( !busy_wait(hd) ) {
 		char error[64];
-		sprintf(error, "%s identify failed !!!!!\n", hd->name);
+		sprintk(error, "%s identify failed !!!!!\n", hd->name);
 		PANIC(error);
 	}
 		
@@ -307,6 +307,7 @@ static void identify_disk(struct disk *hd)
 static void partition_scan(struct disk *hd, uint32_t ext_lba)
 {
 	struct boot_sector *bs = sys_malloc(sizeof(struct boot_sector));
+	printk("malloc successful\n");
 	ide_read(hd, ext_lba, bs, 1);
 	uint8_t part_idx = 0;
 	struct partition_table_entry *p = bs->partition_table;
@@ -327,7 +328,7 @@ static void partition_scan(struct disk *hd, uint32_t ext_lba)
 				hd->prim_parts[p_no].sec_cnt = p->sec_cnt;
 				hd->prim_parts[p_no].my_disk = hd;
 				list_append(&partition_list, &hd->prim_parts[p_no].part_tag);
-				sprintf(hd->prim_parts[p_no].name, "%s%d", hd->name, p_no + 1);
+				sprintk(hd->prim_parts[p_no].name, "%s%d", hd->name, p_no + 1);
 				p_no++;
 				ASSERT(p_no < 4);
 			}
@@ -336,7 +337,7 @@ static void partition_scan(struct disk *hd, uint32_t ext_lba)
 				hd->logic_parts[l_no].sec_cnt = p->sec_cnt;
 				hd->logic_parts[l_no].my_disk = hd;
 				list_append(&partition_list, &hd->logic_parts[l_no].part_tag);
-				sprintf(hd->logic_parts[l_no].name, "%s%d", hd->name, l_no + 5);
+				sprintk(hd->logic_parts[l_no].name, "%s%d", hd->name, l_no + 5);
 				l_no++;
 				if( l_no >= 8 )
 					return ;
