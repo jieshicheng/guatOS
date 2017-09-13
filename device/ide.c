@@ -37,28 +37,38 @@
 
 #define max_lba 			((80 * 1024 * 1024 / 512) - 1)
 
-
+// 拓展分区的起始扇区
 int32_t ext_lba_base = 0;
+// p_no 主分区号码 l_no 逻辑分区号码
 uint8_t p_no = 0, l_no = 0;
+// 分区队列，将所有已知的分区用链表链接起来
 struct list partition_list;
 
+// IDE硬盘接口数量
 uint8_t channel_cnt;
+// 最大支持2个IDE硬盘插口
 struct ide_channel channels[2];
 
+
+/**
+ *	硬盘驱动初始化
+ */
 void ide_init()
 {
 	printk("ide_init start \n");
-	uint8_t hd_cnt = *((uint8_t *)(0x475));
+	uint8_t hd_cnt = *((uint8_t *)(0x475));   // 获取硬盘数量
 	ASSERT(hd_cnt > 0);
-	channel_cnt = DIV_ROUND_UP(hd_cnt, 2);
+	channel_cnt = DIV_ROUND_UP(hd_cnt, 2);		// 获取主办IDE接口数量
 
 	struct ide_channel *channel;
 	uint8_t channel_no = 0, dev_no = 0;
+	// 对于每一个主板插口进行相应初始化
 	while (channel_no < channel_cnt) {
 		channel = &channels[channel_no];
 
 		sprintf(channel->name, "ide%d", channel_no);
-		switch (channel_no) {
+		// 不同的插口对应不同的数据端口
+		switch (channel_no) {		
 			case 0:
 				channel->port_base = 0x1f0;
 				channel->irq_no = 0x20 + 14;
@@ -68,11 +78,12 @@ void ide_init()
 				channel->irq_no = 0x20 + 15;
 				break;
 		}
+		// 不期待中断
 		channel->expecting_intr = false;
-		lock_init(&channel->lock);
-		sema_init(&channel->disk_done, 0);
-		register_handler(channel->irq_no, intr_hd_handler);
-
+		lock_init(&channel->lock);	// 初始化锁
+		sema_init(&channel->disk_done, 0);	// 信号量初始化位0
+		register_handler(channel->irq_no, intr_hd_handler); 	// 安装中断处理程序
+		// 一个插口有两个硬盘槽，处理这两个硬盘
 		while( dev_no < 2 ) {
 			struct disk *hd = &channel->devices[dev_no];
 			hd->my_channel = channel;
