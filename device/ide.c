@@ -88,7 +88,7 @@ void ide_init()
 			struct disk *hd = &channel->devices[dev_no];
 			hd->my_channel = channel;
 			hd->dev_no = dev_no;
-			sprintf(hd->name, "sd%c", 'a' + channel_no * 2 + dev_no);
+			sprintk(hd->name, "sd%c", 'a' + channel_no * 2 + dev_no);
 			identify_disk(hd);
 			if( dev_no != 0 ) {
 				partition_scan(hd, 0);
@@ -208,7 +208,7 @@ void ide_read(struct disk *hd, uint32_t lba, void *buf, uint32_t sec_cnt)
 		read_from_sector(hd, (void *)((uint32_t)buf + secs_done * 512), secs_op);
 		secs_done += secs_op;
 	}
-	lock_release(&hd->my_channel->disk_done);
+	lock_release(&hd->my_channel->lock);
 }
 
 void ide_write(struct disk *hd, uint32_t lba, void *buf, uint32_t sec_cnt)

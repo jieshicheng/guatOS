@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include "console.h"
+#include "global.h"
 
 
 /**
