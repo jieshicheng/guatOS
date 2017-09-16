@@ -117,7 +117,7 @@ void filesys_init()
 {
 	uint8_t channel_no = 0, dev_no, part_idx = 0;
 	
-	struct super_block *sb_buf = (struct super_block *)sys_malloc(sizeof(SECTOR_SIZE));
+	struct super_block *sb_buf = (struct super_block *)sys_malloc(SECTOR_SIZE);
 	if( sb_buf == NULL ) {
 		PANIC("alloc to super_block point failed\n");
 	}
