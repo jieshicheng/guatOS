@@ -1,6 +1,9 @@
 #ifndef __KERNEL_FS_H
 #define __KERNEL_FS_H
 
+#include "global.h"
+#include "list.h"
+
 #define MAX_FILES_PER_PART	4096
 #define BITS_PER_SECTOR	4096
 #define SECTOR_SIZE		512
@@ -23,5 +26,5 @@ void filesys_init();
  *	inside function
  */
 static void partition_format(struct partition *part);
-
+static enum bool mount_partition(struct list_elem *pelem, int arg);
 #endif

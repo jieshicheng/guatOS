@@ -41,7 +41,6 @@ int main(void)
     process_execute(u_prog_b, "u_prog_b");
     intr_enable();
 
-
     while(1)
         ;
     return 0;
