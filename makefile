@@ -217,7 +217,7 @@ $(BUILD_DIR)/fs.o : fileSystem/fs.c fileSystem/fs.h \
 					kernel/debug/debug.h kernel/memory.h \
 					kernel/stdio-kernel.h lib/string.h \
 					fileSystem/direct.h fileSystem/inode.h fileSystem/super_block.h
-	$(CC) $(CFLAGS1) $< -o $@
+	$(CC) $(CFLAGS2) $< -o $@
 
 
 ##### 		nasm complier   ########

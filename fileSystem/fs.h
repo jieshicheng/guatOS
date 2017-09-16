@@ -22,6 +22,6 @@ void filesys_init();
 /**
  *	inside function
  */
-static void partition_format(struct disk *hd, struct partition *part);
+static void partition_format(struct partition *part);
 
 #endif
