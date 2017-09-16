@@ -16,6 +16,7 @@
 #include "tss.h"
 #include "syscall-init.h"
 #include "ide.h"
+#include "fs.h"
 
 void init_all()
 {
@@ -28,5 +29,7 @@ void init_all()
 	keyboard_init();
 	tss_init();
 	syscall_init();
+	intr_enable();
 	ide_init();
+	filesys_init();
 }

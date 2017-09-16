@@ -3,12 +3,12 @@ ENTRY_POINT = 0xc0001500
 AS = nasm
 CC = gcc
 LD = ld
-LIB = -I lib/ -I kernel/ -I kernel/debug -I device/ -I thread/ -I userprog/
+LIB = -I lib/ -I kernel/ -I kernel/debug -I device/ -I thread/ -I userprog/ -I fileSystem/
 ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
 LDFLAGS = -Ttext $(ENTRY_POINT) -e main
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/ide.o $(BUILD_DIR)/stdio-kernel.o \
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/fs.o $(BUILD_DIR)/ide.o $(BUILD_DIR)/stdio-kernel.o \
 	   $(BUILD_DIR)/stdio.o $(BUILD_DIR)/syscall-init.o \
 	   $(BUILD_DIR)/syscall.o $(BUILD_DIR)/process.o $(BUILD_DIR)/tss.o \
 	   $(BUILD_DIR)/ioqueue.o $(BUILD_DIR)/keyboard.o $(BUILD_DIR)/console.o \
@@ -44,7 +44,8 @@ $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
 					  thread/sync.h \
 					  device/keyboard.h \
 					  userprog/tss.h \
-					  device/ide.h
+					  device/ide.h \
+					  fileSystem/fs.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/interrupt.o : kernel/interrupt.c kernel/interrupt.h \
@@ -209,6 +210,14 @@ $(BUILD_DIR)/ide.o : device/ide.c device/ide.h \
 					 lib/list.h \
 					 lib/string.h
 	$(CC) $(CFLAGS2) $< -o $@
+
+$(BUILD_DIR)/fs.o : fileSystem/fs.c fileSystem/fs.h \
+					lib/stdint.h lib/global.h \
+					device/ide.h \
+					kernel/debug/debug.h kernel/memory.h \
+					kernel/stdio-kernel.h lib/string.h \
+					fileSystem/direct.h fileSystem/inode.h fileSystem/super_block.h
+	$(CC) $(CFLAGS1) $< -o $@
 
 
 ##### 		nasm complier   ########
