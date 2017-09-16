@@ -9,10 +9,13 @@
 #include "super_block.h"
 #include "inode.h"
 #include "fs.h"
-
+#include "list.h"
 
 extern uint8_t channel_cnt;
 extern struct ide_channel channels[2];
+extern struct list partition_list;
+
+struct partition *cur_part;
 
 
 static void partition_format(struct partition *part)
@@ -153,12 +156,49 @@ void filesys_init()
 		}
 		channel_no++;
 	}
+	char defaule_part[8] = "sdb1";
+	list_traversal(&partition_list, mount_partition, (int)defaule_part);
 	sys_free(sb_buf);
 }
 
 
 
+static enum bool mount_partition(struct list_elem *pelem, int arg)
+{
+	char *part_name = (char *)arg;
+	struct partition *part = elem2entry(struct partition, part_tag, pelem);
+	if( strcmp(part->name, part_name) != 0 ) {
+		return false;
+	}
+	cur_part = part;
+	struct disk *hd = cur_part->my_disk;
+	struct super_block *sb_buf = (struct super_block *)sys_malloc(SECTOR_SIZE);
+	if( sb_buf == NULL )
+		PANIC("malloc memory failed\n");
+	cur_part->sb = (struct super_block *)sys_malloc(sizeof(struct super_block));
+	if( cur_part->sb == NULL )
+		PANIC("malloc memory failed\n");
 
+	memset(sb_buf, 0, SECTOR_SIZE);
+	ide_read(hd, cur_part->start_lba + 1, sb_buf, 1);
+	memcpy(cur_part->sb, sb_buf, sizeof(struct super_block));
+
+	cur_part->block_bitmap.bits = (uint8_t *)sys_malloc(sb_buf->block_bitmap_sects * SECTOR_SIZE);
+	if( cur_part->block_bitmap.bits == NULL )
+		PANIC("malloc memory failed\n");
+	cur_part->block_bitmap.btmp_bytes_len = sb_buf->block_bitmap_sects * SECTOR_SIZE;
+	ide_read(hd, sb_buf->block_bitmap_lba, cur_part->block_bitmap.bits, sb_buf->block_bitmap_sects);
+
+	cur_part->inode_bitmap.bits = (uint8_t *)sys_malloc(sb_buf->inode_bitmap_sects * SECTOR_SIZE);
+	if( cur_part->inode_bitmap.bits == NULL )
+		PANIC("malloc memeory failed\n");
+	cur_part->inode_bitmap.btmp_bytes_len = sb_buf->inode_bitmap_sects * SECTOR_SIZE;
+	ide_read(hd, sb_buf->inode_bitmap_lba, cur_part->inode_bitmap.bits, sb_buf->inode_bitmap_sects);
+
+	list_init(&cur_part->open_inodes);
+	printk("mount %s done\n", part->name);
+	return true;
+}
 
 
 

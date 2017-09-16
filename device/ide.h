@@ -77,7 +77,7 @@ struct boot_sector
  */
 void ide_init();
 void ide_read(struct disk *hd, uint32_t lba, void *buf, uint32_t sec_cnt);
-void ide_write(struct disk *hd, uint32_t lbd, void *buf, uint32_t sec_cnt);
+void ide_write(struct disk *hd, uint32_t lba, void *buf, uint32_t sec_cnt);
 
 
 /**

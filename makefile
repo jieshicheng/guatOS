@@ -213,7 +213,7 @@ $(BUILD_DIR)/ide.o : device/ide.c device/ide.h \
 
 $(BUILD_DIR)/fs.o : fileSystem/fs.c fileSystem/fs.h \
 					lib/stdint.h lib/global.h \
-					device/ide.h \
+					device/ide.h lib/list.h \
 					kernel/debug/debug.h kernel/memory.h \
 					kernel/stdio-kernel.h lib/string.h \
 					fileSystem/direct.h fileSystem/inode.h fileSystem/super_block.h
