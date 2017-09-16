@@ -8,13 +8,14 @@
 #include "debug.h"
 #include "super_block.h"
 #include "inode.h"
+#include "fs.h"
 
 
 extern uint8_t channel_cnt;
 extern struct ide_channel channels[2];
 
 
-static void partition_format(struct disk *hd, struct partition *part)
+static void partition_format(struct partition *part)
 {
 	uint32_t boot_sector_sects = 1;
 	uint32_t super_block_sects = 1;
@@ -48,11 +49,11 @@ static void partition_format(struct disk *hd, struct partition *part)
 	sb.dir_entry_size = sizeof(struct dir_entry);
 
 	printk("%s info:\n", part->name);
-	printk("magic: 0x%x\npart_lba_base: 0x%x\n
-			all_sectors: 0x%x\ninode_cnt: 0x%x\n
-			block_bitmap_lba: 0x%xblock_bitmap_sectors: 0x%x\n
-			inode_bitmap_lba: 0x%x\ninode_bitmap_sectors: 0x%x\n
-			inode_table_lba: 0x%x\ninode_table_sectors: 0x%x\n
+	printk("magic: 0x%x\npart_lba_base: 0x%x\n \
+			all_sectors: 0x%x\ninode_cnt: 0x%x\n \
+			block_bitmap_lba: 0x%x\nblock_bitmap_sectors: 0x%x\n \
+			inode_bitmap_lba: 0x%x\ninode_bitmap_sectors: 0x%x\n \
+			inode_table_lba: 0x%x\ninode_table_sectors: 0x%x\n \
 			data_start_lba: 0x%x\n", sb.magic, sb.part_lba_base, 
 			sb.sec_cnt, sb.inode_cnt, sb.block_bitmap_lba, sb.block_bitmap_sects, 
 			sb.inode_bitmap_lba, sb.inode_bitmap_sects, sb.inode_table_lba, 
@@ -60,7 +61,7 @@ static void partition_format(struct disk *hd, struct partition *part)
 
 	struct disk *hd = part->my_disk;
 	ide_write(hd, part->start_lba + 1, &sb, 1);
-	printk("super_block_lba: 0x%x\n", part->start + 1);
+	printk("super_block_lba: 0x%x\n", part->start_lba + 1);
 
 	uint32_t buf_size = (sb.block_bitmap_sects >= sb.inode_bitmap_sects ? 
 							sb.block_bitmap_sects : sb.inode_bitmap_sects);
@@ -95,14 +96,14 @@ static void partition_format(struct disk *hd, struct partition *part)
 
 	memset(buf, 0, buf_size);
 	struct dir_entry *p_de = (struct dir_entry *)buf;
-	memcpy(p_de->filename, ".", 1);
+	memcpy(p_de->name, ".", 1);
 	p_de->i_no = 0;
 	p_de->f_type = FT_DIRECTORY;
 	p_de++;
 
-	memcpy(p_de->filename, "..", 2);
+	memcpy(p_de->name, "..", 2);
 	p_de->i_no = 0;
-	P_de->f_type = FT_DIRECTORY;
+	p_de->f_type = FT_DIRECTORY;
 
 	ide_write(hd, sb.data_start_lba, buf, 1);
 
@@ -117,7 +118,7 @@ void filesys_init()
 	uint8_t channel_no = 0, dev_no, part_idx = 0;
 	
 	struct super_block *sb_buf = (struct super_block *)sys_malloc(sizeof(SECTOR_SIZE));
-	if( sb_block == NULL ) {
+	if( sb_buf == NULL ) {
 		PANIC("alloc to super_block point failed\n");
 	}
 	printk("searching filesystem.......\n");

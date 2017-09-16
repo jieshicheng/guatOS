@@ -15,7 +15,7 @@ struct super_block
 	uint32_t inode_bitmap_sects;
 	uint32_t inode_table_lba;
 	uint32_t inode_table_sects;
-	uint32_t data_start_sects;
+	uint32_t data_start_lba;
 	uint32_t root_inode_no;
 	uint32_t dir_entry_size;
 
