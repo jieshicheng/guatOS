@@ -7,8 +7,8 @@
 
 struct file
 {
-	uint32_t fd_pos;
-	uint32_t fd_flag;
+	uint32_t fd_pos;  //offset in file
+	uint32_t fd_flag;	//read or write ?
 	struct inode *fd_inode;
 };
 

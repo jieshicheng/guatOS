@@ -57,6 +57,9 @@ void inode_sync(struct partition *part, struct inode *inode, void *io_buf)
 }
 
 
+/**
+ *	
+ */
 struct inode *inode_open(struct partition *part, uint32_t inode_no)
 {
 	struct list_elem *elem = part->open_inodes.head.next;

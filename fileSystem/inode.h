@@ -7,8 +7,8 @@
 
 struct inode
 {
-	uint32_t i_no;
-	uint32_t i_size;
+	uint32_t i_no;   
+	uint32_t i_size;	//file or sum of dir_entry size
 	uint32_t i_open_cnts;
 	enum bool write_deny;
 	uint32_t i_sectors[13];
