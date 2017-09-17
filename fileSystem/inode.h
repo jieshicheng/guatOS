@@ -16,6 +16,18 @@ struct inode
 };
 
 
+/**
+ *	interface function
+ */
+void inode_sync(struct partition *part, struct inode *inode, void *io_buf);
+struct inode *inode_open(struct partition *part, uint32_t inode_no);
+void inode_close(struct inode *inode);
+void inode_init(uint32_t inode_no, struct inode *new_inode);
+
+/**
+ *	inside function
+ */
+static void inode_locate(struct partition *part, uint32_t inode_no, struct inode_position *inode_pos)
 
 
 #endif

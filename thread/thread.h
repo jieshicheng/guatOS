@@ -8,6 +8,8 @@
 typedef void thread_func(void *);
 typedef int16_t pid_t;
 
+#define MAX_FILES_OPEN_PER_PROC 8
+
 enum task_status
 {
 	TASK_RUNNING,
@@ -67,6 +69,7 @@ struct task_struct
 	
 	int8_t ticks;
 	uint32_t elapsed_ticks;
+	int32_t fd_table[MAX_FILES_OPEN_PER_PROC];
 	struct list_elem general_tag;
 	struct list_elem all_list_tag;
 	uint32_t *pgdir;
