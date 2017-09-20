@@ -159,6 +159,11 @@ void filesys_init()
 	char defaule_part[8] = "sdb1";
 	list_traversal(&partition_list, mount_partition, (int)defaule_part);
 	sys_free(sb_buf);
+	open_root_dir(cur_part);
+	uint32_t fd_idx = 0;
+	while( fd_idx < MAX_FILE_OPEN ) {
+		file_table[fd_idx++].fd_inode = NULL;
+	}
 }
 
 
@@ -201,13 +206,134 @@ static enum bool mount_partition(struct list_elem *pelem, int arg)
 }
 
 
+static char *path_parse(char *pathname, char *name_host)
+{
+	if( pathname[0] == 0 )
+		return NULL;
+	if( pathname[0] == '/' ) {
+		while( *(++pathname) == '/' );
+	}
+	while( *pathname != '/' && *pathname != 0 ) {
+		*name_host++ = *pathname++;
+	}
+	return pathname;
+}
+
+int32_t path_depth_cnt(char *pathname)
+{
+	ASSERT(pathname != NULL);
+	char *p = pathname;
+	char name[MAX_FILE_NAME_LEN];
+
+	uint32_t depth = 0;
+	p = path_parse(p, name);
+	while( name[0] ) {
+		depth++;
+		memset(name, 0, MAX_FILE_NAME_LEN);
+		if( p ) {
+			p = path_parse(p, name);
+		}
+	}
+	return depth;
+}
 
 
+static int search_file(const char *pathname, struct path_depth_cnt *searched_record)
+{
+	if( !strcmp(pathname, "/") || !strcmp(pathname, "/.") || !strcmp(pathname, "/..") ) {
+		searched_record->parent_dir = &root_dir;
+		searched_record->file_type = FT_DIRECTORY;
+		searched_record->searched_path[0] = 0;
+		return 0;
+	}
+	uint32_t path_len = strlen(pathname);
+	ASSERT(pathname[0] == '/' && path_len > 1 && path_len < MAX_PATH_LEN);
+	char *sub_path = (char *)pathname;
+	struct dir *parent_dir = &root_dir;
+	struct dir_entry dir_e;
 
+	char name[MAX_FILE_NAME_LEN] = {0};
 
+	searched_record->parent_dir = parent_dir;
+	searched_record->file_type = FT_UNKNOWN;
+	uint32_t parent_inode_no = 0;
 
+	sub_path = path_parse(sub_path, name);
+	while( name[0] ) {
+		ASSERT(strlen(searched_record->searched_path) < 512);
+		strcat(searched_record->searched_path, "/");
+		strcat(searched_record->searched_path, name);
+		if( search_dir_entry(cur_part, parent_dir, name, &dir_e) ) {
+			memset(name, 0, MAX_FILE_NAME_LEN);
+			if( sub_path ) {
+				sub_path = path_parse(sub_path, name);
+			}
+			if( dir_e.f_type == FT_DIRECTORY ) {
+				parent_inode_no = parent_dir->inode->i_no;
+				dir_close(parent_dir);
+				parent_dir = dir_open(cur_part, dir_e.i_no);
+				searched_record->parent_dir = parent_dir;
+				continue;
+			}
+			else if( dir_e.f_type == FT_REGULAR ) {
+				searched_record->file_type = FT_REGULAR;
+				return dir_e.i_no;
+			}
+		}
+		else {
+			/**
+			 *
+			 */
+			return -1;
+		}
+	}
+	dir_close(searched_record->parent_dir);
+	searched_record->parent_dir = dir_open(cur_part, parent_inode_no);
+	searched_record->file_type = FT_DIRECTORY;
+	return dir_e.i_no;
+}
 
-
+int32_t sys_open(const char *pathname, uint8_t flags)
+{
+	if( pathname[strlen(pathname) - 1] == '/' ) {
+		printk("can't open a director\n");
+		return -1;
+	}
+	ASSERT(flags <= 7);
+	int32_t fd = -1;
+	struct path_search_record searched_record;
+	memset(&searched_record, 0, sizeof(struct path_search_record));
+	uint32_t pathname_depth = path_depth_cnt((char *)pathname);
+	int inode_no = search_file(pathname, &searched_record);
+	enum bool found = inode_no != -1 ? true : false;
+	if( searched_record.file_type == FT_DIRECTORY ) {
+		printk("can't open a director\n");
+		dir_close(searched_record);
+		return -1;
+	}
+	uint32_t path_search_depth = path_depth_cnt(searched_record.searched_path);
+	if( pathname_depth != path_search_depth ) {
+		printk("cannot access %s: Not a director, subpath %s is't exist\n", pathname, searched_record.parent_dir);
+		return -1;
+	}
+	if( !found && !(flags & O_CREAT) ) {
+		printk("in path %s file %s is't exist\n", searched_record.searched_path, (strrchr(searched_record.searched_path, '/') + 1));
+		dir_close(searched_record.parent_dir);
+		return -1;
+	}
+	else if( found && (flags & O_CREAT)) {
+		prink("%s has already exist!\n", pathname);
+		dir_close(searched_record.parent_dir);
+		return -1;
+	}
+	switch( flags & O_CREAT ) {
+		case O_CREAT:
+			printk("create file\n");
+			fd = file_create(searched_record.parent_dir, (strrchr(pathname, '/') + 1), flags);
+			dir_close(searched_record.parent_dir);
+	}
+	return fd;
+}
 
 
 
