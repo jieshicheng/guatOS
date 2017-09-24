@@ -10,6 +10,7 @@
 #include "inode.h"
 #include "fs.h"
 #include "list.h"
+#include "file.h"
 
 extern uint8_t channel_cnt;
 extern struct ide_channel channels[2];
@@ -118,7 +119,7 @@ static void partition_format(struct partition *part)
 
 void filesys_init()
 {
-	uint8_t channel_no = 0, dev_no, part_idx = 0;
+	uint8_t channel_no = 0, dev_no = 0, part_idx = 0;
 	
 	struct super_block *sb_buf = (struct super_block *)sys_malloc(SECTOR_SIZE);
 	if( sb_buf == NULL ) {
@@ -128,7 +129,7 @@ void filesys_init()
 	while( channel_no < channel_cnt ) {
 		dev_no = 0;
 		while( dev_no < 2 ) {
-			if( dev_no == 0 ) {
+			if( dev_no == 0 && channel_no == 0 ) {
 				dev_no++;
 				continue;
 			}

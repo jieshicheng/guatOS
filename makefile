@@ -8,7 +8,9 @@ ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
 LDFLAGS = -Ttext $(ENTRY_POINT) -e main
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/fs.o $(BUILD_DIR)/ide.o $(BUILD_DIR)/stdio-kernel.o \
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/fs.o $(BUILD_DIR)file.o \
+	   $(BUILD_DIR)/direct.o $(BUILD_DIR)/inode.o \
+	   $(BUILD_DIR)/ide.o $(BUILD_DIR)/stdio-kernel.o \
 	   $(BUILD_DIR)/stdio.o $(BUILD_DIR)/syscall-init.o \
 	   $(BUILD_DIR)/syscall.o $(BUILD_DIR)/process.o $(BUILD_DIR)/tss.o \
 	   $(BUILD_DIR)/ioqueue.o $(BUILD_DIR)/keyboard.o $(BUILD_DIR)/console.o \
@@ -30,7 +32,10 @@ $(BUILD_DIR)/main.o : kernel/main.c \
 					  device/console.h \
 					  thread/sync.h \
 					  userprog/process.h \
-					  userprog/tss.h
+					  userprog/tss.h \
+					  lib/syscall.h \
+					  lib/stdio.h \
+					  fileSystem/fs.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
@@ -216,8 +221,30 @@ $(BUILD_DIR)/fs.o : fileSystem/fs.c fileSystem/fs.h \
 					device/ide.h lib/list.h \
 					kernel/debug/debug.h kernel/memory.h \
 					kernel/stdio-kernel.h lib/string.h \
-					fileSystem/direct.h fileSystem/inode.h fileSystem/super_block.h
+					fileSystem/direct.h fileSystem/inode.h fileSystem/super_block.h \
+					fileSystem/file.h
 	$(CC) $(CFLAGS2) $< -o $@
+
+$(BUILD_DIR)/direct.o : fileSystem/direct.c fileSystem/direct.h \
+						device/ide.h lib/stdint.h lib/global.h \
+						kernel/memory.h fileSystem/fs.h \
+						kernel/debug/debug.h lib/string.h \
+						fileSystem/inode.h fileSystem/file.h
+	$(CC) $(CFLAGS1) $< -o $@
+
+$(BUILD_DIR)/file.o : fileSystem/file.c fileSystem/file.h \
+					  lib/stdint.h thread/thread.h \
+					  device/ide.h lib/bitmap.h \
+					  kernel/memory.h fileSystem/inode.h \
+					  lib/global.h
+	$(CC) $(CFLAGS1) $< -o $@
+
+$(BUILD_DIR)/inode.o : fileSystem/inode.c fileSystem/inode.h \
+					   lib/stdint.h lib/global.h \
+					   lib/list.h device/ide.h lib/string.h \
+					   thread/thread.h kernel/memory.h \
+					   kernel/interrupt.h
+	$(CC) $(CFLAGS1) $< -o $@
 
 
 ##### 		nasm complier   ########

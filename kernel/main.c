@@ -22,6 +22,7 @@
 #include "process.h"
 #include "syscall.h"
 #include "stdio.h"
+#include "fs.h"
 
 void k_thread_a(void *arg);
 void k_thread_b(void *arg);
@@ -34,13 +35,15 @@ int main(void)
     put_str("          This is tiny operator system by CJS\n");
     
     init_all();
+    /*
     intr_enable();
     thread_start("k_thread_a", 31, k_thread_a, "kernel thread a, my pid is: ");
     thread_start("k_thread_b", 31, k_thread_b, "kernel thread b, my pid is: ");
     process_execute(u_prog_a, "u_prog_a");
     process_execute(u_prog_b, "u_prog_b");
     intr_enable();
-
+    */
+    sys_open("/file1", O_CREAT);
     while(1)
         ;
     return 0;
