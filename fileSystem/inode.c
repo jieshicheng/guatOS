@@ -6,6 +6,10 @@
 #include "thread.h"
 #include "memory.h"
 #include "interrupt.h"
+#include "inode.h"
+#include "ide.h"
+#include "super_block.h"
+#include "debug.h"
 
 static void inode_locate(struct partition *part, uint32_t inode_no, struct inode_position *inode_pos)
 {
@@ -65,7 +69,7 @@ struct inode *inode_open(struct partition *part, uint32_t inode_no)
 		}
 		elem = elem->next;
 	}
-	struct inode_postion inode_pos;
+	struct inode_position inode_pos;
 	inode_locate(part, inode_no, &inode_pos);
 	struct task_struct *cur = running_thread();
 	uint32_t *cur_pgdir_bak = cur->pgdir;
@@ -74,7 +78,7 @@ struct inode *inode_open(struct partition *part, uint32_t inode_no)
 	cur->pgdir = cur_pgdir_bak;
 
 	char *inode_buf;
-	if( inode_pos->two_sec ) {
+	if( inode_pos.two_sec ) {
 		inode_buf = (char *)sys_malloc(1024);
 		ide_read(part->my_disk, inode_pos.sec_lba, inode_buf, 2);
 	}
@@ -92,7 +96,7 @@ struct inode *inode_open(struct partition *part, uint32_t inode_no)
 
 void inode_close(struct inode *inode)
 {
-	enum intr_status old_status = intr_disbale();
+	enum intr_status old_status = intr_disable();
 	if( --inode->i_open_cnts == 0 ) {
 		list_remove(&inode->inode_tag);
 		struct task_struct *cur = running_thread();

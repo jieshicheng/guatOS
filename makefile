@@ -8,7 +8,7 @@ ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
 LDFLAGS = -Ttext $(ENTRY_POINT) -e main
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/fs.o $(BUILD_DIR)file.o \
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/fs.o $(BUILD_DIR)/file.o \
 	   $(BUILD_DIR)/direct.o $(BUILD_DIR)/inode.o \
 	   $(BUILD_DIR)/ide.o $(BUILD_DIR)/stdio-kernel.o \
 	   $(BUILD_DIR)/stdio.o $(BUILD_DIR)/syscall-init.o \
@@ -230,21 +230,21 @@ $(BUILD_DIR)/direct.o : fileSystem/direct.c fileSystem/direct.h \
 						kernel/memory.h fileSystem/fs.h \
 						kernel/debug/debug.h lib/string.h \
 						fileSystem/inode.h fileSystem/file.h
-	$(CC) $(CFLAGS1) $< -o $@
+	$(CC) $(CFLAGS2) $< -o $@
 
 $(BUILD_DIR)/file.o : fileSystem/file.c fileSystem/file.h \
 					  lib/stdint.h thread/thread.h \
 					  device/ide.h lib/bitmap.h \
 					  kernel/memory.h fileSystem/inode.h \
 					  lib/global.h
-	$(CC) $(CFLAGS1) $< -o $@
+	$(CC) $(CFLAGS2) $< -o $@
 
 $(BUILD_DIR)/inode.o : fileSystem/inode.c fileSystem/inode.h \
 					   lib/stdint.h lib/global.h \
 					   lib/list.h device/ide.h lib/string.h \
 					   thread/thread.h kernel/memory.h \
 					   kernel/interrupt.h
-	$(CC) $(CFLAGS1) $< -o $@
+	$(CC) $(CFLAGS2) $< -o $@
 
 
 ##### 		nasm complier   ########

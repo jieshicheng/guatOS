@@ -4,6 +4,7 @@
 #include "stdint.h"
 #include "global.h"
 #include "list.h"
+#include "ide.h"
 
 struct inode
 {
@@ -35,7 +36,7 @@ void inode_init(uint32_t inode_no, struct inode *new_inode);
 /**
  *	inside function
  */
-static void inode_locate(struct partition *part, uint32_t inode_no, struct inode_position *inode_pos)
+static void inode_locate(struct partition *part, uint32_t inode_no, struct inode_position *inode_pos);
 
 
 #endif

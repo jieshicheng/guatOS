@@ -4,7 +4,9 @@
 #include "bitmap.h"
 #include "memory.h"
 #include "inode.h"
-
+#include "stdio-kernel.h"
+#include "super_block.h"
+#include "string.h"
 
 extern struct partition *cur_part;
 
@@ -84,7 +86,7 @@ void bitmap_sync(struct partition *part, uint32_t bit_idx, uint8_t btmp)
 			bitmap_off = part->block_bitmap.bits + off_size;
 			break;
 	}
-	ide_wrtie(part->my_disk, sec_lba, bitmap_off, 1);
+	ide_write(part->my_disk, sec_lba, bitmap_off, 1);
 }
 
 
@@ -107,7 +109,7 @@ int32_t file_create(struct dir *parent_dir, char *filename, uint8_t flag)
 		rollback_step = 1;
 		goto rollback;
 	}
-	inode_init(new_file_inode);
+	inode_init(inode_no, new_file_inode);
 	int fd_idx = get_free_slot_in_global();
 	if( fd_idx == -1 ) {
 		printk("exceed max open files\n");

@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "list.h"
+#include "ide.h"
 
 // 每个分区最多有的文件个数。也就是inode个数
 #define MAX_FILES_PER_PART	4096

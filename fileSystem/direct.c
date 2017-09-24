@@ -8,7 +8,8 @@
 #include "string.h"
 #include "inode.h"
 #include "file.h"
-
+#include "super_block.h"
+#include "stdio-kernel.h"
 
 extern struct partition *cur_part;
 
@@ -39,7 +40,7 @@ struct dir *dir_open(struct partition *part, uint32_t inode_no)
 /**
  *	在目录中寻找指定名字的目录项，成功则true
  */
-enum bool search_dir_entry(struct partition *part, struct dir *pdir, const char *name, struct dir *dir_e)
+enum bool search_dir_entry(struct partition *part, struct dir *pdir, const char *name, struct dir_entry *dir_e)
 {
 	uint32_t block_cnt = 140;
 	uint32_t *all_blocks = (uint32_t *)sys_malloc(48 + 512);
@@ -52,6 +53,7 @@ enum bool search_dir_entry(struct partition *part, struct dir *pdir, const char 
 		all_blocks[block_idx] = pdir->inode->i_sectors[block_idx];
 		block_idx++;
 	}
+	block_idx = 0;
 	if( pdir->inode->i_sectors[12] != 0 ) {
 		ide_read(part->my_disk, pdir->inode->i_sectors[12], all_blocks + 12, 1);
 	}
@@ -177,7 +179,7 @@ enum bool sync_dir_entry(struct dir *parent_dir, struct dir_entry *p_de, void *i
 		}
 
 		ide_read(cur_part->my_disk, all_blocks[block_idx], io_buf, 1);
-		uint8_t dir_entry_dix = 0;
+		uint8_t dir_entry_idx = 0;
 		while( dir_entry_idx < dir_entrys_per_sec ) {
 			if( (dir_e + dir_entry_idx)->f_type == FT_UNKNOWN ) {
 				memcpy(dir_e + dir_entry_idx, p_de, dir_entry_size);

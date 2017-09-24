@@ -2,6 +2,8 @@
 #define __KERNEL_FILE_H
 
 #include "stdint.h"
+#include "ide.h"
+#include "direct.h"
 
 #define MAX_FILE_OPEN 32
 

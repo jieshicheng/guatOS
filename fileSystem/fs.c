@@ -15,6 +15,8 @@
 extern uint8_t channel_cnt;
 extern struct ide_channel channels[2];
 extern struct list partition_list;
+extern struct file file_table[MAX_FILE_OPEN];
+extern struct dir root_dir;
 
 struct partition *cur_part;
 
@@ -309,7 +311,7 @@ int32_t sys_open(const char *pathname, uint8_t flags)
 	enum bool found = inode_no != -1 ? true : false;
 	if( searched_record.file_type == FT_DIRECTORY ) {
 		printk("can't open a director\n");
-		dir_close(searched_record);
+		dir_close(searched_record.parent_dir);
 		return -1;
 	}
 	uint32_t path_search_depth = path_depth_cnt(searched_record.searched_path);
@@ -323,7 +325,7 @@ int32_t sys_open(const char *pathname, uint8_t flags)
 		return -1;
 	}
 	else if( found && (flags & O_CREAT)) {
-		prink("%s has already exist!\n", pathname);
+		printk("%s has already exist!\n", pathname);
 		dir_close(searched_record.parent_dir);
 		return -1;
 	}
