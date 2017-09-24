@@ -49,7 +49,7 @@ int32_t sys_open(const char *pathname, uint8_t flags);
  */
 static void partition_format(struct partition *part);
 static enum bool mount_partition(struct list_elem *pelem, int arg);
-static int search_file(const char *pathname, struct path_depth_cnt *searched_record);
+static int search_file(const char *pathname, struct path_search_record *searched_record);
 int32_t path_depth_cnt(char *pathname);
 static char *path_parse(char *pathname, char *name_host);
 

@@ -7,15 +7,6 @@
 #include "memory.h"
 #include "interrupt.h"
 
-struct inode_position
-{
-	enum bool two_sec;
-	// 起始扇区
-	uint32_t sec_lba;
-	// 偏移量
-	uint32_t off_size;
-};
-
 static void inode_locate(struct partition *part, uint32_t inode_no, struct inode_position *inode_pos)
 {
 	ASSERT(inode_no < 4096);

@@ -239,7 +239,7 @@ int32_t path_depth_cnt(char *pathname)
 }
 
 
-static int search_file(const char *pathname, struct path_depth_cnt *searched_record)
+static int search_file(const char *pathname, struct path_search_record *searched_record)
 {
 	if( !strcmp(pathname, "/") || !strcmp(pathname, "/.") || !strcmp(pathname, "/..") ) {
 		searched_record->parent_dir = &root_dir;

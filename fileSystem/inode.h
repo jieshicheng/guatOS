@@ -15,6 +15,14 @@ struct inode
 	struct list_elem inode_tag;
 };
 
+struct inode_position
+{
+	enum bool two_sec;
+	// 起始扇区
+	uint32_t sec_lba;
+	// 偏移量
+	uint32_t off_size;
+};
 
 /**
  *	interface function
