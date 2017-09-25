@@ -43,10 +43,12 @@ int main(void)
     process_execute(u_prog_b, "u_prog_b");
     intr_enable();
     */
-    uint32_t fd = sys_open("/file1", O_RDWR);
-    char buf[512] = {0};
-    sys_read(fd, (void *)buf, 512);
+    uint32_t fd = sys_open("/file2", O_RDWR);
+    //sys_write(fd, "hello,world\n", 12);
+    char buf[32] = {0};
+    sys_read(fd, (void *)buf, 32);
     sys_close(fd);
+    console_put_str(buf);
     while(1)
         ;
     return 0;
