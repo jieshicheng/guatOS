@@ -7,6 +7,9 @@
 #include "stdio-kernel.h"
 #include "super_block.h"
 #include "string.h"
+#include "global.h"
+#include "interrupt.h"
+#include "debug.h"
 
 extern struct partition *cur_part;
 
@@ -154,11 +157,135 @@ rollback:
 	return -1;
 }
 
+int32_t file_open(uint32_t inode_no, uint8_t flag)
+{
+	int fd_idx = get_free_slot_in_global();
+	if( fd_idx == -1 ) {
+		printk("exceed max open files\n");
+		return -1;
+	}
+	file_table[fd_idx].fd_inode = inode_open(cur_part, inode_no);
+	file_table[fd_idx].fd_pos = 0;
+	file_table[fd_idx].fd_flag = flag;
+	enum bool *write_deny = &file_table[fd_idx].fd_inode->write_deny;
+	if( flag & O_WRONLY || flag & O_RDWR ) {
+		enum intr_status old_status = intr_disable(); 
+		if( !(write_deny) ) {
+			*write_deny = true;
+			intr_set_status(old_status);
+		}
+		else {
+			intr_set_status(old_status);
+			printk("file can't be write now, try again later\n");
+			return -1;
+		}
+	}
+	return pcb_fd_install(fd_idx);
+}
+
+int32_t file_close(struct file *file)
+{
+	if( file == NULL ) 
+		return -1;
+	file->fd_inode->write_deny = false;
+	inode_close(file->fd_inode);
+	file->fd_inode = NULL;
+	return 0;
+}
+
+int32_t file_write(struct file *file, const void *buf, uint32_t count)
+{
+	if( file->fd_inode->i_size + count > (BLOCK_SIZE * 140) ) {
+		printk("exceed max file_size 71680 bytes, write failed\n");
+		return -1;
+	}
+	uint8_t *io_buf = (uint8_t *)sys_malloc(512);
+	if( io_buf == NULL ) {
+		printk("file_write error: sys_malloc failed for io_buf\n");
+		return -1;
+	}
+	uint32_t *all_blocks = (uint32_t)sys_malloc(BLOCK_SIZE + 48);
+	if( all_blocks == NULL ) {
+		printk("file_write error: sys_malloc failed for all_blocks\n");
+		return -1;
+	}
+
+	const uint8_t *src = src;
+	// 已写字节以及剩下的字节
+	uint32_t bytes_written = 0;
+	uint32_t size_left = count;
+
+	// 块所在的扇区号
+	int32_t block_lba = -1;
+	uint32_t block_bitmap_idx = 0;
+
+	uint32_t sec_idx;
+	uint32_t sec_lba;
+	uint32_t sec_off_bytes;
+	uint32_t sec_left_bytes;
+	uint32_t chunk_size;
+	int32_t indirect_block_table;
+
+	// 块的索引。是相对于data_start_lba的
+	uint32_t block_idx;
 
 
+	if( file->fd_inode->i_sectors[0] = 0 ) {
+		block_lba = block_bitmap_alloc(cur_part);
+		if( block_lba == -1 ) {
+			printk("file_write error: block_bitmap_alloc failed\n");
+			return -1;
+		}
 
+		file->fd_inode->i_sectors[0] = block_lba;
+		block_bitmap_idx = block_lba - cur_part->sb->data_start_lba;
+		ASSERT(block_bitmap_idx != 0);
+		bitmap_sync(cur_part, block_bitmap_idx, BLOCK_BITMAP);
+	}
 
+	uint32_t file_has_used_blocks = file->fd_inode->i_size / BLOCK_SIZE + 1;
+	uint32_t file_will_use_blocks = (file->fd_inode->i_size + count) / BLOCK_SIZE + 1;
+	ASSERT(file_will_use_blocks <= 140);
+	uint32_t add_blocks = file_will_use_blocks - file_has_used_blocks;
 
+	if( add_blocks == 0 ) {
+		
+	}
+	else {
+
+	}
+
+	enum bool first_write_block = true;
+	file->fd_pos = file->fd_inode->i_size - 1;
+	while( bytes_written < count ) {
+		memset(io_buf, 0, BLOCK_SIZE);
+		sec_idx = file->fd_inode->i_size / BLOCK_SIZE;
+		sec_lba = all_blocks[sec_idx];
+		sec_off_bytes = file->fd_inode->i_size % BLOCK_SIZE;
+		sec_left_bytes = BLOCK_SIZE - sec_off_bytes;
+
+		chunk_size = size_left < sec_left_bytes ? size_left : sec_left_bytes;
+		if( first_write_block ) {
+			ide_read(cur_part->my_disk, sec_lba, io_buf, 1);
+			first_write_block = false;
+		}
+		memcpy(io_buf + sec_off_bytes, src, chunk_size);
+		ide_write(cur_part->my_disk, sec_lba, io_buf, 1);
+		// debug用。
+		printk("file write at lba 0x%x\n", sec_lba);
+		// .....
+
+		src += chunk_size;
+		file->fd_inode->i_size += chunk_size;
+		file->fd_pos += chunk_size;
+		bytes_written += chunk_size;
+		size_left -= chunk_size;
+	}
+	inode_sync(cur_part, file->fd_inode, io_buf);
+	sys_free(io_buf);
+	sys_free(all_blocks);
+	return bytes_written;
+}
 
 
 

@@ -222,28 +222,32 @@ $(BUILD_DIR)/fs.o : fileSystem/fs.c fileSystem/fs.h \
 					kernel/debug/debug.h kernel/memory.h \
 					kernel/stdio-kernel.h lib/string.h \
 					fileSystem/direct.h fileSystem/inode.h fileSystem/super_block.h \
-					fileSystem/file.h
+					fileSystem/file.h thread/thread.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 $(BUILD_DIR)/direct.o : fileSystem/direct.c fileSystem/direct.h \
 						device/ide.h lib/stdint.h lib/global.h \
 						kernel/memory.h fileSystem/fs.h \
 						kernel/debug/debug.h lib/string.h \
-						fileSystem/inode.h fileSystem/file.h
+						fileSystem/inode.h fileSystem/file.h \
+						fileSystem/super_block.h kernel/stdio-kernel.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 $(BUILD_DIR)/file.o : fileSystem/file.c fileSystem/file.h \
 					  lib/stdint.h thread/thread.h \
 					  device/ide.h lib/bitmap.h \
 					  kernel/memory.h fileSystem/inode.h \
-					  lib/global.h
+					  lib/global.h kernel/stdio-kernel.h \
+					  fileSystem/super_block.h lib/string.h \
+					  fileSystem/direct.h kernel/interrupt.h kernel/debug/debug.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 $(BUILD_DIR)/inode.o : fileSystem/inode.c fileSystem/inode.h \
 					   lib/stdint.h lib/global.h \
 					   lib/list.h device/ide.h lib/string.h \
 					   thread/thread.h kernel/memory.h \
-					   kernel/interrupt.h
+					   kernel/interrupt.h device/ide.h \
+					   fileSystem/super_block.h kernel/debug/debug.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 

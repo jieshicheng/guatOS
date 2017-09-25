@@ -43,6 +43,7 @@ struct path_search_record
  */
 void filesys_init();
 int32_t sys_open(const char *pathname, uint8_t flags);
+int32_t sys_close(int32_t fd);
 
 
 /**
@@ -53,5 +54,6 @@ static enum bool mount_partition(struct list_elem *pelem, int arg);
 static int search_file(const char *pathname, struct path_search_record *searched_record);
 int32_t path_depth_cnt(char *pathname);
 static char *path_parse(char *pathname, char *name_host);
+static uint32_t fd_local2global(uint32_t local_fd);
 
 #endif
