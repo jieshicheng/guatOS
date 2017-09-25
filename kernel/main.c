@@ -43,7 +43,10 @@ int main(void)
     process_execute(u_prog_b, "u_prog_b");
     intr_enable();
     */
-    sys_open("/file1", O_CREAT);
+    uint32_t fd = sys_open("/file1", O_RDWR);
+    char *str = "sssssssssss\n";
+    sys_write(fd, (void *)str, 12);
+    sys_close(fd);
     while(1)
         ;
     return 0;

@@ -170,7 +170,7 @@ int32_t file_open(uint32_t inode_no, uint8_t flag)
 	enum bool *write_deny = &file_table[fd_idx].fd_inode->write_deny;
 	if( flag & O_WRONLY || flag & O_RDWR ) {
 		enum intr_status old_status = intr_disable(); 
-		if( !(write_deny) ) {
+		if( !(*write_deny) ) {
 			*write_deny = true;
 			intr_set_status(old_status);
 		}
@@ -204,13 +204,13 @@ int32_t file_write(struct file *file, const void *buf, uint32_t count)
 		printk("file_write error: sys_malloc failed for io_buf\n");
 		return -1;
 	}
-	uint32_t *all_blocks = (uint32_t)sys_malloc(BLOCK_SIZE + 48);
+	uint32_t *all_blocks = (uint32_t *)sys_malloc(BLOCK_SIZE + 48);
 	if( all_blocks == NULL ) {
 		printk("file_write error: sys_malloc failed for all_blocks\n");
 		return -1;
 	}
 
-	const uint8_t *src = src;
+	const uint8_t *src = buf;
 	// 已写字节以及剩下的字节
 	uint32_t bytes_written = 0;
 	uint32_t size_left = count;
@@ -230,13 +230,12 @@ int32_t file_write(struct file *file, const void *buf, uint32_t count)
 	uint32_t block_idx;
 
 
-	if( file->fd_inode->i_sectors[0] = 0 ) {
+	if( file->fd_inode->i_sectors[0] == 0 ) {
 		block_lba = block_bitmap_alloc(cur_part);
 		if( block_lba == -1 ) {
 			printk("file_write error: block_bitmap_alloc failed\n");
 			return -1;
 		}
-
 		file->fd_inode->i_sectors[0] = block_lba;
 		block_bitmap_idx = block_lba - cur_part->sb->data_start_lba;
 		ASSERT(block_bitmap_idx != 0);

@@ -10,7 +10,7 @@
 
 #define BITS_PER_SECTOR	4096
 #define SECTOR_SIZE		512
-#define BLOCK_SIZE		SECTOR_SIZE;
+#define BLOCK_SIZE		SECTOR_SIZE
 // 路径名字缓冲区的最长长度
 #define MAX_PATH_LEN 512
 
