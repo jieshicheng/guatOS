@@ -249,10 +249,82 @@ int32_t file_write(struct file *file, const void *buf, uint32_t count)
 	uint32_t add_blocks = file_will_use_blocks - file_has_used_blocks;
 
 	if( add_blocks == 0 ) {
-		
+		if( file_will_use_blocks <= 12 ) {
+			block_idx = file_has_used_blocks - 1;
+			all_blocks[block_idx] = file->fd_inode->i_sectors[block_idx];
+		}
+		else {
+			ASSERT(file->fd_inode->i_sectors[12] != 0);
+			indirect_block_table = file->fd_inode->i_sectors[12];
+			ide_read(cur_part->my_disk, indirect_block_table, all_blocks + 12, 1);
+		}
 	}
 	else {
-
+		if( file_will_use_blocks <= 12 ) {
+			block_idx = file_has_used_blocks - 1;
+			ASSERT(file->fd_inode->i_sectors[block_idx] != 0);
+			all_blocks[block_idx] = file->fd_inode->i_sectors[block_idx];
+			block_idx = file_has_used_blocks;
+			while( block_idx < file_will_use_blocks ) {
+				block_lba = block_bitmap_alloc(cur_part);
+				if( block_lba == -1 ) {
+					printk("file_write error: block bitmap alloc failed\n");
+					return -1;
+				}
+				ASSERT(file->fd_inode->i_sectors[block_idx] == 0);
+				file->fd_inode->i_sectors[block_idx] = all_blocks[block_idx] = block_lba;
+				block_bitmap_idx = block_lba - cur_part->sb->data_start_lba;
+				bitmap_sync(cur_part, block_bitmap_idx, BLOCK_BITMAP);
+				block_idx++;
+			}
+		}
+		else if( file_has_used_blocks <= 12 && file_will_use_blocks > 12 ) {
+			block_idx = file_will_use_blocks - 1;
+			all_blocks[block_idx] = file->fd_inode->i_sectors[block_idx];
+			block_lba = block_bitmap_alloc(cur_part);
+			if( block_lba == -1 ) {
+				printk("file_write error: block bitmap alloc failed\n");
+				return -1;
+			}
+			ASSERT(file->fd_inode->i_sectors[12] == 0);
+			indirect_block_table = file->fd_inode->i_sectors[12] = block_lba;
+			block_idx = file_has_used_blocks;
+			while( block_idx < file_will_use_blocks ) {
+				block_lba = block_bitmap_alloc(cur_part);
+				if( block_lba == -1 ) {
+					printk("file_write error: block bitmap alloc failed\n");
+					return -1;
+				}
+				if( block_idx < 12 ) {
+					ASSERT(file->fd_inode->i_sectors[block_idx] == 0);
+					file->fd_inode->i_sectors[block_idx] = all_blocks[block_idx] = block_lba;
+				}
+				else {
+					all_blocks[block_idx] = block_lba;
+				}
+				block_bitmap_idx = block_lba - cur_part->sb->data_start_lba;
+				bitmap_sync(cur_part, block_bitmap_idx, BLOCK_BITMAP);
+				block_idx++;
+			}
+			ide_write(cur_part->my_disk, indirect_block_table, all_blocks + 12, 1);
+		}
+		else if( file_will_use_blocks > 12 ) {
+			ASSERT(file->fd_inode->i_sectors[12] != 0);
+			indirect_block_table = file->fd_inode->i_sectors[12];
+			ide_read(cur_part->my_disk, indirect_block_table, all_blocks + 12, 1);
+			block_idx = file_has_used_blocks;
+			while( block_idx < file_will_use_blocks ) {
+				block_lba = block_bitmap_alloc(cur_part);
+				if( block_lba == -1 ) {
+					printk("file_write error: block bitmap alloc failed\n");
+					return -1;
+				}
+				all_blocks[block_idx] = block_lba;
+				block_bitmap_idx = block_lba - cur_part->sb->data_start_lba;
+				bitmap_sync(cur_part, block_bitmap_idx, BLOCK_BITMAP);
+			}
+			ide_write(cur_part->my_disk, indirect_block_table, all_blocks + 12, 1);
+		}
 	}
 
 	enum bool first_write_block = true;

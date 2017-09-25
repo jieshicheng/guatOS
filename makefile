@@ -190,7 +190,8 @@ $(BUILD_DIR)/syscall-init.o : userprog/syscall-init.c userprog/syscall-init.h \
 							  lib/print.h \
 							  device/console.h \
 							  lib/string.h \
-							  kernel/memory.h
+							  kernel/memory.h \
+							  fileSystem/fs.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/stdio.o : lib/stdio.c lib/stdio.h \
