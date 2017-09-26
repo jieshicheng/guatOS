@@ -358,7 +358,95 @@ int32_t file_write(struct file *file, const void *buf, uint32_t count)
 	return bytes_written;
 }
 
+int32_t file_read(struct file *file, void *buf, uint32_t count)
+{
+	uint8_t *buf_dst = (uint8_t *)buf;
+	uint32_t size = count;
+	uint32_t size_left = size;
 
+	if( (file->fd_pos + count) > file->fd_inode->i_size ) {
+		size = file->fd_inode->i_size - file->fd_pos;
+		size_left = size;
+		if( size == 0 ) {
+			return -1;
+		}
+	}
+
+	uint8_t *io_buf = (uint8_t *)sys_malloc(BLOCK_SIZE);
+	if( io_buf == NULL ) {
+		printk("file_read error: sys_malloc failed\n");
+		return -1;
+	}
+	uint32_t *all_blocks = (uint32_t *)sys_malloc(BLOCK_SIZE + 48);
+	if( all_blocks == NULL ) {
+		printk("file_read error: sys_malloc failed\n");
+		return -1;
+	}
+	uint32_t block_read_start_idx = file->fd_pos / BLOCK_SIZE;
+	uint32_t block_read_end_idx = (file->fd_pos + size) / BLOCK_SIZE;
+	uint32_t read_blocks = block_read_end_idx - block_read_start_idx;
+	ASSERT(block_read_start_idx < 139 && block_read_end_idx < 139);
+
+	int32_t indirect_block_table;
+	uint32_t block_idx;
+
+	if( read_blocks == 0 ) {
+		ASSERT(block_read_start_idx == block_read_end_idx);
+		if( block_read_end_idx < 12 ) {
+			block_idx = block_read_end_idx;
+			all_blocks[block_idx] = file->fd_inode->i_sectors[block_idx];
+		}
+		else {
+			indirect_block_table = file->fd_inode->i_sectors[12];
+			ide_read(cur_part->my_disk, indirect_block_table, all_blocks + 12, 1);
+		}
+	}
+	else {
+		if( block_read_end_idx < 12 ) {
+			block_idx = block_read_start_idx;
+			while( block_idx <= block_read_end_idx ) {
+				all_blocks[block_idx] = file->fd_inode->i_sectors[block_idx];
+				block_idx++;
+			}
+		}
+		else if( block_read_start_idx < 12 && block_read_end_idx >= 12 ) {
+			block_idx = block_read_start_idx;
+			while( block_idx < 12 ) {
+				all_blocks[block_idx] = file->fd_inode->i_sectors[block_idx];
+				block_idx++;
+			}
+			ASSERT(file->fd_inode->i_sectors[12] != 0);
+			indirect_block_table = file->fd_inode->i_sectors[12];
+			ide_read(cur_part->my_disk, indirect_block_table, all_blocks + 12, 1);
+		}
+		else {
+			ASSERT(file->fd_inode->i_sectors[12] != 0);
+			indirect_block_table = file->fd_inode->i_sectors[12];
+			ide_read(cur_part->my_disk, indirect_block_table, all_blocks + 12, 1);
+		}
+	}
+
+	uint32_t sec_idx, sec_lba, sec_off_bytes, sec_left_bytes, chunk_size;
+	uint32_t bytes_read = 0;
+	while( bytes_read < size ) {
+		sec_idx = file->fd_pos / BLOCK_SIZE;
+		sec_lba = all_blocks[sec_idx];
+		sec_off_bytes = file->fd_pos % BLOCK_SIZE;
+		sec_left_bytes = BLOCK_SIZE - sec_off_bytes;
+		chunk_size = size_left < sec_left_bytes ? size_left : sec_left_bytes;
+		memset(io_buf, 0, BLOCK_SIZE);
+		ide_read(cur_part->my_disk, sec_lba, io_buf, 1);
+		memcpy(buf_dst, io_buf + sec_off_bytes, chunk_size);
+
+		buf_dst += chunk_size;
+		file->fd_pos += chunk_size;
+		bytes_read += chunk_size;
+		size_left -= chunk_size;
+	}
+	sys_free(io_buf);
+	sys_free(all_blocks);
+	return bytes_read;
+}
 
 
 

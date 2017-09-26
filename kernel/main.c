@@ -44,8 +44,8 @@ int main(void)
     intr_enable();
     */
     uint32_t fd = sys_open("/file1", O_RDWR);
-    char *str = "sssssssssss\n";
-    sys_write(fd, (void *)str, 12);
+    char buf[512] = {0};
+    sys_read(fd, (void *)buf, 512);
     sys_close(fd);
     while(1)
         ;
