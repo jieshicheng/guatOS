@@ -397,11 +397,11 @@ int32_t sys_read(int32_t fd, void *buf, uint32_t count)
 	uint32_t _fd = fd_local2global(fd);
 	return file_read(&file_table[_fd], buf, count);
 }
-
+/*
 
 int32_t sys_lseek(int32_t fd, int32_t offset, uint8_t whence)
 {
-	if( fc < 0 ) {
+	if( fd < 0 ) {
 		printk("sys_lseek error: fd error\n");
 		return -1;
 	}
@@ -433,14 +433,14 @@ int32_t sys_unlink(const char *pathname)
 	ASSERT(strlen(pathname) < MAX_PATH_LEN);
 	struct path_search_record searched_record;
 	memset(&searched_record, 0, sizeof(struct path_search_record));
-	int32_t inode_no = search_file(pathname, &path_search_record);
+	int32_t inode_no = search_file(pathname, &searched_record);
 	ASSERT(inode_no != 0);
 	if( inode_no == -1 ) {
 		printk("sys_unlink error: file not found\n");
 		dir_close(searched_record.parent_dir);
 		return -1;
 	}
-	if( searched_record.file_ty == FT_DIRECTORY ) {
+	if( searched_record.file_type == FT_DIRECTORY ) {
 		printk("sys_unlink error: can't delete a director\n");
 		dir_close(searched_record.parent_dir);
 		return -1;
@@ -476,7 +476,7 @@ int32_t sys_unlink(const char *pathname)
 	return 0;
 }
 
-
+*/
 
 
 

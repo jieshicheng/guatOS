@@ -195,7 +195,7 @@ enum bool sync_dir_entry(struct dir *parent_dir, struct dir_entry *p_de, void *i
 	return false;
 }
 
-
+/*
 enum bool delete_dir_entry(struct partition *part, struct dir *pdir, uint32_t inode_no, void *io_buf)
 {
 	struct inode *dir_inode = pdir->inode;
@@ -260,7 +260,7 @@ enum bool delete_dir_entry(struct partition *part, struct dir *pdir, uint32_t in
 			}
 			else {
 				uint32_t indirect_blocks = 0;
-				uint32_t indirect_block_idx = 12
+				uint32_t indirect_block_idx = 12;
 				while( indirect_block_idx < 140 ) {
 					if( all_blocks[indirect_block_idx] != 0 ) {
 						indirect_blocks++;
@@ -315,4 +315,4 @@ enum bool delete_dir_entry(struct partition *part, struct dir *pdir, uint32_t in
 
 
 
-
+*/

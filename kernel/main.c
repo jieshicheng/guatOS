@@ -49,11 +49,11 @@ int main(void)
     sys_read(fd, (void *)buf, 32);
     sys_close(fd);
     console_put_str(buf);
-    */
 
     sys_unlink("/file1");
     sys_unlink("/file1");
     sys_unlink("/file2");
+    */
     while(1)
         ;
     return 0;
