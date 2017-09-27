@@ -126,7 +126,6 @@ void inode_init(uint32_t inode_no, struct inode *new_inode)
 	} 
 }
 
-/*
 
 void inode_delete(struct partition *part, uint32_t inode_no, void *io_buf)
 {
@@ -155,7 +154,9 @@ void inode_release(struct partition *part, uint32_t inode_no)
 
 	uint8_t block_idx = 0, block_cnt = 12;
 	uint32_t block_bitmap_idx;
-	uint32_t all_blocks[140] = {0};
+/////////////////////////////////////////////////////////
+	uint32_t *all_blocks = (uint32_t *)sys_malloc(4 * 140);
+	memset(all_blocks, 0, 4 * 140);
 
 	while( block_idx < 12 ) {
 		all_blocks[block_idx] = inode_to_del->i_sectors[block_idx];
@@ -186,29 +187,6 @@ void inode_release(struct partition *part, uint32_t inode_no)
 	void *io_buf = sys_malloc(1024);
 	inode_delete(part, inode_no, io_buf);
 	sys_free(io_buf);
-
+	sys_free(all_blocks);
 	inode_close(inode_to_del);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/

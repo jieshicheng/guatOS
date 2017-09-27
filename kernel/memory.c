@@ -331,7 +331,7 @@ static void mem_pool_init(uint32_t all_mem)
 void mem_init()
 {
 	put_str("mem_init start\n");
-	uint32_t mem_bytes_total = 0x1000000;
+	uint32_t mem_bytes_total = 0x2000000;
 	mem_pool_init(mem_bytes_total);
 	block_desc_init(k_block_descs);
 	put_str("mem_init done\n");

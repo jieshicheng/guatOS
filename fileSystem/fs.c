@@ -397,7 +397,6 @@ int32_t sys_read(int32_t fd, void *buf, uint32_t count)
 	uint32_t _fd = fd_local2global(fd);
 	return file_read(&file_table[_fd], buf, count);
 }
-/*
 
 int32_t sys_lseek(int32_t fd, int32_t offset, uint8_t whence)
 {
@@ -476,7 +475,6 @@ int32_t sys_unlink(const char *pathname)
 	return 0;
 }
 
-*/
 
 
 
