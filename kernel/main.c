@@ -24,10 +24,12 @@
 #include "stdio.h"
 #include "fs.h"
 
+/*
 void k_thread_a(void *arg);
 void k_thread_b(void *arg);
 void u_prog_a(void);
 void u_prog_b(void);
+*/
 
 int main(void)
 {
@@ -58,7 +60,7 @@ int main(void)
         ;
     return 0;
 }
-
+/*
 void k_thread_a(void *arg)
 {
     char *msg = arg;
@@ -153,3 +155,4 @@ void u_prog_b(void)
         printf("%s%d\n", str_ub, pid_ub);
     }
 }
+*/

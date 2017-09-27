@@ -199,8 +199,7 @@ enum bool delete_dir_entry(struct partition *part, struct dir *pdir, uint32_t in
 {
 	struct inode *dir_inode = pdir->inode;
 	uint32_t block_idx = 0;
-	uint32_t *all_blocks = (uint32_t *)sys_malloc(4 * 140);
-	memset(all_blocks, 0, 4 * 140);
+	uint32_t all_block[140] = {0};
 
 	while( block_idx < 12 ) {
 		all_blocks[block_idx] = dir_inode->i_sectors[block_idx];
@@ -288,10 +287,8 @@ enum bool delete_dir_entry(struct partition *part, struct dir *pdir, uint32_t in
 		dir_inode->i_size -= dir_entry_size;
 		memset(io_buf, 0, SECTOR_SIZE * 2);
 		inode_sync(part, dir_inode, io_buf);
-		sys_free(all_blocks);
 		return true;
 	}
-	sys_free(all_blocks);
 	return false;
 
 }
