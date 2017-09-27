@@ -42,13 +42,18 @@ int main(void)
     process_execute(u_prog_a, "u_prog_a");
     process_execute(u_prog_b, "u_prog_b");
     intr_enable();
-    */
+    
     uint32_t fd = sys_open("/file2", O_RDWR);
     //sys_write(fd, "hello,world\n", 12);
     char buf[32] = {0};
     sys_read(fd, (void *)buf, 32);
     sys_close(fd);
     console_put_str(buf);
+    */
+
+    sys_unlink("/file1");
+    sys_unlink("/file1");
+    sys_unlink("/file2");
     while(1)
         ;
     return 0;

@@ -248,7 +248,8 @@ $(BUILD_DIR)/inode.o : fileSystem/inode.c fileSystem/inode.h \
 					   lib/list.h device/ide.h lib/string.h \
 					   thread/thread.h kernel/memory.h \
 					   kernel/interrupt.h device/ide.h \
-					   fileSystem/super_block.h kernel/debug/debug.h
+					   fileSystem/super_block.h kernel/debug/debug.h \
+					   lib/bitmap.h fileSystem/file.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 
