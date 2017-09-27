@@ -24,12 +24,10 @@
 #include "stdio.h"
 #include "fs.h"
 
-/*
 void k_thread_a(void *arg);
 void k_thread_b(void *arg);
 void u_prog_a(void);
 void u_prog_b(void);
-*/
 
 int main(void)
 {
@@ -60,7 +58,6 @@ int main(void)
         ;
     return 0;
 }
-/*
 void k_thread_a(void *arg)
 {
     char *msg = arg;
@@ -155,4 +152,97 @@ void u_prog_b(void)
         printf("%s%d\n", str_ub, pid_ub);
     }
 }
-*/
+
+void k_thread_c(void *msg) 
+{
+    void *addr1;
+    void *addr2;
+    void *addr3;
+    void *addr4;
+    void *addr5;
+    void *addr6;
+
+    uint32_t size = 16;
+    addr1 = sys_malloc(size);
+    size *= 2;
+    addr2 = sys_malloc(size);
+    size *= 2;
+    addr3 = sys_malloc(size);
+    size *= 2;
+    addr4 = sys_malloc(size);
+    size *= 2;
+    addr5 = sys_malloc(size);
+    size *= 2;
+    addr6 = sys_malloc(size);
+    sys_free(addr1);
+    sys_free(addr2);
+    sys_free(addr3);
+    sys_free(addr4);
+    sys_free(addr5);
+    sys_free(addr6);
+
+    while(1) {
+        console_put_str(msg);
+        console_put_char('\n');
+    }
+}
+
+void k_thread_d(void *arg)
+{
+    char *msg = arg;
+    void *addr1;
+    void *addr2;
+    void *addr3;
+    void *addr4;
+    void *addr5;
+    void *addr6;
+
+    uint32_t size = 16;
+    addr1 = sys_malloc(size);
+    size *= 2;
+    addr2 = sys_malloc(size);
+    size *= 2;
+    addr3 = sys_malloc(size);
+    size *= 2;
+    addr4 = sys_malloc(size);
+    size *= 2;
+    addr5 = sys_malloc(size);
+    size *= 2;
+    addr6 = sys_malloc(size);
+
+    sys_free(addr1);
+    sys_free(addr2);
+    sys_free(addr3);
+    sys_free(addr4);
+    sys_free(addr5);
+    sys_free(addr6);
+
+
+    while(1) {
+        console_put_str(msg);
+        console_put_char('\n');
+    }
+}
+
+void u_prog_c(void)
+{
+    char *str_ua = "u_prog_a thread, my pid is: ";
+    pid_t pid_ua = getpid();
+    void *addr = malloc(1024);
+    free(addr);
+    while(1) {
+        printf("%s%d\n", str_ua, pid_ua);
+    }
+
+}
+
+void u_prog_d(void)
+{
+    char *str_ub = "u_prog_b thread, my pid is: ";
+    pid_t pid_ub = getpid();
+    void *addr = malloc(1024);
+    free(addr);
+    while(1) {
+	printf("xx");
+    }
+}

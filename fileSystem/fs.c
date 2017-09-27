@@ -426,7 +426,6 @@ int32_t sys_lseek(int32_t fd, int32_t offset, uint8_t whence)
 	pf->fd_pos = new_pos;
 	return pf->fd_pos;
 }
-
 int32_t sys_unlink(const char *pathname) 
 {
 	ASSERT(strlen(pathname) < MAX_PATH_LEN);
@@ -468,13 +467,12 @@ int32_t sys_unlink(const char *pathname)
 	}
 
 	struct dir *parent_dir = searched_record.parent_dir;
-	delete_dir_entry(cur_part, parent_dir, inode_no, io_buf);
+	//delete_dir_entry(cur_part, parent_dir, inode_no, io_buf);
 	inode_release(cur_part, inode_no);
 	sys_free(io_buf);
 	dir_close(searched_record.parent_dir);
 	return 0;
 }
-
 
 
 

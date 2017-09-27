@@ -10,6 +10,7 @@
 #include "file.h"
 #include "super_block.h"
 #include "stdio-kernel.h"
+#include "bitmap.h"
 
 extern struct partition *cur_part;
 
@@ -195,11 +196,12 @@ enum bool sync_dir_entry(struct dir *parent_dir, struct dir_entry *p_de, void *i
 	return false;
 }
 
+/*
 enum bool delete_dir_entry(struct partition *part, struct dir *pdir, uint32_t inode_no, void *io_buf)
 {
 	struct inode *dir_inode = pdir->inode;
 	uint32_t block_idx = 0;
-	uint32_t all_block[140] = {0};
+	uint32_t all_blocks[140] = {0};
 
 	while( block_idx < 12 ) {
 		all_blocks[block_idx] = dir_inode->i_sectors[block_idx];
@@ -216,6 +218,7 @@ enum bool delete_dir_entry(struct partition *part, struct dir *pdir, uint32_t in
 	uint8_t dir_entry_idx, dir_entry_cnt;
 	enum bool id_dir_entry_first_block = false;
 
+	
 	block_idx = 0;
 	while( block_idx < 140 ) {
 		id_dir_entry_first_block = false;
@@ -292,4 +295,4 @@ enum bool delete_dir_entry(struct partition *part, struct dir *pdir, uint32_t in
 	return false;
 
 }
-
+*/

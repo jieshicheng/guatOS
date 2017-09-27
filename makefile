@@ -231,7 +231,7 @@ $(BUILD_DIR)/direct.o : fileSystem/direct.c fileSystem/direct.h \
 						kernel/memory.h fileSystem/fs.h \
 						kernel/debug/debug.h lib/string.h \
 						fileSystem/inode.h fileSystem/file.h \
-						fileSystem/super_block.h kernel/stdio-kernel.h
+						fileSystem/super_block.h kernel/stdio-kernel.h lib/bitmap.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 $(BUILD_DIR)/file.o : fileSystem/file.c fileSystem/file.h \
