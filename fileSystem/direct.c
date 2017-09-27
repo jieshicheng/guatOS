@@ -196,7 +196,7 @@ enum bool sync_dir_entry(struct dir *parent_dir, struct dir_entry *p_de, void *i
 	return false;
 }
 
-/*
+
 enum bool delete_dir_entry(struct partition *part, struct dir *pdir, uint32_t inode_no, void *io_buf)
 {
 	struct inode *dir_inode = pdir->inode;
@@ -295,4 +295,3 @@ enum bool delete_dir_entry(struct partition *part, struct dir *pdir, uint32_t in
 	return false;
 
 }
-*/

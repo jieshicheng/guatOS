@@ -467,7 +467,7 @@ int32_t sys_unlink(const char *pathname)
 	}
 
 	struct dir *parent_dir = searched_record.parent_dir;
-	//delete_dir_entry(cur_part, parent_dir, inode_no, io_buf);
+	delete_dir_entry(cur_part, parent_dir, inode_no, io_buf);
 	inode_release(cur_part, inode_no);
 	sys_free(io_buf);
 	dir_close(searched_record.parent_dir);
