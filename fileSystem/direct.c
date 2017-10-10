@@ -295,3 +295,99 @@ enum bool delete_dir_entry(struct partition *part, struct dir *pdir, uint32_t in
 	return false;
 
 }
+
+
+struct dir_entry *dir_read(struct dir *dir)
+{
+	struct dir_entry *dir_e = (struct dir_entry *)(dir->dir_buf);
+	struct inode *dir_inode = dir->inode;
+	uint32_t all_blocks[140] = {0};
+	uint32_t block_cnt = 12;
+	uint32_t block_idx = 0, dir_entry_idx = 0;
+	while( block_idx < 12 ) {
+		all_blocks[block_idx] = dir_inode->i_sectors[block_idx];
+		block_idx++;
+	} 
+	if( dir_inode->i_sectors[12] != 0 ) {
+		ide_read(cur_part->my_disk, dir_inode->i_sectors[12], all_blocks + 12, 1);
+		block_cnt = 140;
+	}
+	block_idx = 0;
+	uint32_t cur_dir_entry_pos = 0;
+	uint32_t dir_entry_size = cur_part->sb->dir_entry_size;
+	uint32_t dir_entrys_per_sec = SECTOR_SIZE / dir_entry_size;
+	while( dir->dir_pos < dir_inode->i_size ) {
+		if( dir->dir_pos >= dir_inode->i_size ) {
+			return NULL;
+		}
+		if( all_blocks[block_idx] == 0 ) {
+			block_idx++;
+			continue;
+		}
+		memset(dir_e, 0, SECTOR_SIZE);
+		ide_read(cur_part->my_disk, all_blocks[block_idx], dir_e, 1);
+		dir_entry_idx = 0;
+		while( dir_entry_idx < dir_entrys_per_sec ) {
+			if( (dir_e + dir_entry_idx)->f_type ) {
+				if( cur_dir_entry_pos < dir->dir_pos ) {
+					cur_dir_entry_pos += dir_entry_size;
+					dir_entry_idx++;
+					continue;
+				}
+				ASSERT(cur_dir_entry_pos == dir->dir_pos);
+				dir->dir_pos += dir_entry_size;
+				return dir_e + dir_entry_idx;
+			}
+			dir_entry_idx++;
+		}
+		block_idx++;
+	}
+	return NULL;
+}
+
+enum bool dir_is_empty(struct dir *dir)
+{
+	struct inode *dir_inode = dir->inode;
+	return (dir_inode->i_size == cur_part->sb->dir_entry_size * 2);
+}
+
+
+int32_t dir_remove(struct dir *parent_dir, struct dir *child_dir)
+{
+	struct inode *child_dir_inode = child_dir->inode;
+	int32_t block_idx = 1;
+	while( block_idx < 13 ) {
+		ASSERT(child_dir_inode->i_sectors[block_idx] == 0);
+		block_idx++;
+	}
+	void *io_buf = sys_malloc(SECTOR_SIZE * 2);
+	if( io_buf == NULL ) {
+		printk("dir_remove error: sys_malloc failed\n");
+		return -1;
+	}
+	delete_dir_entry(cur_part, parent_dir, child_dir_inode->i_no, io_buf);
+	inode_release(cur_part, child_dir_inode->i_no);
+	sys_free(io_buf);
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

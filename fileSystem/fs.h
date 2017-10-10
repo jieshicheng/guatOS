@@ -45,7 +45,12 @@ struct path_search_record
 	enum file_types file_type;
 };
 
-
+struct stat
+{
+	uint32_t st_ino;
+	uint32_t st_size;
+	enum file_type st_fileType;
+};
 
 
 /**
@@ -58,6 +63,14 @@ int32_t sys_write(int32_t fd, const void *buf, uint32_t count);
 int32_t sys_read(int32_t fd, void *buf, uint32_t count);
 int32_t sys_lseek(int32_t fd, int32_t offset, uint8_t whence);
 int32_t sys_unlink(const char *pathname) ;
+struct dir *sys_opendir(const char *name);
+int32_t sys_closedir(struct dir *dir);
+struct dir_entry *sys_readdir(struct dir *dir);
+void sys_rewinddir(struct dir *dir);
+int32_t sys_rmdir(const char *name);
+char *sys_getcwd(char *buf, uint32_t size);
+int32_t sys_chdir(const char *path);
+int32_t sys_stat(const char *path, struct stat *buf);
 
 /**
  *	inside function
@@ -68,5 +81,7 @@ static int search_file(const char *pathname, struct path_search_record *searched
 int32_t path_depth_cnt(char *pathname);
 static char *path_parse(char *pathname, char *name_host);
 static uint32_t fd_local2global(uint32_t local_fd);
+static int get_child_dir_name(uint32_t p_inode_nr, uint32_t c_inode_nr, char *path, void *io_buf);
+static uint32_t get_parent_dir_inode_nr(uint32_t child_inode_nr, void *io_buf);
 
 #endif
