@@ -181,17 +181,17 @@ mem_cpy:
 
 rd_disk_m_32:
     mov esi, eax
-    mov edi, ecx
+    mov di, cx
     
     mov dx, 0x01f2
-    mov eax, ecx
+    mov al, cl
     out dx, al
     mov eax, esi
 
     mov dx, 0x01f3
     out dx, al
 
-    mov ecx, 8
+    mov cl, 8
     shr eax, cl
     mov dx, 0x01f4
     out dx, al
@@ -217,11 +217,11 @@ rd_disk_m_32:
     cmp al, 0x08
     jnz .not_ready
 
-    mov eax, edi
-    mov edx, 128
-    mul edx
-    mov ecx, eax
-    mov dx, 0x01f0
+    mov ax, di
+    mov dx, 128
+    mul dx
+    mov cx, ax
+    mov dx, 0x1f0
 
 .go_on_read:
     in ax, dx

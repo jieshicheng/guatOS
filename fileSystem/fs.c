@@ -486,7 +486,7 @@ int32_t sys_mkdir(const char *pathname)
 	}
 
 	struct path_search_record searched_record;
-	memset(searched_record, 0, sizeof(struct path_search_record));
+	memset(&searched_record, 0, sizeof(struct path_search_record));
 	int32_t inode_no = -1;
 	inode_no = search_file(pathname, &searched_record);
 	if( inode_no == -1 ) {
@@ -536,7 +536,7 @@ int32_t sys_mkdir(const char *pathname)
 	p_de++;
 
 	memcpy(p_de->name, "..", 2);
-	p_de->inode_no = parent_dir->inode->i_no;
+	p_de->i_no = parent_dir->inode->i_no;
 	p_de->f_type = FT_DIRECTORY;
 
 	ide_write(cur_part->my_disk, new_dir_inode.i_sectors[0], io_buf, 1);
@@ -544,7 +544,7 @@ int32_t sys_mkdir(const char *pathname)
 	new_dir_inode.i_size = 2 * cur_part->sb->dir_entry_size;
 
 	struct dir_entry new_dir_entry;
-	memset(new_dir_entry, 0, sizeof(struct new_dir_entry));
+	memset(&new_dir_entry, 0, sizeof(struct dir_entry));
 	create_dir_entry(dirname, inode_no, FT_DIRECTORY, &new_dir_entry);
 	memset(io_buf, 0, SECTOR_SIZE * 2);
 	if( !sync_dir_entry(parent_dir, &new_dir_entry, io_buf) ) {
@@ -584,17 +584,15 @@ struct dir *sys_opendir(const char *name)
 	}
 
 	struct path_search_record searched_record;
-	memset(searched_record, 0, sizeof(struct path_search_record));
+	memset(&searched_record, 0, sizeof(struct path_search_record));
 	int inode_no = search_file(name, &searched_record);
 	struct dir *ret = NULL;
 	if( inode_no == -1) {
 		printk("sys_opendir error: %s is not exist\n", name);
-		return -1;
 	}
 	else {
 		if( searched_record.file_type == FT_REGULAR ) {
 			printk("sys_opendir error: %s is a regular file\n", name);
-			return -1;
 		}
 		else if( searched_record.file_type == FT_DIRECTORY ) {
 			ret = dir_open(cur_part, inode_no);
@@ -617,7 +615,7 @@ int32_t sys_closedir(struct dir *dir)
 struct dir_entry *sys_readdir(struct dir *dir)
 {
 	ASSERT(dir != NULL);
-	return dir_entru(dir);
+	return dir_read(dir);
 }
 
 void sys_rewinddir(struct dir *dir)
@@ -755,7 +753,7 @@ int32_t sys_chdir(const char *path)
 {
 	int32_t ret = -1;
 	struct path_search_record searched_record;
-	memset(searched_record, 0, sizeof(struct path_search_record));
+	memset(&searched_record, 0, sizeof(struct path_search_record));
 	int inode_no = search_file(path, &searched_record);
 	if( inode_no != -1 ) {
 		if( searched_record.file_type == FT_DIRECTORY ) {
@@ -780,7 +778,7 @@ int32_t sys_stat(const char *path, struct stat *buf)
 	}
 	int32_t ret = -1;
 	struct path_search_record searched_record;
-	memset(searched_record, 0, sizeof(struct path_search_record));
+	memset(&searched_record, 0, sizeof(struct path_search_record));
 	int inode_no = search_file(path, &searched_record);
 	if( inode_no != -1 ) {
 		struct inode *obj_inode = inode_open(cur_part, inode_no);

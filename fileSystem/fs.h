@@ -49,7 +49,7 @@ struct stat
 {
 	uint32_t st_ino;
 	uint32_t st_size;
-	enum file_type st_fileType;
+	enum file_types st_fileType;
 };
 
 

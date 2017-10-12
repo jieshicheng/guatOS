@@ -94,7 +94,7 @@ char *strrchr(const char *str, const uint8_t ch)
 	char *last_curr = NULL;
 	while(*str != 0) {
 		if(*str == ch)
-			last_curr = str;
+			last_curr = (char *)str;
 		str++;
 	}
 	return last_curr;
@@ -102,7 +102,7 @@ char *strrchr(const char *str, const uint8_t ch)
 }
 
 // 两个字符串拼接函数
-char strcat(char *dst_, const char *src_)
+char *strcat(char *dst_, const char *src_)
 {
 	ASSERT(dst_ != NULL && src_ != NULL);
 	char *str = dst_;

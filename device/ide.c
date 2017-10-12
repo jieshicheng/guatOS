@@ -55,6 +55,7 @@ struct ide_channel channels[2];
  */
 void ide_init()
 {
+	memset(channels, 0, sizeof(struct ide_channel) * 2);
 	printk("ide_init start \n");
 	uint8_t hd_cnt = *((uint8_t *)(0x475));   // 获取硬盘数量
 	ASSERT(hd_cnt > 0);
