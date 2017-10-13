@@ -76,6 +76,7 @@ struct task_struct
 	struct virtual_addr userprog_vaddr;
 	struct mem_block_desc u_block_desc[DESC_CNT];
 	uint8_t cwd_inode_nr;
+	int16_t parent_pid;
 	uint32_t stack_magic;
 };
 
@@ -91,6 +92,7 @@ void thread_unblock(struct task_struct *pthread);
 void schedule();
 struct task_struct *running_thread();
 void thread_yield(void);
+pid_t fork_pid();
 
 
 /**

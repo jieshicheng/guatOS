@@ -133,6 +133,7 @@ void init_thread(struct task_struct *pthread, char *name, int prio)
 		fd_idx++;
 	}
 	pthread->cwd_inode_nr = 0;
+	pthread->parent_pid = -1;
 	pthread->stack_magic = 0x19870916;
 }
 
@@ -244,7 +245,10 @@ void thread_unblock(struct task_struct *pthread)
 	intr_set_status(old_status);
 }
 
-
+pid_t fork_pid()
+{
+	return allocate_pid();
+}
 
 
 
