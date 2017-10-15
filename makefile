@@ -8,7 +8,8 @@ ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
 LDFLAGS = -Ttext $(ENTRY_POINT) -e main
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/fs.o $(BUILD_DIR)/file.o \
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/fork.o \
+	   $(BUILD_DIR)/fs.o $(BUILD_DIR)/file.o \
 	   $(BUILD_DIR)/direct.o $(BUILD_DIR)/inode.o \
 	   $(BUILD_DIR)/ide.o $(BUILD_DIR)/stdio-kernel.o \
 	   $(BUILD_DIR)/stdio.o $(BUILD_DIR)/syscall-init.o \
@@ -191,7 +192,8 @@ $(BUILD_DIR)/syscall-init.o : userprog/syscall-init.c userprog/syscall-init.h \
 							  device/console.h \
 							  lib/string.h \
 							  kernel/memory.h \
-							  fileSystem/fs.h
+							  fileSystem/fs.h \
+							  userprog/fork.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/stdio.o : lib/stdio.c lib/stdio.h \
@@ -250,6 +252,12 @@ $(BUILD_DIR)/inode.o : fileSystem/inode.c fileSystem/inode.h \
 					   kernel/interrupt.h device/ide.h \
 					   fileSystem/super_block.h kernel/debug/debug.h \
 					   lib/bitmap.h fileSystem/file.h
+	$(CC) $(CFLAGS2) $< -o $@
+
+$(BUILD_DIR)/fork.o : userprog/fork.c userprog/fork.h \
+					  lib/stdint.h lib/global.h lib/string.h lib/bitmap.h lib/list.h \
+					  kernel/debug/debug.h kernel/memory.h thread/thread.h kernel/interrupt.h \
+					  userprog/process.h fileSystem/file.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 

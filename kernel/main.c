@@ -139,3 +139,18 @@ void u_prog_b(void)
         printf("%s%d\n", str_ub, pid_ub);
     }
 }
+
+
+void init(void)
+{
+    uint32_t ret_pid = fork();
+    if( ret_pid ) {
+        printf("i am father, my pid is %d, child pid is %d\n", getpid(), ret_pid);
+    }
+    else {
+        printf("i am child, my pid is %d, ret pid is %d\n", getpid(), ret_pid);
+    }
+    while(1);
+}
+
+
