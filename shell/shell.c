@@ -27,6 +27,7 @@ static void readline(char *buf, int32_t count)
 			case '\n':
 			case '\r':
 				*pos = 0;
+				putchar('\n');
 				return ;
 			case '\b':
 				if( buf[0] != '\b' ) {
