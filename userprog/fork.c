@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "interrupt.h"
 #include "list.h"
+#include "inode.h"
 
 extern void intr_exit(void);
 extern struct file file_table[MAX_FILE_OPEN];
@@ -31,7 +32,7 @@ static int32_t copy_pcb_vaddrbitmap_stack0(struct task_struct *child_thread,
 	uint32_t bitmap_pg_cnt = DIV_ROUND_UP((0xc0000000 - USER_VADDR_START) / PAGE_SIZE / 8, PAGE_SIZE);
 	void *vaddr_btmp = get_kernel_pages(bitmap_pg_cnt);
 	memcpy(vaddr_btmp, child_thread->userprog_vaddr.vaddr_bitmap.bits, bitmap_pg_cnt * PAGE_SIZE);
-	child_thread->userprog_vaddr.vaddr_btmp.bits = vaddr_btmp;
+	child_thread->userprog_vaddr.vaddr_bitmap.bits = vaddr_btmp;
 	ASSERT(strlen(child_thread->name) < 11);
 	strcat(child_thread->name, "_fork");
 	return 0;
@@ -43,7 +44,7 @@ static void copy_body_stack3(struct task_struct *child_thread,
 {
 	uint8_t *vaddr_btmp = parent_thread->userprog_vaddr.vaddr_bitmap.bits;
 	uint32_t btmp_bytes_len = parent_thread->userprog_vaddr.vaddr_bitmap.btmp_bytes_len;
-	uint32_t vaddr_start = parent_thread->userprog_vaddr.vaddr_bitmap.vaddr_start;
+	uint32_t vaddr_start = parent_thread->userprog_vaddr.vaddr_start;
 	uint32_t idx_byte = 0;
 	uint32_t idx_bit = 0;
 	uint32_t prog_vaddr = 0;
@@ -79,9 +80,9 @@ static int32_t build_child_stack(struct task_struct *child_thread)
 	uint32_t *ebx_ptr_in_thread_stack = (uint32_t *)intr_0_stack - 4;
 	uint32_t *ebp_ptr_in_thread_stack = (uint32_t *)intr_0_stack - 5;
 
-	*ret_addr_in_thread_stack = (uint32_t *)intr_exit;
+	*ret_addr_in_thread_stack = (uint32_t)intr_exit;
 	*ebp_ptr_in_thread_stack = *ebx_ptr_in_thread_stack =
-	*edi_ptr_in_thread_stack = esi_ptr_in_thread_stack = 0;
+	*edi_ptr_in_thread_stack = *esi_ptr_in_thread_stack = 0;
 
 	child_thread->self_kstack = ebp_ptr_in_thread_stack;
 	return 0;

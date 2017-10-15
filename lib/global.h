@@ -13,6 +13,7 @@
 enum bool { false = 0, true = 1 };
 #define UNUSED __attribute__ ((unused))
 
+
 #define EFLAGS_MBS		(1 << 1)
 #define EFLAGS_IF_1		(1 << 9)
 #define EFLAGS_IF_0		0

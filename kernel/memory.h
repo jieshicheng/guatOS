@@ -80,5 +80,6 @@ void *malloc_page(enum pool_flags pf, uint32_t pg_cnt);
 void *get_a_page(enum pool_flags pf, uint32_t vaddr);
 uint32_t addr_v2p(uint32_t vaddr);
 void *get_a_page_without_opvaddrbitmap(enum pool_flags pf, uint32_t vaddr);
+void mfree_page(enum pool_flags pf, void *_vaddr, uint32_t pg_cnt);
 
 #endif

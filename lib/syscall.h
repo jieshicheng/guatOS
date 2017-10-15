@@ -2,6 +2,7 @@
 #define __KERNEL_SYSCALL_H
 
 #include "stdint.h"
+#include "thread.h"
 
 enum SYSCALL_NR
 {
