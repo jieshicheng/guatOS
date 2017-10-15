@@ -23,6 +23,7 @@
 #include "syscall.h"
 #include "stdio.h"
 #include "fs.h"
+#include "shell.h"
 
 void k_thread_a(void *arg);
 void k_thread_b(void *arg);
@@ -35,12 +36,15 @@ int main(void)
     put_str("          This is tiny operator system by CJS\n");
     
     init_all();
-    intr_enable();
+    cls_screen();
+    console_put_str("[rabbit@localhost /]$ ");
+    /*
     thread_start("k_thread_a", 31, k_thread_a, "kernel thread a, my pid is: ");
     thread_start("k_thread_b", 31, k_thread_b, "kernel thread b, my pid is: ");
     process_execute(u_prog_a, "u_prog_a");
     process_execute(u_prog_b, "u_prog_b");
     intr_enable();
+    */
     while(1)
         ;
     return 0;
@@ -145,10 +149,10 @@ void init(void)
 {
     uint32_t ret_pid = fork();
     if( ret_pid ) {
-        printf("i am father, my pid is %d, child pid is %d\n", getpid(), ret_pid);
+        while(1);
     }
     else {
-        printf("i am child, my pid is %d, ret pid is %d\n", getpid(), ret_pid);
+        my_shell();
     }
     while(1);
 }

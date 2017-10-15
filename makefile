@@ -3,12 +3,12 @@ ENTRY_POINT = 0xc0001500
 AS = nasm
 CC = gcc
 LD = ld
-LIB = -I lib/ -I kernel/ -I kernel/debug -I device/ -I thread/ -I userprog/ -I fileSystem/
+LIB = -I lib/ -I kernel/ -I kernel/debug -I device/ -I thread/ -I userprog/ -I fileSystem/ -I shell/
 ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
 LDFLAGS = -Ttext $(ENTRY_POINT) -e main
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/fork.o \
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/shell.o $(BUILD_DIR)/fork.o \
 	   $(BUILD_DIR)/fs.o $(BUILD_DIR)/file.o \
 	   $(BUILD_DIR)/direct.o $(BUILD_DIR)/inode.o \
 	   $(BUILD_DIR)/ide.o $(BUILD_DIR)/stdio-kernel.o \
@@ -225,7 +225,8 @@ $(BUILD_DIR)/fs.o : fileSystem/fs.c fileSystem/fs.h \
 					kernel/debug/debug.h kernel/memory.h \
 					kernel/stdio-kernel.h lib/string.h \
 					fileSystem/direct.h fileSystem/inode.h fileSystem/super_block.h \
-					fileSystem/file.h thread/thread.h lib/bitmap.h
+					fileSystem/file.h thread/thread.h lib/bitmap.h \
+					device/ioqueue.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 $(BUILD_DIR)/direct.o : fileSystem/direct.c fileSystem/direct.h \
@@ -260,6 +261,10 @@ $(BUILD_DIR)/fork.o : userprog/fork.c userprog/fork.h \
 					  userprog/process.h fileSystem/file.h
 	$(CC) $(CFLAGS2) $< -o $@
 
+$(BUILD_DIR)/shell.o : shell/shell.c shell/shell.h \
+					   lib/stdint.h lib/global.h kernel/debug/debug.h lib/stdio.h \
+					   lib/syscall.h lib/string.h fileSystem/file.h
+	$(CC) $(CFLAGS2) $< -o $@
 
 ##### 		nasm complier   ########
 

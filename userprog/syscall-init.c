@@ -9,7 +9,6 @@
 #include "fs.h"
 #include "fork.h"
 
-
 #define syscall_nr 32
 
 typedef void *syscall;
@@ -20,6 +19,11 @@ uint32_t sys_getpid(void)
 	return running_thread()->pid;
 }
 
+void sys_putchar(char ch)
+{
+	console_put_char(ch);
+}
+
 void syscall_init(void)
 {
 	put_str("syscall init start\n");
@@ -28,6 +32,9 @@ void syscall_init(void)
 	syscall_table[SYS_MALLOC] = sys_malloc;
 	syscall_table[SYS_FREE] = sys_free;
 	syscall_table[SYS_FORK] = sys_fork;
+	syscall_table[SYS_READ] = sys_read;
+	syscall_table[SYS_CLEAR] = cls_screen;
+	syscall_table[SYS_PUTCHAR] = sys_putchar;
 	//.....others syscall
 	//.....wait declare
 
