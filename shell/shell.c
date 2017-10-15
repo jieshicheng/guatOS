@@ -54,5 +54,4 @@ void my_shell(void)
 			continue;
 		}
 	}
-	panic("my_shell: should not be here\n");
 }

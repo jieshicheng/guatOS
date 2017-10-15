@@ -86,12 +86,12 @@ int32_t read(int32_t fd, void *buf, uint32_t count)
 
 void putchar(char char_asci)
 {
-	return _syscall1(SYS_PUTCHAR, char_asci);
+	_syscall1(SYS_PUTCHAR, char_asci);
 }
 
 void clear(void)
 {
-	return _syscall0(SYS_CLEAR);
+	_syscall0(SYS_CLEAR);
 }
 
 

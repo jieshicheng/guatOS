@@ -393,6 +393,7 @@ int32_t sys_write(int32_t fd, const void *buf, uint32_t count)
 int32_t sys_read(int32_t fd, void *buf, uint32_t count)
 {
 	ASSERT(buf != NULL);
+	int ret = -1;
 	if( fd < 0 || fd == stdout_no || fd == stderr_no ) {
 		printk("sys_read error: fd error\n");
 		return -1;
