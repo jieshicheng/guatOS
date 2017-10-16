@@ -93,6 +93,7 @@ void schedule();
 struct task_struct *running_thread();
 void thread_yield(void);
 pid_t fork_pid();
+void sys_ps(void);
 
 
 /**
@@ -104,7 +105,8 @@ static pid_t allocate_pid(void);
 static void make_main_thread(void);
 static void kernel_thread(thread_func *function, void *func_arg);
 static void idle(void *arg UNUSED);
-
+static void pad_print(char *buf, int32_t buf_len, void *ptr, char format);
+static enum bool elem2entry_info(struct list_elem *pelem, int arg UNUSED);
 
 
 

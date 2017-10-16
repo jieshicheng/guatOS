@@ -8,7 +8,8 @@ ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
 LDFLAGS = -Ttext $(ENTRY_POINT) -e main
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/shell.o $(BUILD_DIR)/fork.o \
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/buildin_cmd.o \
+	   $(BUILD_DIR)/shell.o $(BUILD_DIR)/fork.o \
 	   $(BUILD_DIR)/fs.o $(BUILD_DIR)/file.o \
 	   $(BUILD_DIR)/direct.o $(BUILD_DIR)/inode.o \
 	   $(BUILD_DIR)/ide.o $(BUILD_DIR)/stdio-kernel.o \
@@ -115,7 +116,7 @@ $(BUILD_DIR)/thread.o : thread/thread.c thread/thread.h \
 						kernel/interrupt.h \
 						lib/print.h \
 						kernel/debug/debug.h \
-						userprog/process.h
+						userprog/process.h lib/stdio.h fileSystem/fs.h fileSystem/file.h
 	$(CC) $(CFLAGS1) $< -o $@
 
 $(BUILD_DIR)/list.o : lib/list.c lib/list.h \
@@ -263,7 +264,13 @@ $(BUILD_DIR)/fork.o : userprog/fork.c userprog/fork.h \
 
 $(BUILD_DIR)/shell.o : shell/shell.c shell/shell.h \
 					   lib/stdint.h lib/global.h kernel/debug/debug.h lib/stdio.h \
-					   lib/syscall.h lib/string.h fileSystem/file.h
+					   lib/syscall.h lib/string.h fileSystem/file.h lib/string.h \
+					   shell/buildin_cmd.h
+	$(CC) $(CFLAGS2) $< -o $@
+
+$(BUILD_DIR)/buildin_cmd.o : shell/buildin_cmd.c shell/buildin_cmd.h \
+							 lib/stdint.h lib/global.h lib/string.h \
+							 kernel/debug/debug.h fileSystem/fs.h fileSystem/direct.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 ##### 		nasm complier   ########

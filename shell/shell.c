@@ -6,15 +6,16 @@
 #include "syscall.h"
 #include "file.h"
 #include "string.h"
+#include "buildin_cmd.h"
 
 #define cmd_len 128
 #define MAX_ARG_NR 16
 
-static char cmd_line[cmd_len] = {0};
-char cwd_cache[64] = {0};
+static char cmd_line[MAX_PATH_LEN] = {0};
+char cwd_cache[MAX_PATH_LEN] = {0};
 char *argv[MAX_ARG_NR];
 int32_t argc = -1;
-
+char final_path[MAX_PATH_LEN] = {0};
 
 void print_prompt(void)
 {
@@ -61,10 +62,12 @@ static void readline(char *buf, int32_t count)
 void my_shell(void)
 {
 	cwd_cache[0] = '/';
+	cwd_cache[1] = 0;
 	while( 1 ) {
 		print_prompt();
-		memset(cmd_line, 0, cmd_len);
-		readline(cmd_line, cmd_len);
+		memset(cmd_line, 0, MAX_PATH_LEN);
+		memset(final_path, 0, MAX_PATH_LEN);
+		readline(cmd_line, MAX_PATH_LEN);
 		if( cmd_line[0] == 0 ) {
 			continue;
 		}
@@ -74,9 +77,11 @@ void my_shell(void)
 			printf("num of arguments exceed %d\n", MAX_ARG_NR);
 			continue;
 		}
+		char buf[MAX_PATH_LEN] = {0};
 		int32_t arg_idx = 0;
 		while( arg_idx < argc ) {
-			printf("%s ",argv[arg_idx]);
+			make_clear_abs_path(argv[arg_idx], buf);
+			printf("%s -> %s",argv[arg_idx], buf);
 			arg_idx++;
 		}
 		printf("\n");

@@ -8,6 +8,9 @@
 #include "print.h"
 #include "debug.h"
 #include "process.h"
+#include "stdio.h"
+#include "fs.h"
+#include "file.h"
 
 
 // list struct of ready state and all thread
@@ -251,6 +254,85 @@ pid_t fork_pid()
 {
 	return allocate_pid();
 }
+
+static void pad_print(char *buf, int32_t buf_len, void *ptr, char format)
+{
+	memset(buf, 0, buf_len);
+	uint8_t out_pad_0idx = 0;
+	switch( format ) {
+		case 's':
+			out_pad_0idx = sprintf(buf, "%s", ptr);
+			break;
+		case 'd':
+			out_pad_0idx = sprintf(buf, "%d", *((int16_t *)ptr));
+			break;
+		case 'x':
+			out_pad_0idx = sprintf(buf, "%x", *((uint32_t *)ptr));
+			break;
+		default:
+	}
+	while( out_pad_0idx < buf_len ) {
+		buf[out_pad_0idx] = ' ';
+		out_pad_0idx++;
+	}
+	sys_write(stdout_no, buf, buf_len - 1);
+}
+
+static enum bool elem2entry_info(struct list_elem *pelem, int arg UNUSED)
+{
+	struct task_struct *pthread = elem2entry(struct task_struct, all_list_tag, pelem);
+	char out_pad[16] = {0};
+	pad_print(out_pad, 16, &pthread->pid, 'd');
+	if( pthread->parent_pid == -1 ) {
+		pad_print(out_pad, 16, "NULL", 's');
+	}
+	else {
+		pad_print(out_pad, 16, &pthread->parent_pid, 'd');
+	}
+
+	switch( pthread->status ) {
+		case RUNNING:
+			pad_print(out_pad, 16, "RUNNING", 's');
+			break;
+		case REDY:
+			pad_print(out_pad, 16, "REDY", 's');
+			break;
+		case BLOCKED:
+			pad_print(out_pad, 16, "BLOCKED", 's');
+			break;
+		case WAITTING:
+			pad_print(out_pad, 16, "WAITTING", 's');
+			break;
+		case HANGING:
+			pad_print(out_pad, 16, "HANGING", 's');
+			break;
+		case DIED:
+			pad_print(out_pad, 16, "DIED", 's');
+			break;
+		default:
+	}
+	pad_print(out_pad, 16, &pthread->elapsed_ticks, 'x');
+	memset(out_pad, 0, 16);
+	ASSERT(strlen(pthread->name) < 17);
+	memcpy(out_pad, pthread->name, strlen(pthread->name));
+	strcat(out_pad, "\n");
+	sys_write(stdout_no, out_pad, strlen(out_pad));
+	return false;
+}
+
+
+void sys_ps(void)
+{
+	char *ps_title = "PID 		PPID 		STAT 		TICKS 		COMMAND\n";
+	sys_write(stdout_no, ps_title, strlen(ps_title));
+	list_traversal(&thread_all_list, elem2entry_info, 0);
+}
+
+
+
+
+
+
 
 
 

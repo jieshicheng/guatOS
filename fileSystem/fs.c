@@ -214,7 +214,7 @@ static enum bool mount_partition(struct list_elem *pelem, int arg)
 }
 
 
-static char *path_parse(char *pathname, char *name_host)
+char *path_parse(char *pathname, char *name_host)
 {
 	if( pathname[0] == 0 )
 		return NULL;
