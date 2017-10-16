@@ -117,7 +117,7 @@ $(BUILD_DIR)/thread.o : thread/thread.c thread/thread.h \
 						lib/print.h \
 						kernel/debug/debug.h \
 						userprog/process.h lib/stdio.h fileSystem/fs.h fileSystem/file.h
-	$(CC) $(CFLAGS1) $< -o $@
+	$(CC) $(CFLAGS2) $< -o $@
 
 $(BUILD_DIR)/list.o : lib/list.c lib/list.h \
 					  lib/global.h \

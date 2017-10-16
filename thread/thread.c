@@ -269,7 +269,6 @@ static void pad_print(char *buf, int32_t buf_len, void *ptr, char format)
 		case 'x':
 			out_pad_0idx = sprintf(buf, "%x", *((uint32_t *)ptr));
 			break;
-		default:
 	}
 	while( out_pad_0idx < buf_len ) {
 		buf[out_pad_0idx] = ' ';
@@ -291,25 +290,24 @@ static enum bool elem2entry_info(struct list_elem *pelem, int arg UNUSED)
 	}
 
 	switch( pthread->status ) {
-		case RUNNING:
+		case TASK_RUNNING:
 			pad_print(out_pad, 16, "RUNNING", 's');
 			break;
-		case REDY:
+		case TASK_READY:
 			pad_print(out_pad, 16, "REDY", 's');
 			break;
-		case BLOCKED:
+		case TASK_BLOCKED:
 			pad_print(out_pad, 16, "BLOCKED", 's');
 			break;
-		case WAITTING:
+		case TASK_WAITING:
 			pad_print(out_pad, 16, "WAITTING", 's');
 			break;
-		case HANGING:
+		case TASK_HANGING:
 			pad_print(out_pad, 16, "HANGING", 's');
 			break;
-		case DIED:
+		case TASK_DIED:
 			pad_print(out_pad, 16, "DIED", 's');
 			break;
-		default:
 	}
 	pad_print(out_pad, 16, &pthread->elapsed_ticks, 'x');
 	memset(out_pad, 0, 16);

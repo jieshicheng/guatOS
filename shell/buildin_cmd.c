@@ -3,6 +3,7 @@
 #include "direct.h"
 #include "string.h"
 #include "fs.h"
+#include "syscall.h"
 
 static void wash_path(char *old_abs_path, char *new_abs_path)
 {
