@@ -270,7 +270,8 @@ $(BUILD_DIR)/shell.o : shell/shell.c shell/shell.h \
 
 $(BUILD_DIR)/buildin_cmd.o : shell/buildin_cmd.c shell/buildin_cmd.h \
 							 lib/stdint.h lib/global.h lib/string.h \
-							 kernel/debug/debug.h fileSystem/fs.h fileSystem/direct.h
+							 kernel/debug/debug.h fileSystem/fs.h fileSystem/direct.h \
+							 lib/stdio.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 ##### 		nasm complier   ########
