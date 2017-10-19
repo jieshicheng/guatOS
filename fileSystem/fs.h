@@ -83,7 +83,7 @@ static enum bool mount_partition(struct list_elem *pelem, int arg);
 static int search_file(const char *pathname, struct path_search_record *searched_record);
 int32_t path_depth_cnt(char *pathname);
 char *path_parse(char *pathname, char *name_host);
-static uint32_t fd_local2global(uint32_t local_fd);
+static uint32_t fd_local2global(int32_t local_fd);
 static int get_child_dir_name(uint32_t p_inode_nr, uint32_t c_inode_nr, char *path, void *io_buf);
 static uint32_t get_parent_dir_inode_nr(uint32_t child_inode_nr, void *io_buf);
 

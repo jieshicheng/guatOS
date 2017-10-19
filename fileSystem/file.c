@@ -19,7 +19,7 @@ struct file file_table[MAX_FILE_OPEN];
 
 int32_t get_free_slot_in_global(void)
 {
-	uint32_t fd_idx = 3;
+	int32_t fd_idx = 3;
 	while( fd_idx < MAX_FILE_OPEN ) {
 		if( file_table[fd_idx].fd_inode == NULL ) {
 			break;
@@ -36,7 +36,7 @@ int32_t get_free_slot_in_global(void)
 int32_t pcb_fd_install(int32_t global_fd_idx)
 {
 	struct task_struct *cur = running_thread();
-	uint8_t local_fd_idx = 3;
+	int32_t local_fd_idx = 3;
 	while( local_fd_idx < MAX_FILES_OPEN_PER_PROC ) {
 		if( cur->fd_table[local_fd_idx] == -1 ) {
 			cur->fd_table[local_fd_idx] = global_fd_idx;
@@ -159,7 +159,7 @@ rollback:
 
 int32_t file_open(uint32_t inode_no, uint8_t flag)
 {
-	int fd_idx = get_free_slot_in_global();
+	int32_t fd_idx = get_free_slot_in_global();
 	if( fd_idx == -1 ) {
 		printk("exceed max open files\n");
 		return -1;

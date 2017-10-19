@@ -322,6 +322,7 @@ int32_t sys_open(const char *pathname, uint8_t flags)
 	uint32_t path_search_depth = path_depth_cnt(searched_record.searched_path);
 	if( pathname_depth != path_search_depth ) {
 		printk("cannot access %s: Not a director, subpath %s is't exist\n", pathname, searched_record.parent_dir);
+		dir_close(searched_record.parent_dir);
 		return -1;
 	}
 	if( !found && !(flags & O_CREAT) ) {
@@ -347,10 +348,11 @@ int32_t sys_open(const char *pathname, uint8_t flags)
 	return fd;
 }
 
-static uint32_t fd_local2global(uint32_t local_fd)
+static uint32_t fd_local2global(int32_t local_fd)
 {
 	struct task_struct *cur = running_thread();
 	int32_t global_fd = cur->fd_table[local_fd];
+	printk("%d", global_fd);
 	ASSERT(global_fd >= 0 && global_fd < MAX_FILE_OPEN);
 	return (uint32_t)global_fd;
 }

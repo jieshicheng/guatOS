@@ -24,6 +24,7 @@
 #include "stdio.h"
 #include "fs.h"
 #include "shell.h"
+#include "stdio-kernel.h"
 
 void k_thread_a(void *arg);
 void k_thread_b(void *arg);
@@ -37,6 +38,14 @@ int main(void)
     put_str("          This is tiny operator system by CJS\n");
     
     init_all();
+    //sys_open("/file1", O_CREAT);  OK
+    //int fd = sys_open("/file1", O_WRONLY); OK
+    //int fd = sys_open("/file1", O_RDONLY); OK
+    //sys_read(fd, buf, 11); OK
+    //sys_write(fd, "chengjieshi", 11); OK
+    //sys_close(fd); OK
+
+    
 
 
 //    cls_screen();
