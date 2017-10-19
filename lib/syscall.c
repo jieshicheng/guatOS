@@ -130,9 +130,9 @@ struct dir *opendir(const char *name)
 	return (struct dir *)_syscall1(SYS_OPENDIR, name);
 }
 
-int32_t closedir(int32_t fd)
+int32_t closedir(struct dir *dir)
 {
-	return _syscall1(SYS_CLOSEDIR, fd);
+	return _syscall1(SYS_CLOSEDIR, dir);
 }
 
 int32_t rmdir(const char *pathname)

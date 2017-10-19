@@ -62,7 +62,7 @@ void make_clear_abs_path(char *path, char *final_path)
 }
 
 
-void buildin_pwd(uitn32_t argc, char **argv UNUSED)
+void buildin_pwd(uint32_t argc, char **argv UNUSED)
 {
 	if( argc != 1 ) {
 		printf("pwd: no argument support!\n");
@@ -78,7 +78,7 @@ void buildin_pwd(uitn32_t argc, char **argv UNUSED)
 	}
 }
 
-char *buildin_cd(uitn32_t argc, char **argv)
+char *buildin_cd(uint32_t argc, char **argv)
 {
 	if( argc > 2 ) {
 		printf("cd: only support one argument!\n");
@@ -99,22 +99,21 @@ char *buildin_cd(uitn32_t argc, char **argv)
 	return final_path;
 }
 
-void buildin_ls(uitn32_t argc, cahr **argv)
+void buildin_ls(uint32_t argc, char **argv)
 {
 	char *pathname = NULL;
 	struct stat file_stat;
 	memset(&file_stat, 0, sizeof(struct stat));
 	enum bool long_info = false;
-	uitn32_t arg_path_nr = 0;
-	uitn32_t arg_idx = 1;
+	uint32_t arg_path_nr = 0;
+	uint32_t arg_idx = 1;
 	while( arg_idx < argc ) {
 		if( argv[arg_idx][0] == '-' ) {
 			if( !strcmp("-l", argv[arg_idx]) ) {
 				long_info = true;
 			}
 			else if( !strcmp("-h", argv[arg_idx]) ) {
-				printf("usage: -l list all information about file.\n
-					-h for help.\nlist all files in the current directory if no option.\n");
+				printf("usage: -l list all information about file.\n-h for help.\nlist all files in the current directory if no option.\n");
 			}
 			else {
 				printf("ls: invalid option %s\nTry 'ls -h' for help\n", argv[arg_idx]);
@@ -152,12 +151,12 @@ void buildin_ls(uitn32_t argc, cahr **argv)
 		printf("ls: cannot access %s: No such file or directory.\n", pathname);
 		return ;
 	}
-	if( file_stat.st_filetype == FT_DIRECTORY ) {
+	if( file_stat.st_fileType == FT_DIRECTORY ) {
 		struct dir *dir = opendir(pathname);
 		struct dir_entry *dir_e = NULL;
 		char sub_pathname[MAX_PATH_LEN] = {0};
-		uitn32_t pathname_len = strlen(pathname);
-		uitn32_t last_char_idx = pathname_len - 1;
+		uint32_t pathname_len = strlen(pathname);
+		uint32_t last_char_idx = pathname_len - 1;
 		memcpy(sub_pathname, pathname, pathname_len);
 		if( sub_pathname[last_char_idx] != '/' ) {
 			sub_pathname[pathname_len] = '/';
@@ -188,7 +187,7 @@ void buildin_ls(uitn32_t argc, cahr **argv)
 			}
 			printf("\n");
 		}
-		close(dir);
+		closedir(dir);
 	}
 	else {
 		if( long_info ) {
@@ -201,7 +200,7 @@ void buildin_ls(uitn32_t argc, cahr **argv)
 }
 
 
-void buildin_ps(uitn32_t argc, char **argv UNUSED)
+void buildin_ps(uint32_t argc, char **argv UNUSED)
 {
 	if( argc != 1 ) {
 		printf("ps: no argument support!\n");
@@ -210,7 +209,7 @@ void buildin_ps(uitn32_t argc, char **argv UNUSED)
 	ps();
 }
 
-void buildin_clear(uitn32_t argc, char **argv UNUSED)
+void buildin_clear(uint32_t argc, char **argv UNUSED)
 {
 	if( argc != 1 ) {
 		printf("clear: no argument support!\n");
@@ -219,12 +218,12 @@ void buildin_clear(uitn32_t argc, char **argv UNUSED)
 	clear();
 }
 
-int32_t buildin_mkdir(uitn32_t argc, char **argv)
+int32_t buildin_mkdir(uint32_t argc, char **argv)
 {
 	int32_t ret = -1;
 	if( argc != 2 ) {
 		printf("mkdir: no argument support!\n");
-		return ;
+		return -1;
 	}
 	else {
 		make_clear_abs_path(argv[1], final_path);
@@ -240,7 +239,7 @@ int32_t buildin_mkdir(uitn32_t argc, char **argv)
 	return ret;
 }
 
-int32_t buildin_rmdir(uitn32_t argc, char **argv)
+int32_t buildin_rmdir(uint32_t argc, char **argv)
 {
 	int32_t ret = -1;
 	if( argc != 2 ) {
@@ -261,7 +260,7 @@ int32_t buildin_rmdir(uitn32_t argc, char **argv)
 }
 
 
-int32_t buildin_rm(uitn32_t argc, char **argv)
+int32_t buildin_rm(uint32_t argc, char **argv)
 {
 	int32_t ret = -1;
 	if( argc != 2 ) {

@@ -46,7 +46,7 @@ int32_t stat(const char *path, struct stat *buf);
 void rewinddir(struct dir *dir);
 struct dir_entry *readdir(struct dir *dir);
 int32_t rmdir(const char *pathname);
-int32_t closedir(int32_t fd);
+int32_t closedir(struct dir *dir);
 struct dir *opendir(const char *name);
 int32_t mkdir(const char *pathname);
 int32_t unlink(const char *pathname);

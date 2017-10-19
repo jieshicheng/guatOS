@@ -216,7 +216,11 @@ void thread_init(void)
 	list_init(&thread_ready_list);
 	list_init(&thread_all_list);
 	lock_init(&pid_lock);
-	process_execute(init, "init");
+	
+//
+//	process_execute(init, "init");
+//	
+
 	make_main_thread();
 	idle_thread = thread_start("idle", 10, idle, NULL);
 	put_str("thread init done\n");

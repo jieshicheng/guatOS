@@ -36,8 +36,12 @@ int main(void)
     put_str("          This is tiny operator system by CJS\n");
     
     init_all();
-    cls_screen();
-    console_put_str("[rabbit@localhost /]$ ");
+
+
+//    cls_screen();
+//    console_put_str("[rabbit@localhost /]$ ");
+
+
     /*
     thread_start("k_thread_a", 31, k_thread_a, "kernel thread a, my pid is: ");
     thread_start("k_thread_b", 31, k_thread_b, "kernel thread b, my pid is: ");
