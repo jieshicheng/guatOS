@@ -32,6 +32,7 @@ void u_prog_b(void);
 
 int main(void)
 {
+    cls_screen();
     put_str("          Welcome using\n");
     put_str("          This is tiny operator system by CJS\n");
     

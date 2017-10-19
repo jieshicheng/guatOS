@@ -59,20 +59,20 @@ static void partition_format(struct partition *part)
 	sb.root_inode_no = 0;
 	sb.dir_entry_size = sizeof(struct dir_entry);
 
-	printk("%s info:\n", part->name);
-	printk("magic: 0x%x\npart_lba_base: 0x%x\n \
-			all_sectors: 0x%x\ninode_cnt: 0x%x\n \
-			block_bitmap_lba: 0x%x\nblock_bitmap_sectors: 0x%x\n \
-			inode_bitmap_lba: 0x%x\ninode_bitmap_sectors: 0x%x\n \
-			inode_table_lba: 0x%x\ninode_table_sectors: 0x%x\n \
-			data_start_lba: 0x%x\n", sb.magic, sb.part_lba_base, 
+	printk("----%s info:\n", part->name);
+	printk("--------magic: 0x%x\n--------part_lba_base: 0x%x\n\
+--------all_sectors: 0x%x\n--------inode_cnt: 0x%x\n\
+--------block_bitmap_lba: 0x%x\n--------block_bitmap_sectors: 0x%x\n\
+--------inode_bitmap_lba: 0x%x\n--------inode_bitmap_sectors: 0x%x\n\
+--------inode_table_lba: 0x%x\n--------inode_table_sectors: 0x%x\n\
+--------data_start_lba: 0x%x\n", sb.magic, sb.part_lba_base, 
 			sb.sec_cnt, sb.inode_cnt, sb.block_bitmap_lba, sb.block_bitmap_sects, 
 			sb.inode_bitmap_lba, sb.inode_bitmap_sects, sb.inode_table_lba, 
 			sb.inode_table_sects, sb.data_start_lba);
 
 	struct disk *hd = part->my_disk;
 	ide_write(hd, part->start_lba + 1, &sb, 1);
-	printk("super_block_lba: 0x%x\n", part->start_lba + 1);
+	printk("--------super_block_lba: 0x%x\n", part->start_lba + 1);
 
 	uint32_t buf_size = (sb.block_bitmap_sects >= sb.inode_bitmap_sects ? 
 							sb.block_bitmap_sects : sb.inode_bitmap_sects);
@@ -118,8 +118,8 @@ static void partition_format(struct partition *part)
 
 	ide_write(hd, sb.data_start_lba, buf, 1);
 
-	printk(" root_dir_lba: 0x%x\n", sb.data_start_lba);
-	printk("%s format done\n", part->name);
+	printk("--------root_dir_lba: 0x%x\n", sb.data_start_lba);
+	printk("----%s format done\n", part->name);
 	sys_free(buf);
 }
 
@@ -150,10 +150,10 @@ void filesys_init()
 					memset(sb_buf, 0, SECTOR_SIZE);
 					ide_read(hd, part->start_lba + 1, sb_buf, 1);
 					if( sb_buf->magic == 0x19590318 ) {
-						printk("%s has filesystem\n", part->name);
+						printk("----%s has filesystem\n", part->name);
 					}
 					else {
-						printk("formatting %s's partition %s .......\n",hd->name, part->name);
+						printk("----formatting %s's partition %s .......\n",hd->name, part->name);
 						partition_format(part);
 					}
 				}

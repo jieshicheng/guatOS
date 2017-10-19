@@ -308,7 +308,6 @@ static void identify_disk(struct disk *hd)
 static void partition_scan(struct disk *hd, uint32_t ext_lba)
 {
 	struct boot_sector *bs = sys_malloc(sizeof(struct boot_sector));
-	printk("malloc successful\n");
 	ide_read(hd, ext_lba, bs, 1);
 	uint8_t part_idx = 0;
 	struct partition_table_entry *p = bs->partition_table;
