@@ -47,10 +47,10 @@ static void frequency_set(uint8_t counter_port, uint8_t counter_no,
 
 void timer_init()
 {
-	put_str("timer_init start\n");
+	put_str("timer_init start:\n");
 	frequency_set(COUNTER0_PORT, COUNTER0_NO, READ_WRITE_LATCH, COUNTER0_MODE, COUNTER0_VALUE);
 	register_handler(0x20, intr_timer_handler);
-	put_str("timer_init end\n");
+	put_str("timer_init end:\n");
 }
 
 static void intr_timer_handler(void)

@@ -26,7 +26,7 @@ void sys_putchar(char ch)
 
 void syscall_init(void)
 {
-	put_str("syscall init start\n");
+	put_str("syscall init start:\n");
 	syscall_table[SYS_GETPID] = sys_getpid;
 	syscall_table[SYS_WRITE] = sys_write;
 	syscall_table[SYS_MALLOC] = sys_malloc;
@@ -52,5 +52,5 @@ void syscall_init(void)
 	//.....others syscall
 	//.....wait declare
 
-	put_str("syscall init done\n");
+	put_str("syscall init done:\n");
 }

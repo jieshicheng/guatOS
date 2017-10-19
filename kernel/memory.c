@@ -271,7 +271,7 @@ void sys_free(void *ptr)
  */
 static void mem_pool_init(uint32_t all_mem)
 {
-	put_str("    mem pool init start\n");
+	put_str("----mem pool init start\n");
 	// 已经使用的二级页表占用的内存
 	// PDE 加 第一个和769到1022个PTE一共256个页面
 	uint32_t page_table_size = PAGE_SIZE * 256;
@@ -300,14 +300,14 @@ static void mem_pool_init(uint32_t all_mem)
 	kernel_pool.pool_bitmap.bits = (void *)MEM_BITMAP_BASE;
 	user_pool.pool_bitmap.bits = (void *)(MEM_BITMAP_BASE + kbm_length);
 
-	put_str(".   kernel pool bitmap start: ");
+	put_str("kernel pool bitmap start: ");
 	put_int((int)kernel_pool.pool_bitmap.bits);
-	put_str(".   kernel pool phy addr start: ");
+	put_str(" -> kernel pool phy addr start: ");
 	put_int((int)kernel_pool.phy_addr_start);
 	put_char('\n');
-	put_str(".   user pool bitmap start: ");
+	put_str("user pool bitmap start: ");
 	put_int((int)user_pool.pool_bitmap.bits);
-	put_str(".   user pool phy addr start: ");
+	put_str(" -> user pool phy addr start: ");
 	put_int((int)user_pool.phy_addr_start);
 	put_char('\n');
 
@@ -320,7 +320,7 @@ static void mem_pool_init(uint32_t all_mem)
 	kernel_vaddr.vaddr_bitmap.bits = (void *)(MEM_BITMAP_BASE + kbm_length + ubm_length);
 	kernel_vaddr.vaddr_start = K_HEAP_START;
 	bitmap_init(&kernel_vaddr.vaddr_bitmap);
-	put_str(".   mem pool init done\n");
+	put_str("----mem pool init done\n");
 
 }
 
@@ -330,11 +330,11 @@ static void mem_pool_init(uint32_t all_mem)
  */
 void mem_init()
 {
-	put_str("mem_init start\n");
+	put_str("mem_init start:\n");
 	uint32_t mem_bytes_total = (*(uint32_t *)0xb00);
 	mem_pool_init(mem_bytes_total);
 	block_desc_init(k_block_descs);
-	put_str("mem_init done\n");
+	put_str("mem_init done:\n");
 }
 
 /**

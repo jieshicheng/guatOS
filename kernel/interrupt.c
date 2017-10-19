@@ -154,7 +154,7 @@ static void pic_init(void)
 	outb(PIC_M_DATA, 0xf8); // 开关外部中断的位。0xfc表示倒数的时钟，键盘中断打开
 	outb(PIC_S_DATA, 0xbf);
 
-	put_str("	pic_init done\n");
+	put_str("----pic_init done\n");
 }
 
 // 设置中断描述符
@@ -177,7 +177,7 @@ static void idt_desc_init(void)
 		make_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]);
 	}
 	make_idt_desc(&idt[lastindex], IDT_DESC_ATTR_DPL3, syscall_handler);
-	put_str("	idt_desc_init done\n");
+	put_str("----idt_desc_init done\n");
 
 }
 
@@ -189,14 +189,14 @@ static void idt_desc_init(void)
  */
 void idt_init() 
 {
-	put_str("idt_init start\n");
+	put_str("idt_init start:\n");
 	idt_desc_init();
 	exception_init();
 	pic_init();
 
 	uint64_t idt_operand = ((sizeof(idt) - 1) | ((uint64_t)(uint32_t)idt << 16));
 	asm volatile ("lidt %0" : : "m" (idt_operand));
-	put_str("idt_init done\n");
+	put_str("idt_init done:\n");
 }
 
 

@@ -212,7 +212,7 @@ void schedule()
  */
 void thread_init(void) 
 {
-	put_str("thread init start \n");
+	put_str("thread init start:\n");
 	list_init(&thread_ready_list);
 	list_init(&thread_all_list);
 	lock_init(&pid_lock);
@@ -223,7 +223,7 @@ void thread_init(void)
 
 	make_main_thread();
 	idle_thread = thread_start("idle", 10, idle, NULL);
-	put_str("thread init done\n");
+	put_str("thread init done:\n");
 }
 
 /**

@@ -56,7 +56,7 @@ struct ide_channel channels[2];
 void ide_init()
 {
 	memset(channels, 0, sizeof(struct ide_channel) * 2);
-	printk("ide_init start \n");
+	printk("ide_init start:\n");
 	uint8_t hd_cnt = *((uint8_t *)(0x475));   // 获取硬盘数量
 	ASSERT(hd_cnt > 0);
 	channel_cnt = DIV_ROUND_UP(hd_cnt, 2);		// 获取主办IDE接口数量
@@ -100,9 +100,9 @@ void ide_init()
 		dev_no = 0;
 		channel_no++;
 	}
-	printk("     all partition info :\n");
+	printk("----all partition info :\n");
 	list_traversal(&partition_list, partition_info, (int)NULL);
-	printk("ide_init done\n");
+	printk("ide_init done:\n");
 }
 
 
@@ -295,13 +295,13 @@ static void identify_disk(struct disk *hd)
 	uint8_t md_start = 27 * 2, md_len = 40;
 	memset(buf, 0, sizeof(buf));
 	swap_pairs_bytes(&id_info[sn_start], buf, sn_len);
-	printk(" disk %s info : \n      SN: %s\n", hd->name, buf);
+	printk("----disk %s info:\n--------SN: %s\n", hd->name, buf);
 	memset(buf, 0, sizeof(buf));
 	swap_pairs_bytes(&id_info[md_start], buf, md_len);
-	printk(" module: %s\n", buf);
+	printk("--------module: %s\n", buf);
 	uint32_t sectors = *((uint32_t *)&id_info[60 * 2]);
-	printk(" sectors: %d\n", sectors);
-	printk(" capacity: %dMB\n", sectors * 512 / 1024 / 1024);
+	printk("--------sectors: %d\n", sectors);
+	printk("--------capacity: %dMB\n", sectors * 512 / 1024 / 1024);
 }
 
 
@@ -353,7 +353,7 @@ static void partition_scan(struct disk *hd, uint32_t ext_lba)
 static enum bool partition_info(struct list_elem *pelem, int arg UNUSED)
 {
 	struct partition *part = elem2entry(struct partition, part_tag, pelem);
-	printk("    %s start_lba: 0x%x, sec_cnt: 0x%x\n", part->name, part->start_lba, part->sec_cnt);
+	printk("--------%s start_lba: 0x%x, sec_cnt: 0x%x\n", part->name, part->start_lba, part->sec_cnt);
 	return false;
 }
 
