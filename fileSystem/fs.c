@@ -757,7 +757,7 @@ char *sys_getcwd(char *buf, uint32_t size)
 	}
 	ASSERT(strlen(full_path_reverse) <= size);
 	char *last_slash;
-	while( (last_slash == strrchr(full_path_reverse, '/')) ) {
+	while( (last_slash = strrchr(full_path_reverse, '/')) ) {
 		uint16_t len = strlen(buf);
 		strcpy(buf + len, last_slash);
 		*last_slash = 0;

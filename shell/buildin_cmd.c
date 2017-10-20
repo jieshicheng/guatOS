@@ -146,7 +146,6 @@ void buildin_ls(uint32_t argc, char **argv)
 		make_clear_abs_path(pathname, final_path);
 		pathname = final_path;
 	}
-
 	if( stat(pathname, &file_stat) == -1 ) {
 		printf("ls: cannot access %s: No such file or directory.\n", pathname);
 		return ;
@@ -227,7 +226,7 @@ int32_t buildin_mkdir(uint32_t argc, char **argv)
 	}
 	else {
 		make_clear_abs_path(argv[1], final_path);
-		if( !strcmp("/", final_path) ) {
+		if( strcmp("/", final_path) ) {
 			if( mkdir(final_path) == 0 ) {
 				ret = 0;
 			}
@@ -247,7 +246,7 @@ int32_t buildin_rmdir(uint32_t argc, char **argv)
 	}
 	else {
 		make_clear_abs_path(argv[1], final_path);
-		if( strcmp("/", final_path) == 0 ) {
+		if( strcmp("/", final_path) ) {
 			if( rmdir(final_path) == 0 ) {
 				ret = 0;
 			}
@@ -268,7 +267,7 @@ int32_t buildin_rm(uint32_t argc, char **argv)
 	}
 	else {
 		make_clear_abs_path(argv[1], final_path);
-		if( strcmp("/", final_path) == 0 ) {
+		if( strcmp("/", final_path) ) {
 			if( unlink(final_path) == 0 ) {
 				ret = 0;
 			}
