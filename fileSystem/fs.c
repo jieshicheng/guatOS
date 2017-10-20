@@ -507,8 +507,8 @@ int32_t sys_mkdir(const char *pathname)
 	memset(&searched_record, 0, sizeof(struct path_search_record));
 	int32_t inode_no = -1;
 	inode_no = search_file(pathname, &searched_record);
-	if( inode_no == -1 ) {
-		printk("sys_mkdir error: search_file failed\n");
+	if( inode_no != -1 ) {
+		printk("sys_mkdir error: search_file failed, file already exist\n");
 		rollback_step = 1;
 		goto rollback;
 	}

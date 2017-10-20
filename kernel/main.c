@@ -44,13 +44,12 @@ int main(void)
     //sys_read(fd, buf, 11); OK
     //sys_write(fd, "chengjieshi", 11); OK
     //sys_close(fd); OK
+    //sys_unlink("/file1"); OK
+    //sys_mkdir("/direct1/"); OK
+    //sys_rmdir("/direct1/"); OK
 
-    
-
-
-//    cls_screen();
-//    console_put_str("[rabbit@localhost /]$ ");
-
+    cls_screen();
+    console_put_str("[rabbit@localhost /]$ ");
 
     /*
     thread_start("k_thread_a", 31, k_thread_a, "kernel thread a, my pid is: ");
@@ -137,13 +136,8 @@ void k_thread_b(void *arg)
 
 void u_prog_a(void)
 {
-    char *str_ua = "u_prog_a thread, my pid is: ";
-    pid_t pid_ua = getpid();
-    void *addr = malloc(1024);
-    free(addr);
-    while(1) {
-        printf("%s%d\n", str_ua, pid_ua);
-    }
+    mkdir("/file1/");
+    while(1);
 
 }
 
@@ -163,7 +157,7 @@ void init(void)
 {
     uint32_t ret_pid = fork();
     if( ret_pid ) {
-        while(1);
+	while(1);
     }
     else {
         my_shell();
