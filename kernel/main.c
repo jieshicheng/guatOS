@@ -26,11 +26,6 @@
 #include "shell.h"
 #include "stdio-kernel.h"
 
-void k_thread_a(void *arg);
-void k_thread_b(void *arg);
-void u_prog_a(void);
-void u_prog_b(void);
-
 int main(void)
 {
     cls_screen();
@@ -51,105 +46,9 @@ int main(void)
     cls_screen();
     console_put_str("[rabbit@localhost /]$ ");
 
-    /*
-    thread_start("k_thread_a", 31, k_thread_a, "kernel thread a, my pid is: ");
-    thread_start("k_thread_b", 31, k_thread_b, "kernel thread b, my pid is: ");
-    process_execute(u_prog_a, "u_prog_a");
-    process_execute(u_prog_b, "u_prog_b");
-    intr_enable();
-    */
     while(1)
         ;
     return 0;
-}
-void k_thread_a(void *arg)
-{
-    char *msg = arg;
-    void *addr1;
-    void *addr2;
-    void *addr3;
-    void *addr4;
-    void *addr5;
-    void *addr6;
-
-    uint32_t size = 16;
-    addr1 = sys_malloc(size);
-    size *= 2;
-    addr2 = sys_malloc(size);
-    size *= 2;
-    addr3 = sys_malloc(size);
-    size *= 2;
-    addr4 = sys_malloc(size);
-    size *= 2;
-    addr5 = sys_malloc(size);
-    size *= 2;
-    addr6 = sys_malloc(size);
-    sys_free(addr1);
-    sys_free(addr2);
-    sys_free(addr3);
-    sys_free(addr4);
-    sys_free(addr5);
-    sys_free(addr6);
-
-    while(1) {
-        console_put_str(msg);
-        console_put_char('\n');
-    }
-}
-
-void k_thread_b(void *arg)
-{
-    char *msg = arg;
-    void *addr1;
-    void *addr2;
-    void *addr3;
-    void *addr4;
-    void *addr5;
-    void *addr6;
-
-    uint32_t size = 16;
-    addr1 = sys_malloc(size);
-    size *= 2;
-    addr2 = sys_malloc(size);
-    size *= 2;
-    addr3 = sys_malloc(size);
-    size *= 2;
-    addr4 = sys_malloc(size);
-    size *= 2;
-    addr5 = sys_malloc(size);
-    size *= 2;
-    addr6 = sys_malloc(size);
-
-    sys_free(addr1);
-    sys_free(addr2);
-    sys_free(addr3);
-    sys_free(addr4);
-    sys_free(addr5);
-    sys_free(addr6);
-
-
-    while(1) {
-        console_put_str(msg);
-        console_put_char('\n');
-    }
-}
-
-void u_prog_a(void)
-{
-    mkdir("/file1/");
-    while(1);
-
-}
-
-void u_prog_b(void)
-{
-    char *str_ub = "u_prog_b thread, my pid is: ";
-    pid_t pid_ub = getpid();
-    void *addr = malloc(1024);
-    free(addr);
-    while(1) {
-        printf("%s%d\n", str_ub, pid_ub);
-    }
 }
 
 
@@ -157,7 +56,7 @@ void init(void)
 {
     uint32_t ret_pid = fork();
     if( ret_pid ) {
-	while(1);
+	   while(1);
     }
     else {
         my_shell();
