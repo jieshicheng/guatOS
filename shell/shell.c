@@ -7,6 +7,8 @@
 #include "file.h"
 #include "string.h"
 #include "buildin_cmd.h"
+#include "fs.h"
+#include "execv.h"
 
 #define cmd_len 128
 #define MAX_ARG_NR 16
@@ -106,7 +108,23 @@ void my_shell(void)
 			buildin_rm(argc, argv);
 		}
 		else {
-			printf("external command\n");
+			int32_t pid = fork();
+			if( pid ) {
+				while( 1 ) ;
+			}
+			else {
+				make_clear_abs_path(argv[0], final_path);
+				argv[0] = final_path;
+				struct stat file_path;
+				memset(&file_path, 0, sizeof(struct stat));
+				if( stat(argv[0], &final_path) == -1 ) {
+					printf("my_shell: cannot open %s, cause it's not exist\n", argv[0]);
+				}
+				else {
+					execv(argv[0], argv);
+				}
+				while(1);
+			}
 		}
 	}
 }

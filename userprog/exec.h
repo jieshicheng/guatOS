@@ -50,6 +50,7 @@ enum segment_type
 };
 
 
+int32_t sys_execv(const char *path, const char *argv[]);
 
 
 #endif
