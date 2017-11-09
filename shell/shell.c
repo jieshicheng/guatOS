@@ -126,6 +126,11 @@ void my_shell(void)
 				while(1);
 			}
 		}
+		int32_t arg_idx = 0;
+		while( arg_idx < MAX_ARG_NR ) {
+			argv[arg_idx] = NULL;
+			arg_idx++;
+		}
 	}
 }
 
