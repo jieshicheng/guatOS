@@ -29,7 +29,8 @@ enum SYSCALL_NR
 	SYS_READDIR,
 	SYS_REWINDDIR,
 	SYS_STAT,
-	SYS_PS
+	SYS_PS,
+	SYS_EXECV
 };
 
 uint32_t getpid(void);
@@ -54,5 +55,5 @@ int32_t lseek(int32_t fd, int32_t offset, uint8_t whence);
 int32_t close(int32_t fd);
 int32_t open(char *pathname, uint8_t flag);
 char *getcwd(char *buf, uint32_t size);
-
+int32_t execv(const char *path, const char *argv[]);
 #endif

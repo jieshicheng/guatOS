@@ -25,7 +25,7 @@ static enum bool segment_load(int32_t fd, uint32_t offset, uint32_t filesz, uint
 	uint32_t vaddr_page = vaddr_first_page;
 	while( page_idx < occupy_pages ) {
 		uint32_t *pde = pde_ptr(vaddr_page);
-		uint32_t *pte = ptr_ptr(vaddr_page);
+		uint32_t *pte = pte_ptr(vaddr_page);
 		if( !(*pde & 0x00000001) || !(*pte & 0x00000001) ) {
 			if( get_a_page(PF_USER, vaddr_page) ) {
 				return false;

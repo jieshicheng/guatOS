@@ -8,7 +8,7 @@
 #include "string.h"
 #include "buildin_cmd.h"
 #include "fs.h"
-#include "execv.h"
+#include "exec.h"
 
 #define cmd_len 128
 #define MAX_ARG_NR 16
@@ -115,13 +115,13 @@ void my_shell(void)
 			else {
 				make_clear_abs_path(argv[0], final_path);
 				argv[0] = final_path;
-				struct stat file_path;
-				memset(&file_path, 0, sizeof(struct stat));
-				if( stat(argv[0], &final_path) == -1 ) {
+				struct stat file_stat;
+				memset(&file_stat, 0, sizeof(struct stat));
+				if( stat(argv[0], &file_stat) == -1 ) {
 					printf("my_shell: cannot open %s, cause it's not exist\n", argv[0]);
 				}
 				else {
-					execv(argv[0], argv);
+					execv(argv[0], (const char **)argv);
 				}
 				while(1);
 			}

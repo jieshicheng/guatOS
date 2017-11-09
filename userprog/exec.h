@@ -1,6 +1,9 @@
 #ifndef __KERNEL_EXEC_H
 #define __KERNEL_EXEC_H
 
+#include "stdint.h"
+#include "global.h"
+
 typedef uint32_t Elf32_Off;
 typedef uint32_t Elf32_Word;
 typedef uint32_t Elf32_Addr;
@@ -20,7 +23,7 @@ struct Elf32_Ehdr
 	Elf32_Half e_ehsize;
 	Elf32_Half e_phentsize;
 	Elf32_Half e_phnum;
-	Elf32_Half e_shentsize
+	Elf32_Half e_shentsize;
 	Elf32_Half e_shnum;
 	Elf32_Half e_shstrndx;
 };
