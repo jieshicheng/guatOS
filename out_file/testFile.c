@@ -1,8 +1,6 @@
-#include "stdio.h"
-
 int main(void)
 {
-	printf("I am running!\n");
-	while(true);
+	put_str("i am here!\n");
+	while(1);
 	return 0;
 }
