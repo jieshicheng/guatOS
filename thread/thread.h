@@ -78,8 +78,17 @@ struct task_struct
 	struct mem_block_desc u_block_desc[DESC_CNT];
 	uint8_t cwd_inode_nr;
 	int16_t parent_pid;
+	int8_t exit_status;
 	uint32_t stack_magic;
 };
+
+struct pid_pool
+{
+	struct bitmap pid_bitmap;
+	uint32_t pid_start;
+	struct lock pid_lock;
+};
+
 
 
 /**
@@ -95,7 +104,8 @@ struct task_struct *running_thread();
 void thread_yield(void);
 pid_t fork_pid();
 void sys_ps(void);
-
+void thread_exit(struct task_struct *thread_over, enum bool need_schedule);
+void release_pid(pid_t pid);
 
 /**
  *	inside function

@@ -19,7 +19,7 @@
 #define K_HEAP_START 0xc0100000
 
 // function to get given virtual addr's PDE and PTE
-#define PDE_IDX(addr) ((addr & 0xffc00000) >> 22)
+#define `PDE_IDX(addr) ((addr & 0xffc00000) >> 22)
 #define PTE_IDX(addr) ((addr & 0x003ff000) >> 12)
 
 
@@ -63,7 +63,7 @@ struct pool
 void block_desc_init(struct mem_block_desc *desc_array);
 void *sys_malloc(uint32_t size);
 void sys_free(void *ptr);
-
+void free_a_phy_page(uint32_t pg_phy_addr);
 
 
 extern struct pool kernel_pool, user_pool;

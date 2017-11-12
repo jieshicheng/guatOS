@@ -12,18 +12,23 @@
 #include "fs.h"
 #include "file.h"
 
+#include "bitmap.h"
+#include "sync.h"
+
 
 // list struct of ready state and all thread
 struct list thread_ready_list;
 struct list thread_all_list;
 
-// avoid lock to distribute pid_t
-struct lock pid_lock;
 
 // free thread when CPU is nothing to do
 struct task_struct *idle_thread;
 // main thread. make up by main function
 struct task_struct *main_thread;
+
+uint8_t pid_bitmap_bits[128] = {0};
+
+struct pid_pool pid_pool;
 
 // a variable
 static struct list_elem *thread_tag;
@@ -31,6 +36,123 @@ static struct list_elem *thread_tag;
 // outboard function come from switch.s
 extern void switch_to(struct task_struct *cur, struct task_struct *next);
 extern void init(void);
+
+
+static void pid_pool_init(void)
+{
+	pid_pool.pid_start = 1;
+	pid_pool.pid_bitmap.bits = pid_bitmap_bits;
+	pid_pool.pid_bitmap.btmp_bytes = 128;
+	bitmap_init(&pid_pool.pid_bitmap);
+	lock_init(&pid_pool.pid_lock);
+}
+
+static pid_t allocate_pid(void)
+{
+	lock_acquire(&pid_pool.pid_lock);
+	int32_t bit_idx = bitmap_scan(&pid_pool.pid_bitmap, 1);
+	bitmap_set(&pid_pool.pid_bitmap, bit_idx, 1);
+	lock_release(&pid_pool.pid_lock);
+	return (bit_idx + pid_pool.pid_start);
+}
+
+void release_pid(pid_t pid)
+{
+	lock_acquire(&pid_pool.pid_bitmap);
+	int32_t bit_idx = pid - pid_pool.pid_start;
+	bitmap_set(&pid_pool.pid_bitmap, bit_idx, 0);
+	lock_release(&pid_pool.pid_bitmap);
+}
+
+void thread_exit(struct task_struct *thread_over, enum bool need_schedule)
+{
+	intr_disable();
+	thread_over->status = TASK_DIED;
+	if( elem_find(&thread_ready_list, &thread_over->general_tag) ) {
+		list_remove(&thread_over->general_tag);
+	}
+	if( thread_over->pgdir ) {
+		mfree_page(PF_KERNEL, thread_over->pgdir, 1);
+	} 
+	list_remove(&thread_over->all_list_tag);
+	if( thread_over != main_thread ) {
+		mfree_page(PF_KERNEL, thread_over, 1);
+	}
+	release_pid(thread_over->pid);
+	if( need_schedule ) {
+		schedule();
+	}
+}
+
+static enum bool pid_check(struct list_elem *pelem, int32_t pid)
+{
+	sturct task_struct *pthread = elem2entry(struct task_struct, all_list_tag. pelem);
+	if( pthread->pid == pid ) {
+		return true;
+	}
+	return false;
+}
+
+struct task_struct *pid2thread(int32_t pid)
+{
+	struct list_elem *pelem = list_traversal(&thread_all_list, pid_check, pid);
+	if( pelem == NULL ) {
+		return NULL;
+	}
+	struct task_struct *thread = elem2entry(struct task_struct, all_list_tag, pelem);
+	return thread;
+}
+
+static void release_prog_resource(struct task_struct *release_thread)
+{
+	uint32_t *pgdir_vaddr = release_thread->pgdir;
+	uint16_t user_pde_nr = 768, pde_idx = 0;
+	uint32_t pde = 0;
+	uint32_t *v_pde_ptr = NULL;
+
+	uint16_t user_pte_nr = 1024, pte_idx = 0;
+	uint32_t pte = 0;
+	uint32_t *v_pte_ptr = NULL;
+
+	uint32_t *first_pte_vaddr_in_pde = NULL;
+	uint32_t pg_phy_addr = 0;
+
+	while( pde_idx < user_pde_nr ) {
+		v_pde_ptr = pgdir_vaddr + pde_idx;
+		pde = *v_pde_ptr;
+		if( pde & 0x00000001 ) {
+			first_pte_vaddr_in_pde = pte_ptr(pde_idx * 0x400000);
+			pte_idx = 0;
+			while( pte_idx < user_pte_nr ) {
+				v_pte_ptr = first_pte_vaddr_in_pde + pte_idx;
+				pte = *v_pte_ptr;
+				if( pte * 0x00000001 ) {
+					pg_phy_addr = pte & 0xfffff000;
+					free_a_phy_page(pg_phy_addr);
+				}
+				pte_idx++;
+			}
+			pg_phy_addr = pde & 0xfffff000;
+			free_a_phy_page(pg_phy_addr);
+		}
+		pde_idx++;
+	}
+
+	uint32_t bitmap_pg_cnt = (release_thread->userprog_vaddr.vaddr_bitmap.btmp_bytes_len) / PAGE_SIZE;
+	uint8_t *user_vaddr_pool_bitmap = release_thread->userprog_vaddr.vaddr_bitmap.bits;
+	mfree_page(PF_KERNEL, user_vaddr_pool_bitmap, bitmap_pg_cnt);
+
+	uint8_t fd_idx = 3;
+	while( fd_idx < MAX_FILES_OPEN_PER_PROC ) {
+		if( release_thread->fd_table[fd_idx] != -1 ) {
+			sys_close(fd_idx);
+		}
+		fd_idx++;
+	}
+}
+
+
+
 
 /**
  *	free thread. when CPU is nothing to do
@@ -58,17 +180,6 @@ void thread_yield(void)
 	intr_set_status(old_status);
 }
 
-/**
- *	allocate pid when thread is creating
- */
-static pid_t allocate_pid(void)
-{
-	static pid_t next_pid = 0;
-	lock_acquire(&pid_lock);
-	next_pid++;
-	lock_release(&pid_lock);
-	return next_pid;
-}
 
 /**
  *	get running thread's PCB begin address
@@ -215,9 +326,10 @@ void thread_init(void)
 	put_str("thread init start:\n");
 	list_init(&thread_ready_list);
 	list_init(&thread_all_list);
-	lock_init(&pid_lock);
-	
-	process_execute(init, "init");
+	pid_pool_init();
+
+
+	process_execute(l;init, "init");
 
 	make_main_thread();
 	idle_thread = thread_start("idle", 10, idle, NULL);

@@ -540,6 +540,20 @@ void *get_a_page_without_opvaddrbitmap(enum pool_flags pf, uint32_t vaddr)
 	return (void *)vaddr;
 }
 
+void free_a_phy_page(uint32_t pg_phy_addr)
+{
+	struct pool *mem_pool;
+	uint32_t bit_idx = 0;
+	if( pg_phy_addr >= user_pool.phy_addr_start ) {
+		mem_pool = &user_pool;
+		bit_idx = (pg_phy_addr - user_pool.phy_addr_start) / PAGE_SIZE;
+	}
+	else {
+		mem_pool = &kernel_pool;
+		bit_idx = (pg_phy_addr - kernel_pool.phy_addr_start) / PAGE_SIZE;
+	}
+	bitmap_set(&mem_pool->pool_bitmap, bit_idx, 0);
+}
 
 
 
