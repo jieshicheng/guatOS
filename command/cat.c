@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 		read_bytes = read(fd, buf, buf_size);
 		if( read_bytes == -1 )
 			break;
-		write(1, buf. buf_size);
+		write(1, buf, buf_size);
 	}
 	free(buf);
 	close(fd);
