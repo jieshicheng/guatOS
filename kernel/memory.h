@@ -19,7 +19,7 @@
 #define K_HEAP_START 0xc0100000
 
 // function to get given virtual addr's PDE and PTE
-#define `PDE_IDX(addr) ((addr & 0xffc00000) >> 22)
+#define PDE_IDX(addr) ((addr & 0xffc00000) >> 22)
 #define PTE_IDX(addr) ((addr & 0x003ff000) >> 12)
 
 
