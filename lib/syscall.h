@@ -30,7 +30,9 @@ enum SYSCALL_NR
 	SYS_REWINDDIR,
 	SYS_STAT,
 	SYS_PS,
-	SYS_EXECV
+	SYS_EXECV,
+	SYS_WAIT,
+	SYS_EXIT
 };
 
 uint32_t getpid(void);
@@ -56,4 +58,6 @@ int32_t close(int32_t fd);
 int32_t open(char *pathname, uint8_t flag);
 char *getcwd(char *buf, uint32_t size);
 int32_t execv(const char *path, const char *argv[]);
+void exit(int32_t status);
+pid_t wait(int32_t *status);
 #endif

@@ -17,12 +17,8 @@ typedef void * intr_handler;
 enum intr_status { INTR_OFF, INTR_ON };
 void register_handler(uint8_t vector_no, intr_handler function);
 
-static void make_idt_desc(struct gate_desc *, uint8_t, intr_handler);
-static void idt_desc_init(void);
 void idt_init();
-static void general_intr_handler(uint8_t vec_nr);
-static void pic_init(void);
-static void exception_init(void);
+
 enum intr_status intr_enable();
 enum intr_status intr_disable();
 enum intr_status intr_set_status(enum intr_status status);

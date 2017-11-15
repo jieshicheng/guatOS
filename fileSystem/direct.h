@@ -36,9 +36,4 @@ struct dir_entry *dir_read(struct dir *dir);
 enum bool dir_is_empty(struct dir *dir);
 int32_t dir_remove(struct dir *parent_dir, struct dir *child_dir);
 
-
-/**
- *	inside function
- */
-
 #endif

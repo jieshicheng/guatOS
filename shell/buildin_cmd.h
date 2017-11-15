@@ -5,7 +5,7 @@
 #include "global.h"
 
 void make_clear_abs_path(char *path, char *final_path);
-static void wash_path(char *old_abs_path, char *new_abs_path);
+
 
 
 int32_t buildin_rm(uint32_t argc, char **argv);

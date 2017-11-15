@@ -18,11 +18,8 @@ struct ioqueue
 };
 
 void ioqueue_init(struct ioqueue *ioq);
-static int32_t next_pos(int32_t pos);
 enum bool ioq_full(struct ioqueue *ioq);
 enum bool ioq_empty(struct ioqueue *ioq);
-static void ioq_wait(struct task_struct **waiter);
-static void ioq_wakeup(struct task_struct **waiter);
 char ioq_getchar(struct ioqueue *ioq);
 void ioq_putchar(struct ioqueue *ioq, char byte);
 
