@@ -41,10 +41,4 @@ int32_t file_close(struct file *file);
 int32_t file_write(struct file *file, const void *buf, uint32_t count);
 int32_t file_read(struct file *file, void *buf, uint32_t count);
 
-
-/**
- *	inside function
- */
-
-
 #endif

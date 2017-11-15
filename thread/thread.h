@@ -108,18 +108,8 @@ void thread_exit(struct task_struct *thread_over, enum bool need_schedule);
 void release_pid(pid_t pid);
 struct task_struct *pid2thread(int32_t pid);
 
-/**
- *	inside function
- */
-void thread_create(struct task_struct *pthread, thread_func function, void *func_arg);
-void init_thread(struct task_struct *pthread, char *name, int prio);
-static pid_t allocate_pid(void);
-static void make_main_thread(void);
-static void kernel_thread(thread_func *function, void *func_arg);
-static void idle(void *arg UNUSED);
-static void pad_print(char *buf, int32_t buf_len, void *ptr, char format);
-static enum bool elem2entry_info(struct list_elem *pelem, int arg UNUSED);
 
+void thread_create(struct task_struct *pthread, thread_func function, void *func_arg);
 
 
 
