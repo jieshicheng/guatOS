@@ -8,7 +8,8 @@ ASFLAGS = -f elf
 CFLAGS1 = $(LIB) -c -fno-builtin
 CFLAGS2 = $(LIB) -c -fno-builtin -fno-stack-protector
 LDFLAGS = -Ttext $(ENTRY_POINT) -e main
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/exec.o $(BUILD_DIR)/buildin_cmd.o \
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/wait_exit.o \
+	   $(BUILD_DIR)/exec.o $(BUILD_DIR)/buildin_cmd.o \
 	   $(BUILD_DIR)/shell.o $(BUILD_DIR)/fork.o \
 	   $(BUILD_DIR)/fs.o $(BUILD_DIR)/file.o \
 	   $(BUILD_DIR)/direct.o $(BUILD_DIR)/inode.o \
@@ -116,7 +117,8 @@ $(BUILD_DIR)/thread.o : thread/thread.c thread/thread.h \
 						kernel/interrupt.h \
 						lib/print.h \
 						kernel/debug/debug.h \
-						userprog/process.h lib/stdio.h fileSystem/fs.h fileSystem/file.h
+						userprog/process.h lib/stdio.h fileSystem/fs.h \
+						fileSystem/file.h thread/sync.h lib/bitmap.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 $(BUILD_DIR)/list.o : lib/list.c lib/list.h \
@@ -277,6 +279,11 @@ $(BUILD_DIR)/buildin_cmd.o : shell/buildin_cmd.c shell/buildin_cmd.h \
 $(BUILD_DIR)/exec.o : userprog/exec.c userprog/exec.h \
 					   lib/stdint.h lib/global.h lib/string.h \
 					   thread/thread.h kernel/memory.h fileSystem/fs.h
+	$(CC) $(CFLAGS2) $< -o $@
+
+$(BUILD_DIR)/wait_exit.o : userprog/wait_exit.c userprog/wait_exit.h \
+							thread/thread.h kernel/memory.h lib/bitmap.h \
+							lib/list.h lib/stdint.h lib/global.h fileSystem/fs.h
 	$(CC) $(CFLAGS2) $< -o $@
 
 ##### 		nasm complier   ########

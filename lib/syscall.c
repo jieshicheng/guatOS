@@ -170,5 +170,13 @@ int32_t execv(const char *path, const char *argv[])
 	return _syscall2(SYS_EXECV, path, argv);
 }
 
+pid_t wait(int32_t *status)
+{
+	return _syscall1(SYS_WAIT, status);
+}
 
+void exit(int32_t status)
+{
+	_syscall1(SYS_EXIT, status);
+}
 
