@@ -18,6 +18,8 @@
 #define PIT_CONTROL_PORT	0x43
 #define mil_seconds_per_intr	(1000 / IRQ0_FREQUENCY)
 
+static void intr_timer_handler(void);
+
 uint32_t ticks = 0;
 
 static void ticks_to_sleep(uint32_t sleep_ticks)

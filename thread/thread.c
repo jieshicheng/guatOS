@@ -42,7 +42,7 @@ static void pid_pool_init(void)
 {
 	pid_pool.pid_start = 1;
 	pid_pool.pid_bitmap.bits = pid_bitmap_bits;
-	pid_pool.pid_bitmap.btmp_bytes = 128;
+	pid_pool.pid_bitmap.btmp_bytes_len = 128;
 	bitmap_init(&pid_pool.pid_bitmap);
 	lock_init(&pid_pool.pid_lock);
 }
@@ -58,10 +58,10 @@ static pid_t allocate_pid(void)
 
 void release_pid(pid_t pid)
 {
-	lock_acquire(&pid_pool.pid_bitmap);
+	lock_acquire(&pid_pool.pid_lock);
 	int32_t bit_idx = pid - pid_pool.pid_start;
 	bitmap_set(&pid_pool.pid_bitmap, bit_idx, 0);
-	lock_release(&pid_pool.pid_bitmap);
+	lock_release(&pid_pool.pid_lock);
 }
 
 void thread_exit(struct task_struct *thread_over, enum bool need_schedule)
@@ -86,7 +86,7 @@ void thread_exit(struct task_struct *thread_over, enum bool need_schedule)
 
 static enum bool pid_check(struct list_elem *pelem, int32_t pid)
 {
-	sturct task_struct *pthread = elem2entry(struct task_struct, all_list_tag. pelem);
+	struct task_struct *pthread = elem2entry(struct task_struct, all_list_tag, pelem);
 	if( pthread->pid == pid ) {
 		return true;
 	}
@@ -279,7 +279,7 @@ void thread_init(void)
 	pid_pool_init();
 
 
-	process_execute(l;init, "init");
+	process_execute(init, "init");
 
 	make_main_thread();
 	idle_thread = thread_start("idle", 10, idle, NULL);

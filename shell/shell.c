@@ -19,6 +19,9 @@ char *argv[MAX_ARG_NR];
 int32_t argc = -1;
 char final_path[MAX_PATH_LEN] = {0};
 
+static int32_t cmd_parse(char *cmd_str, char **argc, char token);
+
+
 void print_prompt(void)
 {
 	printf("[rabbit@localhost %s]$ ", cwd_cache);

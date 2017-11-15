@@ -6,6 +6,9 @@
 #include "list.h"
 #include "fs.h"
 
+extern struct list thread_all_list;
+extern struct list thread_ready_list;
+
 static void release_prog_resource(struct task_struct *release_thread)
 {
 	uint32_t *pgdir_vaddr = release_thread->pgdir;
@@ -88,7 +91,7 @@ pid_t sys_wait(int32_t *status)
 	while( 1 ) {
 		struct list_elem *child_elem = list_traversal(&thread_all_list, find_hanging_child, parent_thread->pid);
 		if( child_elem != NULL ) {
-			struct task_struct *child_thread = elem2entry(&thread_all_list, all_list_tag, child_elem); 
+			struct task_struct *child_thread = elem2entry(struct task_struct, all_list_tag, child_elem); 
 			*status = child_thread->exit_status;
 			uint16_t child_pid = child_thread->pid;
 			thread_exit(child_thread, false);

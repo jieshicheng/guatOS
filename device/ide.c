@@ -50,6 +50,11 @@ uint8_t channel_cnt;
 struct ide_channel channels[2];
 
 
+static enum bool partition_info(struct list_elem *pelem, int arg UNUSED);
+static void partition_scan(struct disk *hd, uint32_t ext_lba);
+static void identify_disk(struct disk *hd);
+
+
 /**
  *	硬盘驱动初始化
  */

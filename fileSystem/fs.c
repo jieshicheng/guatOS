@@ -26,6 +26,8 @@ extern struct ioqueue kbd_buf;
 struct partition *cur_part;
 
 
+static enum bool mount_partition(struct list_elem *pelem, int arg);
+
 static void partition_format(struct partition *part)
 {
 	uint32_t boot_sector_sects = 1;

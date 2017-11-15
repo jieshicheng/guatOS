@@ -107,7 +107,7 @@ void sys_ps(void);
 void thread_exit(struct task_struct *thread_over, enum bool need_schedule);
 void release_pid(pid_t pid);
 struct task_struct *pid2thread(int32_t pid);
-
+void init_thread(struct task_struct *pthread, char *name, int prio);
 
 void thread_create(struct task_struct *pthread, thread_func function, void *func_arg);
 
