@@ -133,7 +133,7 @@ void thread_yield(void)
 /**
  *	get running thread's PCB begin address
  */
-struct task_struct *running_thread()
+struct task_struct *running_thread(void)
 {
 	uint32_t esp;
 	asm volatile ("mov %%esp, %0" : "=g"(esp));
@@ -238,7 +238,7 @@ static void make_main_thread(void)
  *	schedule others thread to running
  *
  */
-void schedule()
+void schedule(void)
 {
 	ASSERT(intr_get_status() == INTR_OFF);
 
@@ -313,7 +313,7 @@ void thread_unblock(struct task_struct *pthread)
 	intr_set_status(old_status);
 }
 
-pid_t fork_pid()
+pid_t fork_pid(void)
 {
 	return allocate_pid();
 }

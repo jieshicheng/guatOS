@@ -74,7 +74,7 @@ void free(void *ptr)
 	_syscall1(SYS_FREE, ptr);
 }
 
-pid_t fork()
+pid_t fork(void)
 {
 	return _syscall0(SYS_FORK);
 }

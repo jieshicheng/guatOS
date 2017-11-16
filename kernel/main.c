@@ -47,7 +47,7 @@ int main(void)
     //sys_rmdir("/direct1/"); OK
 
 //********************
-    uint32_t file_size = 2460;
+    uint32_t file_size = 5776;
     uint32_t sec_cnt = DIV_ROUND_UP(file_size, 512);
     struct disk *sda = &channels[0].devices[0];
     void *prog_buf = sys_malloc(file_size);
@@ -65,9 +65,7 @@ int main(void)
 //*********************
     cls_screen();
     console_put_str("[rabbit@localhost /]$ ");
-
-    while(1)
-        ;
+    thread_exit(running_thread(), true);
     return 0;
 }
 
@@ -76,12 +74,16 @@ void init(void)
 {
     uint32_t ret_pid = fork();
     if( ret_pid ) {
-	   while(1);
+    	int status;
+	int child_pid;
+	while( 1 ) {
+	    child_pid = wait(&status);
+	    printf("i am init, my pid is 1. i recive a child %d, status is %d", child_pid, status);
+	}
     }
     else {
         my_shell();
     }
-    while(1);
 }
 
 

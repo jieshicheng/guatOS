@@ -14,11 +14,8 @@ CFLAGS="-Wall -c -fno-builtin -W -Wstrict-prototypes \
 		-Wmissing-prototypes -Wsystem-headers -fno-stack-protector"
 LIB="-I ../lib/ -I  ../kernel/ -I ../device/ -I ../thread/ -I ../userprog/ \
 		-I ../fileSystem/ -I ../shell/"
-OBJS="../build/string.o ../build/syscall.o ../build/stdio.o ../build/debug.o \
-	start.o ../build/print.o ../build/interrupt.o ../build/memory.o \
-	../build/kernel.o ../build/sync.o ../build/thread.o ../build/syscall-init.o \
-	../build/bitmap.o ../build/list.o ../build/fs.o ../build/direct.o \
-	../build/file.o"
+OBJS="../build/string.o ../build/syscall.o ../build/stdio.o \
+	start.o"
 
 DD_IN=$BIN
 DD_OUT="/home/jieshi/bochs-2.6/c.img"

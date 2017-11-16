@@ -58,7 +58,7 @@ static void identify_disk(struct disk *hd);
 /**
  *	硬盘驱动初始化
  */
-void ide_init()
+void ide_init(void)
 {
 	memset(channels, 0, sizeof(struct ide_channel) * 2);
 	printk("ide_init start:\n");

@@ -39,7 +39,7 @@ $(BUILD_DIR)/main.o : kernel/main.c \
 					  lib/syscall.h \
 					  lib/stdio.h \
 					  fileSystem/fs.h
-	$(CC) $(CFLAGS1) $< -o $@
+	$(CC) $(CFLAGS2) $< -o $@
 
 $(BUILD_DIR)/init.o : kernel/init.c kernel/init.h \
 					  lib/print.h \

@@ -56,7 +56,7 @@ struct stat
 /**
  *	interface function
  */
-void filesys_init();
+void filesys_init(void);
 
 int32_t sys_open(const char *pathname, uint8_t flags);
 int32_t sys_close(int32_t fd);

@@ -126,7 +126,7 @@ static void partition_format(struct partition *part)
 }
 
 
-void filesys_init()
+void filesys_init(void)
 {
 	uint8_t channel_no = 0, dev_no = 0, part_idx = 0;
 	

@@ -99,10 +99,10 @@ struct task_struct *thread_start(char *name, int prio, thread_func function, voi
 
 void thread_block(enum task_status stat);
 void thread_unblock(struct task_struct *pthread);
-void schedule();
-struct task_struct *running_thread();
+void schedule(void);
+struct task_struct *running_thread(void);
 void thread_yield(void);
-pid_t fork_pid();
+pid_t fork_pid(void);
 void sys_ps(void);
 void thread_exit(struct task_struct *thread_over, enum bool need_schedule);
 void release_pid(pid_t pid);

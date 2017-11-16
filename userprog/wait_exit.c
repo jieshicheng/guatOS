@@ -98,7 +98,7 @@ pid_t sys_wait(int32_t *status)
 			return child_pid;
 		}
 		child_elem = list_traversal(&thread_all_list, find_child, parent_thread->pid);
-		if( child_elem != NULL ) {
+		if( child_elem == NULL ) {
 			return -1;
 		}
 		else {

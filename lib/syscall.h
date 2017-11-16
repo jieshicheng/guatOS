@@ -39,7 +39,7 @@ uint32_t getpid(void);
 uint32_t write(int32_t fd, const void *buf, uint32_t count);
 void *malloc(uint32_t size);
 void free(void *ptr);
-pid_t fork();
+pid_t fork(void);
 int32_t read(int32_t fd, void *buf, uint32_t count);
 void putchar(char char_asci);
 void clear(void);

@@ -113,7 +113,9 @@ void my_shell(void)
 		else {
 			int32_t pid = fork();
 			if( pid ) {
-				while( 1 ) ;
+				int32_t status;
+				int32_t child_pid = wait(&status);
+				printf("child_pid %d, it's status: %d\n", child_pid, status);
 			}
 			else {
 				make_clear_abs_path(argv[0], final_path);
@@ -126,7 +128,6 @@ void my_shell(void)
 				else {
 					execv(argv[0], (const char **)argv);
 				}
-				while(1);
 			}
 		}
 		int32_t arg_idx = 0;
