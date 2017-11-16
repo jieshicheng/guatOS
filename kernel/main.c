@@ -36,30 +36,29 @@ int main(void)
     put_str("          This is tiny operator system by CJS\n");
     
     init_all();
-    //sys_open("/file1", O_CREAT);  OK
     //int fd = sys_open("/file1", O_WRONLY); OK
     //int fd = sys_open("/file1", O_RDONLY); OK
     //sys_read(fd, buf, 11); OK
-    //sys_write(fd, "chengjieshi", 11); OK
-    //sys_close(fd); OK
     //sys_unlink("/file1"); OK
     //sys_mkdir("/direct1/"); OK
     //sys_rmdir("/direct1/"); OK
 
 //********************
-    uint32_t file_size = 5776;
+    sys_unlink("/cat");
+    uint32_t file_size = 5804;
     uint32_t sec_cnt = DIV_ROUND_UP(file_size, 512);
     struct disk *sda = &channels[0].devices[0];
     void *prog_buf = sys_malloc(file_size);
     ide_read(sda, 300, prog_buf, sec_cnt);
-    int32_t fd = sys_open("/testFile", O_CREAT | O_RDWR);
+    int32_t fd = sys_open("/cat", O_CREAT | O_RDWR);
     if( fd != -1 ) {
         if( sys_write(fd, prog_buf, file_size) == -1 ) {
             printk("file write failed!\n");
             while(true);
         }
     }
-
+    sys_close(fd);
+    sys_free(prog_buf);
 
 
 //*********************

@@ -21,20 +21,22 @@ int main(int argc, char **argv)
 		strcat(abs_path, argv[1]);
 	}
 	else {
-		strcat(abs_path,argv[1]);
+		strcpy(abs_path,argv[1]);
 	}
+	printf("%s", abs_path);
 	int fd = open(abs_path, O_RDONLY);
 	if( fd == -1 ) {
 		printf("cat: open %s file failed\n", argv[1]);
 		return -1;
 	}
 	int read_bytes = 0;
-	while( 1 ) {
+//	while( 1 ) {
 		read_bytes = read(fd, buf, buf_size);
-		if( read_bytes == -1 )
+		printf("%s  %d\n", buf, read_bytes);
+		/*if( read_bytes == -1 )
 			break;
-		write(1, buf, buf_size);
-	}
+		write(1, buf, read_bytes);*/
+//	}
 	free(buf);
 	close(fd);
 	return 66;
