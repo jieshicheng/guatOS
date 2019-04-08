@@ -1,0 +1,19 @@
+## mode
+boot: disk
+
+# memory
+megs: 32
+
+# real machine tools
+romimage: file="/usr/local/Cellar/bochs/2.6.9_2/share/bochs/BIOS-bochs-latest"
+vgaromimage: file="/usr/local/Cellar/bochs/2.6.9_2/share/bochs/VGABIOS-lgpl-latest"
+
+# log file
+log: bochsout.txt
+
+# set mouse and keyboard
+mouse: enabled=0
+keyboard: keymap="/usr/local/Cellar/bochs/2.6.9_2/share/bochs/keymaps/sdl2-pc-us.map"
+
+ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
+ata0-master: type=disk, path="guatos.img", mode=flat
