@@ -2,97 +2,116 @@
 ; author: linkcheng
 ; date: 2019 4.8
 
-;org 0x7c00
+SECTION code_mbr align=16 vstart=0x7c00
+    
+    ; print string
+    ; set graph card memory
+    mov ax, 0xb800
+    mov es, ax
 
-; print string "hello world"
-; set graph card memory
-mov ax, 0xb800
-mov es, ax
+    ; set data segment
+    mov ax, 0
+    mov ds, ax
 
-mov byte [es:0x00], 'H'
-mov byte [es:0x01], 0x07
-mov byte [es:0x02], 'e'
-mov byte [es:0x03], 0x07
-mov byte [es:0x04], 'l'
-mov byte [es:0x05], 0x07
-mov byte [es:0x06], 'l'
-mov byte [es:0x07], 0x07
-mov byte [es:0x08], 'o'
-mov byte [es:0x09], 0x07
-mov byte [es:0x0A], ' '
-mov byte [es:0x0B], 0x07
-mov byte [es:0x0C], 'W'
-mov byte [es:0x0D], 0x07
-mov byte [es:0x0E], 'o'
-mov byte [es:0x0F], 0x07
-mov byte [es:0x10], 'r'
-mov byte [es:0x11], 0x07
-mov byte [es:0x12], 'l'
-mov byte [es:0x13], 0x07
-mov byte [es:0x14], 'd'
-mov byte [es:0x15], 0x07
-mov byte [es:0x16], ' '
-mov byte [es:0x17], 0x07
+    ; set stack
+    mov ax, 0
+    mov ss, ax
+    mov sp, ax
 
-; set data segment
-mov ax, cs
-mov ds, ax
+    ; start mbr process
+    ; print message and loader os code.
+    call print_message
 
-; set dividsor
-mov ax, pudding
-mov bx, 10
+    ; set ds and es equals os section
+    mov ax, [cs:os_loader_add]
+    mov dx, [cs:os_loader_add + 2]
+    mov di, 16
+    div di
+    mov ds, ax
+    mov es, ax
 
-; start divided
-mov dx, 0
-div bx
-mov [0x7c00 + vec + 0x00], dl
+    ; loader os code
+    call loader_os
+    jmp $
 
-mov dx, 0
-div bx
-mov [0x7c00 + vec + 0x01], dl
+loader_os:
+    mov di, 0
+    mov cx, 100 ; os code address in hardisk
+    mov bx, 0
 
-mov dx, 0
-div bx
-mov [0x7c00 + vec + 0x02], dl
+    call read_section
 
-mov dx, 0
-div bx
-mov [0x7c00 + vec + 0x03], dl
+    ret
 
-mov dx, 0
-div bx
-mov [0x7c00 + vec + 0x04], dl
+; 28 bits sections start address store in cl, ch, bl and bh.
+read_section:
+    push ax
+    push dx
+    
+    mov dx, 0x1f2
+    mov al, 1 ; read one section
+    out dx, al
 
-; print the address
-mov al, [0x7c00 + vec + 0x04]
-add al, 0x30
-mov [es:0x18], al
-mov byte [es:0x19], 0x07
+    inc dx
+    mov al, cl
+    out dx, al
 
-mov al, [0x7c00 + vec + 0x04]
-add al, 0x30
-mov [es:0x1A], al
-mov byte [es:0x1B], 0x07
+    inc dx
+    mov al, ch
+    out dx, al
 
-mov al, [0x7c00 + vec + 0x02]
-add al, 0x30
-mov [es:0x1C], al
-mov byte [es:0x1D], 0x07
+    inc dx
+    mov al, bl
+    out dx, al
 
-mov al, [0x7c00 + vec + 0x01]
-add al, 0x30
-mov [es:0x1E], al
-mov byte [es:0x1F], 0x07
+    inc dx
+    mov al, bh
+    or al, 0xe0
+    out dx, al
 
-mov al, [0x7c00 + vec + 0x00]
-add al, 0x30
-mov [es:0x20], al
-mov byte [es:0x21], 0x07
+    inc dx
+    mov al, 0x20
+    out dx, al ; write read command
 
-infi:
-    jmp near infi 
+    wait_ready:
+        in al, dx
+        and al, 0x88
+        cmp al, 0x08
+        jnz wait_ready
 
-vec db 0, 0, 0, 0, 0
+    mov cx, 256
+    mov dx, 0x1f0
+    read_words:
+        in ax, dx
+        mov [di], ax
+        add di, 2
+        loop read_words
+    
+    pop dx
+    pop ax
+    ret
 
-times 510 - ($ - $$) db 0
-pudding db 0x55, 0xAA
+print_message:
+    mov bx, message
+    mov cx, pudding - message
+    mov di, 0
+    
+    show:
+        mov byte al, [bx]
+        mov ah, 0x07
+        mov [es:di], ax
+        add di, 2
+        inc bx
+        loop show
+    
+    ret
+
+lba db 0, 0, 0, 0
+
+os_loader_add dd 0x10000
+
+message db 'guatOS: Welcome to guatOS, It is mbr model now'
+
+pudding: 
+    times 510 - ($ - $$) db 0
+    db 0x55, 0xAA
