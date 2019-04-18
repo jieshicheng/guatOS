@@ -1,6 +1,9 @@
 ; guatOS
+; module of master boot record
 ; author: linkcheng
 ; date: 2019 4.8
+
+os_lba_add equ 100
 
 SECTION code_mbr align=16 vstart=0x7c00
     
@@ -32,32 +35,111 @@ SECTION code_mbr align=16 vstart=0x7c00
 
     ; loader os code
     call loader_os
-    jmp $
+    jmp far [0x04]
 
+
+;------------------------------------------------------------;
+; @brief loader kernal to memory
+; @param
+;------------------------------------------------------------;
 loader_os:
+    pusha
+    push ds
+
     mov di, 0
-    mov cx, 100 ; os code address in hardisk
+    mov si, os_lba_add ; os code address in hardisk
     mov bx, 0
 
     call read_section
+    
+    ; get sections number of os
+    mov dx, [0x2]
+    mov ax, [0x0]
+    mov bx, 512
+    div bx
+    cmp dx, 0
+    jnz unfinished
+    dec ax
 
+    unfinished:
+        cmp ax, 0
+        jz finished
+        
+        mov si, os_lba_add + 1
+        mov bx, 0
+        mov cx, ax ; set loop times
+    
+    read_more:
+        mov ax, ds ; every times when we read a section then set ds pointer to it's tail postion.
+        add ax, 0x20
+        mov ds, ax
+
+        mov di, 0
+        call read_section
+        inc si
+        loop read_more
+
+    finished:
+        pop ds ; reset ds to 0x1000
+        mov ax, [0x6] ; kernal entry pointer's segment address. 32 bits
+        mov dx, [0x8]
+        call update_seg_base
+        mov [0x6], ax ; update the correctly value.
+
+        mov cx, [0xa]
+        mov bx, 0xc
+    
+    fix_seg_add:
+        mov ax, [bx]
+        mov dx, [bx + 2]
+        call update_seg_base
+        mov [bx], ax
+        add bx, 4
+        loop fix_seg_add
+               
+    popa
     ret
+;------------------------------------------------------------;
 
-; 28 bits sections start address store in cl, ch, bl and bh.
+
+;------------------------------------------------------------;
+; @brief recalculate the segment address according to the os_loader_add
+; @param 
+;------------------------------------------------------------;
+update_seg_base:
+    push dx
+
+    add ax, [cs:os_loader_add]
+    adc dx, [cs:os_loader_add + 0x2]
+    shr ax, 4
+    ror dx, 4
+    and dx, 0xf000
+    or ax, dx
+
+    pop dx
+    ret
+;------------------------------------------------------------;
+
+;------------------------------------------------------------;
+; @brief read a section from hardisk
+; @param si, bx: 28 bits sections start address stored in order
+;        di: di means that beginning address of os.
+;------------------------------------------------------------;
 read_section:
     push ax
     push dx
-    
+    push cx
+
     mov dx, 0x1f2
     mov al, 1 ; read one section
     out dx, al
 
     inc dx
-    mov al, cl
+    mov ax, si
     out dx, al
 
     inc dx
-    mov al, ch
+    mov al, ah
     out dx, al
 
     inc dx
@@ -87,10 +169,16 @@ read_section:
         add di, 2
         loop read_words
     
+    pop cx
     pop dx
     pop ax
     ret
+;------------------------------------------------------------;
 
+;------------------------------------------------------------;
+; @brief print message
+; @param message 
+;------------------------------------------------------------;
 print_message:
     mov bx, message
     mov cx, pudding - message
@@ -105,8 +193,7 @@ print_message:
         loop show
     
     ret
-
-lba db 0, 0, 0, 0
+;------------------------------------------------------------;
 
 os_loader_add dd 0x10000
 
