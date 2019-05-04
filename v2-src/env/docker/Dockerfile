@@ -11,6 +11,8 @@ ENV REFRESHED_AT 2019-4-25
 # make; vim; gcc; g++; git
 # gcc; g++ requirement up to 7.2
 RUN apt-get update && apt-get -y install gcc make
+RUN apt-get update && apt-get -y install nasm
+RUN apt-get update && apt-get -y install gcc-multilib g++-multilib module-assistant
 
 # download guatOJ 
 WORKDIR /root/repo/
